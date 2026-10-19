@@ -22,10 +22,14 @@
 │   │   └── STANDALONE-PROMPT-TEMPLATE.md
 │   ├── reports
 │   │   ├── ARCH-001-gemini-lock-conceptual-model.md
+│   │   ├── ARCH-002-gemini-repo-scaffolding.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
 │       └── status.md
+├── patch
+│   ├── ARCH-001-gemini-lock-conceptual-model.patch
+│   └── ARCH-002-gemini-repo-scaffolding.patch
 ├── scripts
 │   ├── apc-bundle.sh
 │   ├── manage-decisions.py

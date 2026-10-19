@@ -63,6 +63,11 @@ canonical format for this.
 
 If you're ever unsure which applies, default to the diff.
 
+**Patch files:** Whenever asked for a "patch" or generating unified commit patches,
+always write the patch file to `patch/<task-id>-<agent-name>-<short-slug>.patch`
+(or `patch/`) rather than pasting large patch text into the chat response. Reference
+the file path and summary stat in chat instead.
+
 ## Before starting any task
 
 0. If you will run alongside another task or agent, follow 'Parallel work and worktrees' first.
@@ -134,6 +139,9 @@ noteworthy — "nothing noteworthy" is itself vital information to a future sess
 - **Record decisions in `docs/decisions/decision-log.md`** under the reserved ID.
 - **Validate your report:** Run `./scripts/validate-report.py` to ensure your report file
   passes structure checks, diff checks, and status alignment before handoff.
+- **Generate patch in `patch/`:** When asked for a patch or exporting commit deltas, save
+  the patch file to `patch/<task-id>-<agent-name>-<short-slug>.patch` instead of inlining
+  the raw patch into chat messages.
 
 ## Recommended agent-role split
 
