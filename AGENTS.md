@@ -158,3 +158,8 @@ You may receive a task as a "standalone prompt" written by the APC AI and relaye
 lukexodus. These prompts assume zero memory of prior conversations — treat them
 as self-contained instructions. If a prompt assumes context you don't have and can't find
 in this repo, say so in your report rather than guessing.
+
+**Prompt archiving:** Whenever prompt files are provided or detected (e.g. deposited in
+`~/Downloads` or pasted into chat), immediately move/save them into
+`docs/prompts/<TASK-ID>-PROMPT.md` so they remain permanent reference artifacts within the
+repository.

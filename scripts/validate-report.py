@@ -22,7 +22,7 @@ REQUIRED_SECTIONS = [
     r"#+ .*Git Diff",
 ]
 
-REPORT_NAME_REGEX = re.compile(r"^([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+)-([a-z0-9_.-]+)\.md$")
+REPORT_NAME_REGEX = re.compile(r"^([A-Z][A-Z0-9]*(?:-[A-Z0-9.]+)+)-([a-z0-9_.-]+)\.md$")
 
 
 def validate_report(report_path: Path, repo_root: Path) -> list[str]:

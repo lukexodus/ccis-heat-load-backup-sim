@@ -9,21 +9,21 @@ set -euo pipefail
 
 PROFILE_CORE=(
   AGENTS.md
-  docs/context/complete-context.md
-  docs/context/apc-handoff-template.md
-  docs/context/apc-bundle-quickref.md
+  pyproject.toml
+  requirements.txt
+  docs/context/*.md
   docs/context/repo-tree.txt
   docs/decisions/decision-log.md
   docs/tasks/status.md
   docs/tasks/high-level-tasks.md
-  docs/prompts/STANDALONE-ADOPTION-PROMPT.md
+  docs/prompts/*.md
 )
 
 PROFILE_DEV=(
   "${PROFILE_CORE[@]}"
-  # Add key domain models, specs, and interfaces:
-  # src/core.py
-  # tests/test_core.py
+  src/ccis_sim/*.py
+  src/ccis_sim/*/*.py
+  tests/*.py
 )
 
 # full: union of all profiles, de-duplicated during resolution
@@ -34,7 +34,7 @@ PROFILE_FULL=(
 
 # Optional reports: included only with --with-reports flag
 OPTIONAL_REPORTS=(
-  # docs/reports/CORE-001-report.md
+  docs/reports/*.md
 )
 
 show_help() {
@@ -192,6 +192,11 @@ full)
   ;;
 esac
 
+# Add optional reports if requested before resolving globs
+if [[ $WITH_REPORTS -eq 1 ]]; then
+  RAW_PROFILE_ITEMS+=("${OPTIONAL_REPORTS[@]}")
+fi
+
 # Resolve globs in profile items
 RESOLVED_RAW=()
 for item in "${RAW_PROFILE_ITEMS[@]}"; do
@@ -209,13 +214,6 @@ for item in "${RAW_PROFILE_ITEMS[@]}"; do
     RESOLVED_RAW+=("$item")
   fi
 done
-
-# Add optional reports if requested
-if [[ $WITH_REPORTS -eq 1 ]]; then
-  for rep in "${OPTIONAL_REPORTS[@]}"; do
-    RESOLVED_RAW+=("$rep")
-  done
-fi
 
 # Add ad hoc files from --add
 for ad in "${ADDS[@]}"; do

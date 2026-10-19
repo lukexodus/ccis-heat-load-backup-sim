@@ -17,11 +17,16 @@
 │   │   └── COLLABORATOR-GUIDE.md
 │   ├── prompts
 │   │   ├── ARCH-001-PROMPT.md
+│   │   ├── ARCH-002.4-FIXUP-PROMPT.md
 │   │   ├── ARCH-002-PROMPT.md
+│   │   ├── CORE-001-PROMPT.md
+│   │   ├── CORE-002-PROMPT.md
+│   │   ├── CORE-003-PROMPT.md
 │   │   ├── STANDALONE-ADOPTION-PROMPT.md
 │   │   └── STANDALONE-PROMPT-TEMPLATE.md
 │   ├── reports
 │   │   ├── ARCH-001-gemini-lock-conceptual-model.md
+│   │   ├── ARCH-002.4-gemini-research-synthesis-fixup.md
 │   │   ├── ARCH-002-gemini-repo-scaffolding.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
