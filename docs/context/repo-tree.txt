@@ -34,6 +34,7 @@
 │       └── status.md
 ├── patch
 │   ├── ARCH-001-gemini-lock-conceptual-model.patch
+│   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
 │   └── ARCH-002-gemini-repo-scaffolding.patch
 ├── scripts
 │   ├── apc-bundle.sh
