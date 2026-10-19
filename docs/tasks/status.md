@@ -13,7 +13,7 @@ Live tracker — what is actually done right now, not the long-term plan (the pl
 
 ## Phase 0 — Inception, Scope Lock & Repository Foundation
 
-Status: **open**
+Status: **done**
 
 | ID           | Task                                                         | Status | Notes / Report                           |
 | :----------- | :----------------------------------------------------------- | :----- | :--------------------------------------- |
@@ -24,11 +24,11 @@ Status: **open**
 | ARCH-001.4   | Review and record decisions `[D-05]` through `[D-11]`        | `done` | Logged in decision-log.md                |
 | ARCH-001.5   | Lock `HourlyRecord` schema and function signatures           | `done` | Canonical contract                       |
 | ARCH-001.6   | Generate conceptual model Mermaid flowcharts                 | `done` | Architecture & dispatch diagrams         |
-| **ARCH-002** | **Scaffold Repository, Toolchain, Linting & Research Index** | `open` | Outline §5                               |
-| ARCH-002.1   | Set up Python env, `pyproject.toml`, and `requirements.txt`  | `open` | pandas, numpy, scipy, matplotlib, pytest |
-| ARCH-002.2   | Create package directory layout (`src/ccis_sim/`, `tests/`)  | `open` | Scaffolding                              |
-| ARCH-002.3   | Configure linting, formatting, and pytest test harness       | `open` | Verification gate                        |
-| ARCH-002.4   | Create and commit `docs/context/research-synthesis.md`       | `open` | Index 8 research reports                 |
+| **ARCH-002** | **Scaffold Repository, Toolchain, Linting & Research Index** | `done` | [ARCH-002-gemini-repo-scaffolding.md](../reports/ARCH-002-gemini-repo-scaffolding.md) |
+| ARCH-002.1   | Set up Python env, `pyproject.toml`, and `requirements.txt`  | `done` | pandas, numpy, scipy, matplotlib, pytest |
+| ARCH-002.2   | Create package directory layout (`src/ccis_sim/`, `tests/`)  | `done` | Scaffolding (subpackages, tests, data)   |
+| ARCH-002.3   | Configure linting, formatting, and pytest test harness       | `done` | Verification gate (pytest 10/10 passing) |
+| ARCH-002.4   | Create and commit `docs/context/research-synthesis.md`       | `done` | Index 8 research reports in synthesis    |
 
 ---
 

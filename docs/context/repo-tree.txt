@@ -1,4 +1,7 @@
 .
+├── data
+│   ├── fixtures
+│   └── raw
 ├── docs
 │   ├── context
 │   │   ├── apc-bundle-quickref.md
@@ -29,4 +32,26 @@
 │   ├── README.md
 │   ├── task-worktree.sh
 │   └── validate-report.py
-└── AGENTS.md
+├── src
+│   └── ccis_sim
+│       ├── battery
+│       │   └── __init__.py
+│       ├── core
+│       │   └── __init__.py
+│       ├── decision
+│       │   └── __init__.py
+│       ├── demand
+│       │   └── __init__.py
+│       ├── integration
+│       │   └── __init__.py
+│       ├── outage
+│       │   └── __init__.py
+│       ├── solar
+│       │   └── __init__.py
+│       └── __init__.py
+├── tests
+│   ├── __init__.py
+│   └── test_smoke.py
+├── AGENTS.md
+├── pyproject.toml
+└── requirements.txt
