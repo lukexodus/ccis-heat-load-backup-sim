@@ -15,20 +15,20 @@ Live tracker — what is actually done right now, not the long-term plan (the pl
 
 Status: **open**
 
-| ID | Task | Status | Notes / Report |
-| :--- | :--- | :--- | :--- |
-| **ARCH-001** | **Lock Scope, Conceptual Model & Interface Contracts** | `open` | Outline §1–3 |
-| ARCH-001.1 | Formalize system boundary, entities, and environment | `open` | Building, PV, BESS, grid, weather |
-| ARCH-001.2 | Define state variables, discrete events, and transitions | `open` | SoC, grid up/down, hour, temp |
-| ARCH-001.3 | Specify performance measures and decision variables | `open` | Solar share, unserved kWh, kWp, kWh |
-| ARCH-001.4 | Review and record decisions `[D-05]` through `[D-11]` | `open` | Needs operator confirmation |
-| ARCH-001.5 | Lock `HourlyRecord` schema and function signatures | `open` | Canonical contract |
-| ARCH-001.6 | Generate conceptual model Mermaid flowcharts | `open` | For report §3 |
-| **ARCH-002** | **Scaffold Repository, Toolchain, Linting & Research Index** | `open` | Outline §5 |
-| ARCH-002.1 | Set up Python env, `pyproject.toml`, and `requirements.txt` | `open` | pandas, numpy, scipy, matplotlib, pytest |
-| ARCH-002.2 | Create package directory layout (`src/ccis_sim/`, `tests/`) | `open` | Scaffolding |
-| ARCH-002.3 | Configure linting, formatting, and pytest test harness | `open` | Verification gate |
-| ARCH-002.4 | Create and commit `docs/context/research-synthesis.md` | `open` | Index 8 research reports |
+| ID           | Task                                                         | Status | Notes / Report                           |
+| :----------- | :----------------------------------------------------------- | :----- | :--------------------------------------- |
+| **ARCH-001** | **Lock Scope, Conceptual Model & Interface Contracts**       | `done` | [ARCH-001-gemini-lock-conceptual-model.md](../reports/ARCH-001-gemini-lock-conceptual-model.md) |
+| ARCH-001.1   | Formalize system boundary, entities, and environment         | `done` | Building (18 rooms), PV, BESS, grid      |
+| ARCH-001.2   | Define state variables, discrete events, and transitions     | `done` | Hourly, continuous & discrete states     |
+| ARCH-001.3   | Specify performance measures and decision variables          | `done` | SSR, SCR, Autonomy, EUE, kWp, kWh        |
+| ARCH-001.4   | Review and record decisions `[D-05]` through `[D-11]`        | `done` | Logged in decision-log.md                |
+| ARCH-001.5   | Lock `HourlyRecord` schema and function signatures           | `done` | Canonical contract                       |
+| ARCH-001.6   | Generate conceptual model Mermaid flowcharts                 | `done` | Architecture & dispatch diagrams         |
+| **ARCH-002** | **Scaffold Repository, Toolchain, Linting & Research Index** | `open` | Outline §5                               |
+| ARCH-002.1   | Set up Python env, `pyproject.toml`, and `requirements.txt`  | `open` | pandas, numpy, scipy, matplotlib, pytest |
+| ARCH-002.2   | Create package directory layout (`src/ccis_sim/`, `tests/`)  | `open` | Scaffolding                              |
+| ARCH-002.3   | Configure linting, formatting, and pytest test harness       | `open` | Verification gate                        |
+| ARCH-002.4   | Create and commit `docs/context/research-synthesis.md`       | `open` | Index 8 research reports                 |
 
 ---
 
@@ -36,32 +36,33 @@ Status: **open**
 
 Status: **open**
 
-| ID | Task | Status | Notes / Report |
-| :--- | :--- | :--- | :--- |
-| **CORE-001** | **Implement Canonical Domain Models & Interface Contracts** | `open` | |
-| CORE-001.1 | Implement `Building`, `SolarArray`, and `Battery` dataclasses | `open` | Immutability & typing |
-| CORE-001.2 | Implement `OutageEvent` and `HourlyRecord` time-step models | `open` | State contracts |
-| CORE-001.3 | Build CSV/dict serialization protocols for simulation output | `open` | Serialization |
-| CORE-001.4 | Write unit test suite for domain models and data invariants | `open` | Conformance |
-| **CORE-002** | **NASA POWER Weather Ingestion & Offline CSV Fixture Cache** | `open` | Outline §4 |
-| CORE-002.1 | Implement NASA POWER API client for Batac (18.06°N, 120.56°E) | `open` | REST client |
-| CORE-002.2 | Build hourly/daily weather parser (T2M, RH2M, ALLSKY_SFC_SW_DWN) | `open` | Met parsing |
-| CORE-002.3 | Add missing value sentinel `-999` filter & UTC→PST alignment | `open` | Sanitization |
-| CORE-002.4 | Commit cached offline CSV fixtures (baseline, hot-year 2016/2019) | `open` | Committed fixtures |
-| CORE-002.5 | Write unit tests for weather ingest and psychrometric sanity | `open` | Verification |
-| **CORE-003** | **Equipment Audit Model & Synthetic Mock Bill Generator** | `open` | Outline §4 |
-| CORE-003.1 | Define equipment audit CSV schema (`item, count, kW, hours, tier`) | `open` | Audit schema |
-| CORE-003.2 | Create CCIS archetype fixture (~2,500 m², 18 rooms, ACs, labs) | `open` | Base inventory |
-| CORE-003.3 | Implement synthetic monthly electricity bill generator | `open` | Calibrated + noise |
-| CORE-003.4 | Validate synthetic bills against regional EUI (150–300 kWh/m²·yr) | `open` | Plausibility check |
-| **CORE-004** | **Shared Test Harness & Energy Balance Invariant Checker** | `open` | Critical test gate |
-| CORE-004.1 | Implement strict energy conservation checker ($\le 10^{-5}\text{ kWh}$) | `open` | Conservation rule |
-| CORE-004.2 | Implement battery boundary validator ($0 \le \text{SoC} \le \text{Cap}$, C-rate) | `open` | State boundaries |
-| CORE-004.3 | Build shared golden fixture runner for sub-model validation | `open` | Shared runner |
-| **CORE-005** | **Baseline Engine Smoke Test (Phase 1 Exit Gate)** | `open` | Exit gate |
-| CORE-005.1 | Implement grid-only, zero-solar, zero-battery simulation | `open` | Baseline engine |
-| CORE-005.2 | Run 8,760-hour baseline through energy-balance test harness | `open` | Zero-leak test |
-| CORE-005.3 | Generate baseline summary metrics (annual kWh, peak kW, base EUI) | `open` | Baseline KPIs |
+| ID           | Task                                                                             | Status | Notes / Report        |
+| :----------- | :------------------------------------------------------------------------------- | :----- | :-------------------- |
+| **CORE-001** | **Implement Canonical Domain Models & Interface Contracts**                      | `open` |                       |
+| CORE-001.1   | Implement `Building`, `SolarArray`, and `Battery` dataclasses                    | `open` | Immutability & typing |
+| CORE-001.2   | Implement `OutageEvent` and `HourlyRecord` time-step models                      | `open` | State contracts       |
+| CORE-001.3   | Build CSV/dict serialization protocols for simulation output                     | `open` | Serialization         |
+| CORE-001.4   | Write unit test suite for domain models and data invariants                      | `open` | Conformance           |
+| **CORE-002** | **NASA POWER Weather Ingestion & Offline CSV Fixture Cache**                     | `open` | Outline §4            |
+| CORE-002.1   | Implement NASA POWER API client for Batac (18.06°N, 120.56°E)                    | `open` | REST client           |
+| CORE-002.2   | Build hourly/daily weather parser (T2M, RH2M, ALLSKY_SFC_SW_DWN)                 | `open` | Met parsing           |
+| CORE-002.3   | Add missing value sentinel `-999` filter & UTC→PST alignment                     | `open` | Sanitization          |
+| CORE-002.4   | Commit cached offline CSV fixtures (baseline, hot-year 2016/2019)                | `open` | Committed fixtures    |
+| CORE-002.5   | Write unit tests for weather ingest and psychrometric sanity                     | `open` | Verification          |
+| **CORE-003** | **Equipment Audit Model & Synthetic Mock Bill Generator**                        | `open` | Outline §4            |
+| CORE-003.1   | Define equipment audit CSV schema (`item, count, kW, hours, tier`)               | `open` | Audit schema          |
+| CORE-003.2   | Create CCIS archetype fixture (~2,500 m², 18 rooms, ACs, labs)                   | `open` | Base inventory        |
+| CORE-003.3   | Implement synthetic monthly electricity bill generator                           | `open` | Calibrated + noise    |
+| CORE-003.4   | Validate synthetic bills against regional EUI (150–300 kWh/m²·yr)                | `open` | Plausibility check    |
+| **CORE-004** | **Shared Test Harness & Energy Balance Invariant Checker**                       | `open` | Critical test gate    |
+| CORE-004.1   | Implement strict energy conservation checker ($\le 10^{-5}\text{ kWh}$)          | `open` | Conservation rule     |
+| CORE-004.2   | Implement battery boundary validator ($0 \le \text{SoC} \le \text{Cap}$, C-rate) | `open` | State boundaries      |
+| CORE-004.3   | Build shared golden fixture runner for sub-model validation                      | `open` | Shared runner         |
+| **CORE-005** | **Baseline Engine Smoke Test (Phase 1 Exit Gate)**                               | `open` | Exit gate             |
+| CORE-005.1   | Implement grid-only, zero-solar, zero-battery simulation                         | `open` | Baseline engine       |
+| CORE-005.2   | Run 8,760-hour baseline through energy-balance test harness                      | `open` | Zero-leak test        |
+| CORE-005.3   | Generate baseline summary metrics (annual kWh, peak kW, base EUI)                | `open` | Baseline KPIs         |
+|              |                                                                                  |        |                       |
 
 ---
 
@@ -69,48 +70,48 @@ Status: **open**
 
 Status: **open**
 
-| ID | Task | Status | Notes / Report |
-| :--- | :--- | :--- | :--- |
-| **DEM-001** | **Equipment Load & Occupancy Schedule Model** | `open` | |
-| DEM-001.1 | Implement academic schedule engine (classes, breaks, holidays) | `open` | Schedule calendar |
-| DEM-001.2 | Compute diurnal non-cooling base demand (lighting, IT, plug loads) | `open` | Bottom-up load |
-| DEM-001.3 | Model unoccupied nighttime baseload (10% of daytime peak) | `open` | Baseload rule |
-| DEM-001.4 | Write unit tests for equipment aggregation across schedule states | `open` | Test suite |
-| **DEM-002** | **Temperature & Humidity Cooling Response Model** | `open` | |
-| DEM-002.1 | Implement CDD model ($T_{\text{base}} = 24.0^\circ\text{C}$, 4%/°C sensitivity) | `open` | Sensible cooling |
-| DEM-002.2 | Implement latent cooling psychrometric multiplier (+20% humidity) | `open` | Latent load |
-| DEM-002.3 | Model split AC compressor duty cycle / inverter modulation | `open` | Inverter response |
-| DEM-002.4 | Validate combined hourly demand profile against mock monthly bills | `open` | Calibration check |
-| **SOL-001** | **Solar Irradiance Geometry & NOCT Thermal Derating Model** | `open` | |
-| SOL-001.1 | Implement Batac tilted plane irradiance model (15° South tilt) | `open` | Irradiance model |
-| SOL-001.2 | Model cell operating temperature with +10°C rooftop thermal penalty | `open` | NOCT model |
-| SOL-001.3 | Apply module temperature power derating ($\gamma = -0.40\%/^\circ\text{C}$) | `open` | Thermal derate |
-| SOL-001.4 | Write unit tests verifying yield drop during high-temperature hours | `open` | Thermal tests |
-| **SOL-002** | **Array Sizing, Inverter Clipping & Balance-of-System Losses** | `open` | |
-| SOL-002.1 | Implement DC capacity scaling (0, 50, 100, 200 kWp) | `open` | Capacity scaling |
-| SOL-002.2 | Model inverter peak efficiency (98%) and DC/AC clipping limits | `open` | Inverter clipping |
-| SOL-002.3 | Incorporate balance-of-system derates (PR = 0.77, soiling, wiring) | `open` | BOS losses |
-| SOL-002.4 | Validate annual specific yield against Luzon benchmark (1,298 kWh/kWp) | `open` | Yield benchmark |
-| **BAT-001** | **Battery Dispatch Dynamics, SoC Tracking & Losses** | `open` | |
-| BAT-001.1 | Implement time-stepped State-of-Charge tracking logic | `open` | SoC recursion |
-| BAT-001.2 | Apply LFP round-trip efficiency (92% RTE, $\sqrt{\eta}$ charge/discharge) | `open` | Efficiency losses |
-| BAT-001.3 | Enforce charge/discharge power limits (0.5C charge, 1.0C discharge) | `open` | C-rate constraints |
-| BAT-001.4 | Write unit tests for simultaneous charge/discharge prevention | `open` | Boundary tests |
-| **BAT-002** | **Battery Outage Reserve & State-of-Charge Constraints** | `open` | |
-| BAT-002.1 | Enforce 10% minimum SoC reserve floor (90% usable DoD) | `open` | Reserve floor |
-| BAT-002.2 | Implement configurable emergency outage reserve % | `open` | Outage cushion |
-| BAT-002.3 | Incorporate ambient self-discharge (2%/month) and tare loss | `open` | Idle losses |
-| BAT-002.4 | Write unit tests for deep-discharge protection during long outages | `open` | Protection tests |
-| **OUT-001** | **Stochastic Outage Arrival & Duration Sampler** | `open` | |
-| OUT-001.1 | Implement Poisson arrival process ($\lambda = 3$ normal, $\lambda = 8$ typhoon) | `open` | Poisson arrivals |
-| OUT-001.2 | Implement Lognormal duration sampler (Normal: $\mu=1.2, \sigma=0.8$; Typhoon: $\mu=2.3, \sigma=1.0$) | `open` | Duration sampler |
-| OUT-001.3 | Implement typhoon multi-day solar depression (20–30% GHI for 3–5 days) | `open` | Storm coupling |
-| OUT-001.4 | Add Kolmogorov-Smirnov distribution goodness-of-fit validator | `open` | Distribution fit |
-| **OUT-002** | **Priority-Based Tiered Load Shedding Controller** | `open` | |
-| OUT-002.1 | Implement load categorization: Tier 1 (2%), Tier 2 (18%), Tier 3 (80%) | `open` | Tier mapping |
-| OUT-002.2 | Build automated shedding logic on grid failure (instant Tier 3 drop) | `open` | Shedding logic |
-| OUT-002.3 | Implement battery low-SoC Tier 2 shedding rule (<20% SoC) | `open` | Second-tier shed |
-| OUT-002.4 | Track unserved energy (kWh) and outage hours covered per tier | `open` | Unserved metrics |
+| ID          | Task                                                                                                 | Status | Notes / Report     |
+| :---------- | :--------------------------------------------------------------------------------------------------- | :----- | :----------------- |
+| **DEM-001** | **Equipment Load & Occupancy Schedule Model**                                                        | `open` |                    |
+| DEM-001.1   | Implement academic schedule engine (classes, breaks, holidays)                                       | `open` | Schedule calendar  |
+| DEM-001.2   | Compute diurnal non-cooling base demand (lighting, IT, plug loads)                                   | `open` | Bottom-up load     |
+| DEM-001.3   | Model unoccupied nighttime baseload (10% of daytime peak)                                            | `open` | Baseload rule      |
+| DEM-001.4   | Write unit tests for equipment aggregation across schedule states                                    | `open` | Test suite         |
+| **DEM-002** | **Temperature & Humidity Cooling Response Model**                                                    | `open` |                    |
+| DEM-002.1   | Implement CDD model ($T_{\text{base}} = 24.0^\circ\text{C}$, 4%/°C sensitivity)                      | `open` | Sensible cooling   |
+| DEM-002.2   | Implement latent cooling psychrometric multiplier (+20% humidity)                                    | `open` | Latent load        |
+| DEM-002.3   | Model split AC compressor duty cycle / inverter modulation                                           | `open` | Inverter response  |
+| DEM-002.4   | Validate combined hourly demand profile against mock monthly bills                                   | `open` | Calibration check  |
+| **SOL-001** | **Solar Irradiance Geometry & NOCT Thermal Derating Model**                                          | `open` |                    |
+| SOL-001.1   | Implement Batac tilted plane irradiance model (15° South tilt)                                       | `open` | Irradiance model   |
+| SOL-001.2   | Model cell operating temperature with +10°C rooftop thermal penalty                                  | `open` | NOCT model         |
+| SOL-001.3   | Apply module temperature power derating ($\gamma = -0.40\%/^\circ\text{C}$)                          | `open` | Thermal derate     |
+| SOL-001.4   | Write unit tests verifying yield drop during high-temperature hours                                  | `open` | Thermal tests      |
+| **SOL-002** | **Array Sizing, Inverter Clipping & Balance-of-System Losses**                                       | `open` |                    |
+| SOL-002.1   | Implement DC capacity scaling (0, 50, 100, 200 kWp)                                                  | `open` | Capacity scaling   |
+| SOL-002.2   | Model inverter peak efficiency (98%) and DC/AC clipping limits                                       | `open` | Inverter clipping  |
+| SOL-002.3   | Incorporate balance-of-system derates (PR = 0.77, soiling, wiring)                                   | `open` | BOS losses         |
+| SOL-002.4   | Validate annual specific yield against Luzon benchmark (1,298 kWh/kWp)                               | `open` | Yield benchmark    |
+| **BAT-001** | **Battery Dispatch Dynamics, SoC Tracking & Losses**                                                 | `open` |                    |
+| BAT-001.1   | Implement time-stepped State-of-Charge tracking logic                                                | `open` | SoC recursion      |
+| BAT-001.2   | Apply LFP round-trip efficiency (92% RTE, $\sqrt{\eta}$ charge/discharge)                            | `open` | Efficiency losses  |
+| BAT-001.3   | Enforce charge/discharge power limits (0.5C charge, 1.0C discharge)                                  | `open` | C-rate constraints |
+| BAT-001.4   | Write unit tests for simultaneous charge/discharge prevention                                        | `open` | Boundary tests     |
+| **BAT-002** | **Battery Outage Reserve & State-of-Charge Constraints**                                             | `open` |                    |
+| BAT-002.1   | Enforce 10% minimum SoC reserve floor (90% usable DoD)                                               | `open` | Reserve floor      |
+| BAT-002.2   | Implement configurable emergency outage reserve %                                                    | `open` | Outage cushion     |
+| BAT-002.3   | Incorporate ambient self-discharge (2%/month) and tare loss                                          | `open` | Idle losses        |
+| BAT-002.4   | Write unit tests for deep-discharge protection during long outages                                   | `open` | Protection tests   |
+| **OUT-001** | **Stochastic Outage Arrival & Duration Sampler**                                                     | `open` |                    |
+| OUT-001.1   | Implement Poisson arrival process ($\lambda = 3$ normal, $\lambda = 8$ typhoon)                      | `open` | Poisson arrivals   |
+| OUT-001.2   | Implement Lognormal duration sampler (Normal: $\mu=1.2, \sigma=0.8$; Typhoon: $\mu=2.3, \sigma=1.0$) | `open` | Duration sampler   |
+| OUT-001.3   | Implement typhoon multi-day solar depression (20–30% GHI for 3–5 days)                               | `open` | Storm coupling     |
+| OUT-001.4   | Add Kolmogorov-Smirnov distribution goodness-of-fit validator                                        | `open` | Distribution fit   |
+| **OUT-002** | **Priority-Based Tiered Load Shedding Controller**                                                   | `open` |                    |
+| OUT-002.1   | Implement load categorization: Tier 1 (2%), Tier 2 (18%), Tier 3 (80%)                               | `open` | Tier mapping       |
+| OUT-002.2   | Build automated shedding logic on grid failure (instant Tier 3 drop)                                 | `open` | Shedding logic     |
+| OUT-002.3   | Implement battery low-SoC Tier 2 shedding rule (<20% SoC)                                            | `open` | Second-tier shed   |
+| OUT-002.4   | Track unserved energy (kWh) and outage hours covered per tier                                        | `open` | Unserved metrics   |
 
 ---
 
