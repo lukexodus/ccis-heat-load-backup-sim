@@ -51,7 +51,7 @@ Status: **open**
 | CORE-002.5 | Write unit tests for weather ingest and psychrometric sanity | `open` | Verification |
 | **CORE-003** | **Equipment Audit Model & Synthetic Mock Bill Generator** | `open` | Outline §4 |
 | CORE-003.1 | Define equipment audit CSV schema (`item, count, kW, hours, tier`) | `open` | Audit schema |
-| CORE-003.2 | Create CCIS archetype fixture (~2,500 m², 12 rooms, ACs, labs) | `open` | Base inventory |
+| CORE-003.2 | Create CCIS archetype fixture (~2,500 m², 18 rooms, ACs, labs) | `open` | Base inventory |
 | CORE-003.3 | Implement synthetic monthly electricity bill generator | `open` | Calibrated + noise |
 | CORE-003.4 | Validate synthetic bills against regional EUI (150–300 kWh/m²·yr) | `open` | Plausibility check |
 | **CORE-004** | **Shared Test Harness & Energy Balance Invariant Checker** | `open` | Critical test gate |

@@ -27,7 +27,7 @@ This document synthesizes findings, empirical benchmarks, mathematical formulati
 ## 2. Building Energy, Cooling Response & Equipment Modeling
 
 ### Building Archetype (CCIS Baseline):
-- **Gross Floor Area:** ~2,500 m² (2-storey academic college building, 16 designated spaces: 2 hyflex smart rooms, 4 lecture rooms, 1 COD room, 1 Dean + Secretary office, 2 faculty rooms, and 6 computer lab rooms; no dedicated server room, network switches distributed in IDF/office cabinets).
+- **Gross Floor Area:** ~2,500 m² (2-storey academic college building, 18 designated spaces: 2 hyflex smart rooms, 6 lecture rooms, 1 COD room, 1 Dean + Secretary office, 2 faculty rooms, and 6 computer lab rooms; no dedicated server room, network switches distributed in IDF/office cabinets).
 - **Energy Use Intensity (EUI) Benchmarks:**
   - Tropical SE Asian air-conditioned office/academic: $160 \text{ to } 275\text{ kWh/m}^2\cdot\text{yr}$.
   - Philippine DOE Commercial Survey: $213 \text{ to } 336\text{ kWh/m}^2\cdot\text{yr}$ (median: $275\text{ kWh/m}^2\cdot\text{yr}$).

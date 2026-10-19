@@ -47,7 +47,7 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 
 **[D-06]** CCIS building layout and archetype baseline locked.  
 - **Date / Session:** 2026-10-19  
-- **Decision:** Model the MMSU CCIS building as a ~2,500 m² 2-storey facility comprising 16 dedicated rooms: 2 hyflex smart rooms, 4 lecture rooms, 1 COD room, 1 Dean + Secretary office, 2 faculty rooms, and 6 computer lab rooms. No dedicated central server room (telecom/networking hardware distributed in IDF cabinets and office closets).  
+- **Decision:** Model the MMSU CCIS building as a ~2,500 m² 2-storey facility comprising 18 dedicated rooms: 2 hyflex smart rooms, 6 lecture rooms, 1 COD room, 1 Dean + Secretary office, 2 faculty rooms, and 6 computer lab rooms. No dedicated central server room (telecom/networking hardware distributed in IDF cabinets and office closets).  
 - **Reasoning:** Confirmed by operator as local ground truth for MMSU CCIS. Sets equipment counts, occupancy profiles, and spatial power density.  
 - **Affects:** `CORE-003`, `DEM-001`, `DEM-002`, `OUT-002`.
 
