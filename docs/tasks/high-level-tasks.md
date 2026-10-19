@@ -44,7 +44,7 @@ Before completing `ARCH-001.4`, the team locks the following foundational parame
 | Decision ID | Area | Recommended Choice / Value | Rationale & Evidence |
 | :--- | :--- | :--- | :--- |
 | **[D-05]** | **Temporal Resolution** | **Hourly (8,760 hours/year)** | Required to capture diurnal coincidence between peak afternoon heat/AC load (11:00–16:00) and peak solar generation. Daily averaging artificially flattens demand spikes. |
-| **[D-06]** | **CCIS Building Archetype** | **2,500 m² floor area, 2-storey, 12 zones** | Matches MMSU CCIS physical layout (~2,000–3,000 m² benchmark). Baseline 300 kWh/day (~12.5 kW avg load, 35–45 kW hot-day peak). |
+| **[D-06]** | **CCIS Building Archetype** | **2,500 m² floor area, 2-storey, 16 rooms (2 hyflex, 4 lecture, 1 COD, 1 Dean/Sec, 2 faculty, 6 labs; no server room)** | Confirmed MMSU CCIS ground truth. Baseline 300 kWh/day (~12.5 kW avg load, 35–45 kW hot-day peak). |
 | **[D-07]** | **Cooling & Heat Response** | **CDD with $T_{\text{base}} = 24.0^\circ\text{C}$ + 4%/°C sensitivity + 20% latent penalty** | Piecewise-linear model based on tropical office empirical regressions (3–5%/°C range) and high maritime humidity penalty (10–30% range). |
 | **[D-08]** | **Solar PV Parameters** | **$E = P_{\text{kWp}} \times H \times \text{PR}$ with PR = 0.77, 15° South tilt** | Validated against 103-system Luzon empirical study (mean 1,298 kWh/kWp·yr; PR 0.70–0.80). Module tempco $-0.40\%/^\circ\text{C}$, NOCT 45°C + 10°C rooftop thermal penalty. |
 | **[D-09]** | **Battery Technology & Dispatch** | **LFP ($\text{LiFePO}_4$), 92% RTE, 90% usable DoD, 10% min SoC reserve** | Industry standard for safety and thermal stability in the Philippines. Self-consumption priority dispatch with configurable outage reserve. |
