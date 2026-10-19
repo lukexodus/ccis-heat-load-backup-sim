@@ -1,0 +1,39 @@
+item,room_type,count,rated_kw,hours_per_day,tier,duty_cycle,notes
+Student Workstations (Desktop PC + Monitor),computer_lab,240,0.180,12.0,3,0.85,[ASSUMPTION] 40 student workstations per lab across 6 labs (180W CPU+monitor under active lab load)
+Priority Instructor Workstations,computer_lab,6,0.220,12.0,2,0.90,[ASSUMPTION] 1 instructor workstation per lab; prioritized under Tier 2 operational continuity
+Inverter Split AC Units (3.0 HP),computer_lab,12,2.800,12.0,3,0.75,[ASSUMPTION] Dual 3.0 HP inverter split AC units per computer lab to handle 40 students + 40 PCs thermal dissipation
+Ceiling LED Troffers (Lab),computer_lab,72,0.040,12.0,3,1.00,[ASSUMPTION] 12 40W 2x4 LED troffers per computer lab
+Lab IDF Edge PoE Switches (48-port),computer_lab,6,0.180,24.0,2,0.95,[D-06] Distributed IDF networking cabinet per computer lab; 24/7 continuous operation
+Split AC Units (2.0 HP),lecture_room,12,1.800,10.0,3,0.75,[ASSUMPTION] Dual 2.0 HP split AC units per 40-seat lecture hall across 6 lecture rooms
+Ceiling Circulation Fans,lecture_room,24,0.075,10.0,3,0.80,[ASSUMPTION] 4 ceiling fans per lecture hall for supplementary air circulation
+Ceiling Projectors (Multimedia),lecture_room,6,0.300,8.0,3,0.85,[ASSUMPTION] 1 ceiling mounted DLP/LCD multimedia projector per lecture room
+Ceiling LED Troffers (Lecture),lecture_room,48,0.040,10.0,3,1.00,[ASSUMPTION] 8 40W LED troffers per standard lecture room across 6 rooms
+Teacher Lectern Convenience Outlets,lecture_room,6,0.080,8.0,3,0.70,[ASSUMPTION] Instructor laptop and charging plug load per lecture room
+Interactive Smart Displays (86-inch),hyflex_smart_room,2,0.380,10.0,3,0.85,[D-06] Interactive 86-inch 4K smart touchscreen display per hyflex room
+Studio PTZ Cameras & Audio DSP,hyflex_smart_room,2,0.200,10.0,2,0.90,[D-06] Studio auto-tracking camera system and audio DSP mixer per hyflex room
+Instructor Hybrid Workstations,hyflex_smart_room,2,0.220,10.0,2,0.90,[D-06] High-performance workstation driving hybrid video conferencing in smart room
+Inverter Split AC Units (2.5 HP - Hyflex),hyflex_smart_room,4,2.000,10.0,3,0.75,[ASSUMPTION] Dual 2.5 HP inverter split AC units per smart room
+Smart Room LED Lighting,hyflex_smart_room,20,0.040,10.0,3,1.00,[ASSUMPTION] 10 dimmable studio-grade 40W LED fixtures per smart room
+Room Exhaust & Ventilation Fans,hyflex_smart_room,4,0.060,10.0,3,1.00,[ASSUMPTION] Continuous mechanical ventilation fans per smart room
+Executive & Secretary Desktop Workstations,dean_and_secretary,2,0.150,9.0,2,0.85,[D-10] Dean and secretary computing terminals; Tier 2 operational continuity
+Heavy-Duty Network Copier / MFP,dean_and_secretary,1,0.350,6.0,2,0.50,[D-10] Departmental multifunction printer/scanner/copier in administrative office
+Executive Inverter Split AC Units (1.5 HP),dean_and_secretary,2,1.200,9.0,3,0.75,[ASSUMPTION] Dual 1.5 HP inverter split ACs for Dean private office and secretary ante-room
+Office LED Lighting (Dean),dean_and_secretary,8,0.040,9.0,2,1.00,[ASSUMPTION] Administrative suite lighting fixtures
+Water Dispenser (Dean/Secretary),dean_and_secretary,1,0.450,10.0,3,0.40,[ASSUMPTION] Standard 450W electric water dispenser with hot/cold compressor
+COD Administrative Workstation,cod_office,1,0.160,9.0,2,0.85,[D-10] Chairperson of Department office computer; Tier 2 operational continuity
+Department Document Scanner & Printer,cod_office,1,0.150,6.0,2,0.40,[ASSUMPTION] Office desktop printer and document scanner
+Office Inverter Split AC Unit (1.5 HP),cod_office,1,1.200,9.0,3,0.75,[ASSUMPTION] Single 1.5 HP inverter split AC for department chairperson office
+Office LED Lighting (COD),cod_office,4,0.040,9.0,2,1.00,[ASSUMPTION] 4 40W LED troffers in COD office
+Faculty Desktop & Laptop Workstations,faculty_room,36,0.120,9.0,2,0.80,[ASSUMPTION] 36 faculty computing stations across 2 faculty rooms (18 per room); Tier 2
+Shared Network Printers,faculty_room,2,0.150,6.0,2,0.40,[ASSUMPTION] 1 shared workgroup laser printer per faculty room
+Inverter Split AC Units (2.5 HP - Faculty),faculty_room,4,2.000,9.0,3,0.75,[ASSUMPTION] Dual 2.5 HP inverter split AC units per faculty room across 2 rooms
+Faculty Room LED Lighting,faculty_room,24,0.040,9.0,2,1.00,[ASSUMPTION] 12 40W LED fixtures per faculty room
+Faculty Water Dispensers,faculty_room,2,0.450,10.0,3,0.40,[ASSUMPTION] 1 hot/cold water dispenser per faculty room
+Distributed IDF Core Network Routers & Fiber Uplink,building_common,3,0.400,24.0,2,1.00,[D-06] Core campus fiber transceiver, security gateway, and distribution switches (24/7)
+IDF Network Closets Dedicated Spot Cooling (1.0 HP),building_common,2,1.200,24.0,2,0.75,[ASSUMPTION] Spot cooling for distributed telecommunications closets in tropical Batac (24/7)
+Emergency Exit Signs & Egress LED Lighting,building_common,25,0.015,24.0,1,1.00,[D-10] PEC/NFPA life safety exit illuminators with integral battery backup (24/7)
+Central Fire Alarm Control Panel & Annunciators,building_common,1,0.250,24.0,1,1.00,[D-10] Life-safety fire alarm control panel, bells, and smoke detector loop (24/7)
+CCTV Security Surveillance System (NVR + Cameras),building_common,1,0.350,24.0,1,1.00,[D-10] Security headend, PoE camera switch, and network video recorder (24/7)
+Emergency Stairwell Safety Lighting,building_common,12,0.020,24.0,1,1.00,[D-10] Dedicated emergency lighting fixtures in stairwells and primary escape corridors (24/7)
+Domestic Water Booster Pump System,building_common,1,1.500,4.0,2,1.00,[ASSUMPTION] 1.5 kW intermittent domestic water pressure pump for facility restrooms
+Corridor & Restroom LED Lighting,building_common,40,0.030,14.0,3,0.90,[ASSUMPTION] Common hallway, restroom, and exterior perimeter security lighting

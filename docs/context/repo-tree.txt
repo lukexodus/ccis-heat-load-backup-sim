@@ -1,6 +1,9 @@
 .
 ├── data
 │   ├── fixtures
+│   │   ├── equipment-audit-ccis.csv
+│   │   ├── equipment-audit-schema.csv
+│   │   └── synthetic-mock-bills-ccis.csv
 │   └── raw
 ├── docs
 │   ├── context
@@ -29,6 +32,7 @@
 │   │   ├── ARCH-002.4-gemini-research-synthesis-fixup.md
 │   │   ├── ARCH-002-gemini-repo-scaffolding.md
 │   │   ├── CORE-001-gemini-domain-models.md
+│   │   ├── CORE-003-gemini-equipment-mock-bills.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
@@ -37,7 +41,8 @@
 │   ├── ARCH-001-gemini-lock-conceptual-model.patch
 │   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
 │   ├── ARCH-002-gemini-repo-scaffolding.patch
-│   └── CORE-001-gemini-domain-models.patch
+│   ├── CORE-001-gemini-domain-models.patch
+│   └── CORE-003-gemini-equipment-mock-bills.patch
 ├── scripts
 │   ├── apc-bundle.sh
 │   ├── manage-decisions.py
@@ -54,7 +59,9 @@
 │       ├── decision
 │       │   └── __init__.py
 │       ├── demand
-│       │   └── __init__.py
+│       │   ├── equipment.py
+│       │   ├── __init__.py
+│       │   └── mock_bills.py
 │       ├── integration
 │       │   └── __init__.py
 │       ├── outage
@@ -65,6 +72,8 @@
 ├── tests
 │   ├── __init__.py
 │   ├── test_core_models.py
+│   ├── test_equipment_audit.py
+│   ├── test_mock_bills.py
 │   └── test_smoke.py
 ├── AGENTS.md
 ├── pyproject.toml

@@ -1,0 +1,9 @@
+column_name,data_type,required,description,example
+item,string,true,Descriptive name of electrical appliance or equipment load,Student Workstations (Desktop PC + Monitor)
+room_type,string,true,Room archetype category per [D-06] or building infrastructure,computer_lab
+count,integer,true,Total physical count of this equipment item across all rooms of room_type,240
+rated_kw,float,true,Rated active electric power per single unit in kilowatts (kW),0.180
+hours_per_day,float,true,Typical operational hours per weekday under standard academic timetable,12.0
+tier,integer,true,Priority critical load shedding tier per [D-10] (1=Life safety 2% peak; 2=Essential IT 18% peak; 3=Sheddable 80% peak),3
+duty_cycle,float,false,Nominal operating duty cycle or diversity factor during active hours (0.0 to 1.0),0.85
+notes,string,false,Audit notes assumption basis or standard specification reference,[ASSUMPTION] 40 PCs per lab across 6 labs
