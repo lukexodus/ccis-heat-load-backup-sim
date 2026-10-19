@@ -17,8 +17,8 @@ Status: **open**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
-| ARCH-001 | Formalize core system architecture, interfaces, and test harness contracts | `open` | Reserved for initial planning |
-| ARCH-002 | Set up project repository, linting, packaging, and CI baselines | `open` | |
+| ARCH-001 | Lock scope, system boundary, entities/state variables, performance measures, decision variables, and the DayState contract | `open` | Outline §1–3 |
+| ARCH-002 | Scaffold repo: Python env, `src/`, `tests/`, pytest, requirements.txt | `open` | |
 
 ---
 
@@ -28,9 +28,9 @@ Status: **open**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
-| CORE-001 | Implement base domain models and protocols | `open` | |
-| CORE-002 | Implement test harness and golden verification fixtures | `open` | |
-| CORE-003 | End-to-end smoke test through null / baseline component | `open` | Exit gate for Phase 1 |
+| CORE-001 | Domain models: Building, SolarArray, Battery, OutageEvent, DayState | `open` | |
+| CORE-002 | NASA POWER fetch + cached CSV fixture; equipment audit CSV; synthetic bill generator | `open` | Outline §4 |
+| CORE-003 | Energy-balance engine smoke test with no solar and no battery (baseline) | `open` | Exit gate: energy balance holds |
 
 ---
 
@@ -40,9 +40,10 @@ Status: **open**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
-| FEAT-001 | Feature Track 1 | `open` | |
-| FEAT-002 | Feature Track 2 | `open` | |
-| FEAT-003 | Feature Track 3 | `open` | |
+| DEM-001 | Demand model: bottom-up load, schedules, temperature response, fit to mock bills | `open` | |
+| SOL-001 | Solar output model (E = P × H × PR) + yield plausibility check | `open` | |
+| BAT-001 | Battery dispatch: SoC limits, efficiency, outage reserve | `open` | |
+| OUT-001 | Outage generator and distribution fitting | `open` | |
 
 ---
 
@@ -52,8 +53,8 @@ Status: **open**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
-| INT-001 | Wire components into CLI / main application driver | `open` | |
-| INT-002 | Run comprehensive integration benchmarks | `open` | |
+| INT-001 | Monte Carlo runner + scenario grid (weather × solar × battery × outage) | `open` | |
+| INT-002 | Decision layer (AHP/weighted scoring) + V&V suite (energy balance, sensitivity, CIs) | `open` | Outline §6–7 |
 
 ---
 
@@ -63,4 +64,4 @@ Status: **open**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
-| DOC-001 | End-to-end system documentation and deployment guides | `open` | |
+| DOC-001 | Charts with labelled sample outputs, final report (Outline §1–10), program listing, presentation | `open` | |

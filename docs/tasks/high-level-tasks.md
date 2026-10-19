@@ -13,7 +13,7 @@ This document defines the phased macro-architecture and milestones for CCIS Heat
 - Core architecture diagram and component split.
 - Identification of baseline datasets, external APIs, and key technical risks.
 
-**Exit Gate:** All stakeholders/advisers sign off on the design. No Phase 1 implementation begins until design lock is achieved.
+**Exit Gate:** All group members agree on scope, performance measures and decision variables.
 
 ---
 
@@ -28,13 +28,16 @@ This document defines the phased macro-architecture and milestones for CCIS Heat
 4. **Measurement / Test Harness:** Shared runner capable of measuring correctness, performance, or resource utilization uniformly.
 5. **Null / Baseline Component Smoke Test:** A trivial baseline component implemented and run through the harness end-to-end to validate pipelines before real features are written.
 
-**Exit Gate:** The baseline component passes all verification stages through the harness end-to-end.
+**Exit Gate:** Baseline run (no solar, no battery) passes the energy-balance check end-to-end.
 
 ---
 
 ## Phase 2 — Parallel Track Execution
 
 **Purpose:** Concurrent development of distinct strategies, modules, or features by local agents operating in dedicated git worktrees.
+
+### Tracks:
+- Demand, solar, battery and outage, each against the DayState contract.
 
 ### Key Rules:
 - Each track develops against the Phase 1 interface contract.
@@ -50,9 +53,7 @@ This document defines the phased macro-architecture and milestones for CCIS Heat
 **Purpose:** Merge parallel tracks into the shared application driver and execute comprehensive validation.
 
 ### Deliverables:
-1. Unified registration and configuration wiring (e.g., registry, CLI flags).
-2. End-to-end verification, benchmarks, or experiment sweeps.
-3. Budget / resource monitoring and regression testing.
+- Monte Carlo sweep and V&V.
 
 **Exit Gate:** Complete test suite passes; production runs / benchmarks succeed without error.
 
@@ -63,6 +64,4 @@ This document defines the phased macro-architecture and milestones for CCIS Heat
 **Purpose:** Synthesize findings, compile release documentation, and publish deliverables.
 
 ### Deliverables:
-1. Final analysis reports, benchmark plots, or release artifacts.
-2. User guides, API references, and migration manuals.
-3. Post-mortem / close-out handoff documentation.
+- Report, sample outputs, presentation (all members present).

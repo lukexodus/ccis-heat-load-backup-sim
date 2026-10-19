@@ -7,6 +7,8 @@
 │   │   └── repo-tree.txt
 │   ├── decisions
 │   │   └── decision-log.md
+│   ├── guide
+│   │   └── COLLABORATOR-GUIDE.md
 │   ├── prompts
 │   │   ├── STANDALONE-ADOPTION-PROMPT.md
 │   │   └── STANDALONE-PROMPT-TEMPLATE.md

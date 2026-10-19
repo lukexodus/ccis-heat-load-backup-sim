@@ -21,8 +21,20 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** Decouples high-level strategic reasoning and cross-session memory from filesystem-level implementation and execution, preventing hallucinated drifts and lost context across credit resets.  
 - **Affects:** All documents, tasks, and development workflows.
 
-**[D-02]** [Template Entry — Reserved for Core Architectural Decision]  
-- **Date / Session:** [Date]  
-- **Decision:** [e.g., Selected Framework / Database / Representation]  
-- **Reasoning:** [Why this was selected over alternatives]  
-- **Affects:** [Components impacted]
+**[D-02]** Project selected: CCIS Heat, Load and Backup Power Simulation.  
+- **Date / Session:** 2026-10-19  
+- **Decision:** Chose this idea over bunching, evacuation, misinformation, fire spread, dispatch and crowd-crush alternatives.  
+- **Reasoning:** Local, defendable, fits continuous simulation, Monte Carlo and V&V, and needs no external agent-based tooling.  
+- **Affects:** All tasks.
+
+**[D-03]** No institutional data requests; use public and synthetic data only.  
+- **Date / Session:** 2026-10-19  
+- **Decision:** Replace MMSU bills and meter data with NASA POWER weather, a self-conducted equipment audit and synthetic mock bills. This supersedes the original idea's data plan.  
+- **Reasoning:** The deadline is this week, and administrative turnaround is too slow and uncertain.  
+- **Affects:** Data ingestion, calibration, V&V.
+
+**[D-04]** Python (pandas, numpy, scipy, matplotlib) with pytest. *Proposed, pending confirmation that the course permits it.*  
+- **Date / Session:** 2026-10-19  
+- **Decision:** Implement in Python.  
+- **Reasoning:** Course allows "any modelling and simulation software," and `AGENTS.md` already assumes pytest.  
+- **Affects:** `src/`, `tests/`.
