@@ -2,17 +2,23 @@
 ├── docs
 │   ├── context
 │   │   ├── apc-bundle-quickref.md
+│   │   ├── apc-handoff-2026-10-19.md
 │   │   ├── apc-handoff-template.md
 │   │   ├── complete-context.md
-│   │   └── repo-tree.txt
+│   │   ├── conceptual-model.md
+│   │   ├── repo-tree.txt
+│   │   └── research-synthesis.md
 │   ├── decisions
 │   │   └── decision-log.md
 │   ├── guide
 │   │   └── COLLABORATOR-GUIDE.md
 │   ├── prompts
+│   │   ├── ARCH-001-PROMPT.md
+│   │   ├── ARCH-002-PROMPT.md
 │   │   ├── STANDALONE-ADOPTION-PROMPT.md
 │   │   └── STANDALONE-PROMPT-TEMPLATE.md
 │   ├── reports
+│   │   ├── ARCH-001-gemini-lock-conceptual-model.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
