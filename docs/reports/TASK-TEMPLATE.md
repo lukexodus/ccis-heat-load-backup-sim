@@ -4,6 +4,8 @@
 **Agent:** [claude-code | gemini | opencode | cursor | other]  
 **Task ID:** [TASK-ID]  
 **Status:** [done | needs-review | blocked]  
+**Commit:** [git commit hash / message]  
+**Patch File:** `patch/[TASK-ID]-[agent-name]-[short-slug].patch`  
 
 ---
 

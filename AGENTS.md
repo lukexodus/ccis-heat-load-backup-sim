@@ -120,28 +120,44 @@ When multiple tasks run concurrently:
   around it. Note the discrepancy clearly in your report.
 - Run tests regularly using `pytest`.
 
-## After finishing any task
+## After finishing any task (The 4 Unit-of-Work Deliverables)
 
-**Write a report file.** This is not optional, even for a task that found nothing
-noteworthy — "nothing noteworthy" is itself vital information to a future session.
+For every completed unit of work, you must produce four concrete deliverables:
 
-- **Location:** `docs/reports/<task-id>-<agent-name>-<short-slug>.md`
-  - `<task-id>` matches the ID in `docs/tasks/status.md` (e.g., `CORE-001`)
-  - `<agent-name>` is whichever agent you are (e.g. `claude-code`, `gemini`, `opencode`)
-  - `<short-slug>` is a concise hyphenated summary (e.g. `add-auth-middleware`)
-  - Example: `docs/reports/CORE-001-claude-code-add-auth-middleware.md`
-- **Never append to another agent's report file.** One file per completed task,
-  written once by the agent that completed it.
-- **What to include:** Executive summary, implementation details, test outputs/verification,
-  unified git diffs, and items flagged for the APC AI's attention.
-- **Update `docs/tasks/status.md`** to reflect your task's new status (`done`, `blocked`,
-  or `needs-review`) with a link to your report file.
-- **Record decisions in `docs/decisions/decision-log.md`** under the reserved ID.
-- **Validate your report:** Run `./scripts/validate-report.py` to ensure your report file
-  passes structure checks, diff checks, and status alignment before handoff.
-- **Generate patch in `patch/`:** When asked for a patch or exporting commit deltas, save
-  the patch file to `patch/<task-id>-<agent-name>-<short-slug>.patch` instead of inlining
-  the raw patch into chat messages.
+1. **Commit your changes:**
+   - Stage and commit all task changes on your task branch/worktree with a concise, conventional message:
+     ```bash
+     git add <modified/new files>
+     git commit -m "<type>(<task-id>): <concise description of work>"
+     ```
+   - Never leave your worktree with uncommitted changes upon task completion.
+
+2. **Generate the patch file (in `patch/`):**
+   - Export a standalone patch file representing the unit of work:
+     ```bash
+     mkdir -p patch
+     git diff HEAD~1 > patch/<task-id>-<agent-name>-<short-slug>.patch
+     ```
+   - This provides an inspectable, portable patch file stored directly in the repository.
+
+3. **Write the report file (`docs/reports/`):**
+   - Location: `docs/reports/<task-id>-<agent-name>-<short-slug>.md`
+     - `<task-id>` matches the ID in `docs/tasks/status.md` (e.g., `CORE-001`)
+     - `<agent-name>` is whichever agent you are (e.g. `claude-code`, `gemini`, `opencode`)
+     - `<short-slug>` is a concise hyphenated summary (e.g. `add-auth-middleware`)
+     - Example: `docs/reports/CORE-001-claude-code-add-auth-middleware.md`
+   - **Never append to another agent's report file.** One file per completed task, written once by the agent that completed it.
+   - **What to include:** Executive summary, implementation details, test outputs/verification, unified git diff, patch file reference, and items flagged for APC AI attention.
+   - **Update `docs/tasks/status.md`** to reflect your task's new status (`done`, `blocked`, or `needs-review`) with a link to your report file.
+   - **Record decisions in `docs/decisions/decision-log.md`** under the reserved ID.
+   - **Validate your report:** Run `./scripts/validate-report.py` to ensure your report file passes structure checks, diff checks, and status alignment before handoff.
+
+4. **Build a fresh bundle if needed:**
+   - If this task modified shared contracts, context documents, multiple files, or if requested by the APC AI, package an updated snapshot:
+     ```bash
+     ./scripts/apc-bundle.sh [profile]
+     ```
+   - This ensures the external APC AI can be refreshed with live file state upon receiving the handoff.
 
 ## Recommended agent-role split
 

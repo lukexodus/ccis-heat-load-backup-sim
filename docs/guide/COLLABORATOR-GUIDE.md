@@ -117,23 +117,38 @@ Paste the **Standalone Task Prompt** into the agent.
 
 ---
 
-### Step 4: Run Tests & Write the Unit Report
-Every task must produce test evidence and a dedicated report file:
+### Step 4: Run Tests, Commit, Generate Patch & Write the Unit Report
+For every completed unit of work, four concrete artifacts must be produced:
 
 1. **Run the test suite:**
    ```bash
    pytest tests/
-   # or npm test / cargo test (as defined in complete-context.md)
    ```
-2. **Draft the report file:**
+
+2. **Commit your changes:**
+   Stage and commit your work on the task branch:
+   ```bash
+   git add <modified/new files>
+   git commit -m "feat(CORE-001): implement token bucket rate limiter"
+   ```
+
+3. **Generate the patch file (in `patch/`):**
+   Export a standalone patch file representing the unit of work:
+   ```bash
+   mkdir -p patch
+   git diff HEAD~1 > patch/CORE-001-claude-code-token-bucket.patch
+   ```
+
+4. **Draft the report file (in `docs/reports/`):**
    Create `docs/reports/<TASK-ID>-<agent-name>-<short-slug>.md` using the template at `docs/reports/TASK-TEMPLATE.md`.
-   *Example:* `docs/reports/CORE-001-claude-code-token-bucket.md`
-3. **Include the Unified Git Diff:**
-   The report must end with the verbatim `git diff` output showing exactly what moved.
-4. **Update `docs/tasks/status.md`:**
-   Change the task row from `open` to `needs-review` or `done`, and add the link to your report file.
-5. **Log Decisions:**
-   If your prompt reserved a Decision ID (e.g. `[D-05]`), append your entry to `docs/decisions/decision-log.md`.
+   - Update `docs/tasks/status.md` to link your report.
+   - Append reserved decisions to `docs/decisions/decision-log.md`.
+
+5. **Generate a fresh bundle if needed:**
+   If this task changed shared contracts, context documents, or if requested by the APC AI:
+   ```bash
+   ./scripts/apc-bundle.sh [profile]
+   ```
 
 ---
 

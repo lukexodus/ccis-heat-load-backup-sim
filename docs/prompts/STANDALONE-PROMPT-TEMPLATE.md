@@ -47,12 +47,18 @@ Your work is complete when:
 
 ## Output & Reporting Instructions
 Upon completing the work:
-1. **Write a report file:** `docs/reports/[TASK-ID]-[agent-name]-[short-slug].md` following the template in `docs/reports/TASK-TEMPLATE.md`.
-2. **Update `docs/tasks/status.md`:** Change `[TASK-ID]` status to `needs-review` or `done`, referencing your report file.
-3. **Log Decision (if reserved):** Append `[D-xx]` entry to `docs/decisions/decision-log.md`.
-4. **Validate Your Report:** Run `./scripts/validate-report.py docs/reports/[TASK-ID]-[agent-name]-[short-slug].md` to ensure all sections and status links pass.
-5. **Report Back to lukexodus:**
+1. **Commit Your Changes:** Stage and commit all changes on your branch:
+   `git commit -m "<type>([TASK-ID]): <description>"`
+2. **Generate Patch File:** Export the unit-of-work diff into `patch/`:
+   `mkdir -p patch && git diff HEAD~1 > patch/[TASK-ID]-[agent-name]-[short-slug].patch`
+3. **Write Report File:** `docs/reports/[TASK-ID]-[agent-name]-[short-slug].md` following `docs/reports/TASK-TEMPLATE.md`.
+4. **Update `docs/tasks/status.md`:** Change `[TASK-ID]` status to `needs-review` or `done`, linking your report.
+5. **Log Decision (if reserved):** Append `[D-xx]` entry to `docs/decisions/decision-log.md`.
+6. **Validate Your Report:** Run `./scripts/validate-report.py docs/reports/[TASK-ID]-[agent-name]-[short-slug].md`.
+7. **Generate Fresh Bundle (if needed):** Run `./scripts/apc-bundle.sh [profile]` if shared contracts/context were touched.
+8. **Report Back to lukexodus:**
    - Provide an executive summary of what was accomplished and test results.
-   - Include the unified git diff (`git diff`) of all modified files.
+   - Reference the generated patch file in `patch/`.
+   - Include the unified git diff (`git diff HEAD~1`).
    - State the branch name and worktree path. Do not merge or delete the worktree.
 ```

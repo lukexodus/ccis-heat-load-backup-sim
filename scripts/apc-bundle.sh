@@ -17,6 +17,7 @@ PROFILE_CORE=(
   docs/tasks/status.md
   docs/tasks/high-level-tasks.md
   docs/prompts/*.md
+  docs/guide/*.md
 )
 
 PROFILE_DEV=(

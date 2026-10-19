@@ -96,8 +96,23 @@ handoff)
   echo "Worktree Handoff Audit for: $task_id"
   echo "Directory: $TARGET_DIR"
   echo "Branch:    task/$task_id"
-  echo "Git Status:"
-  (cd "$TARGET_DIR" && git status --porcelain)
+  echo "Git Status & Commit Check:"
+  dirty_count=$(cd "$TARGET_DIR" && git status --porcelain | wc -l)
+  if [[ "$dirty_count" -eq 0 ]]; then
+    echo "  [OK] Working tree clean (changes are committed)"
+    latest_commit=$(cd "$TARGET_DIR" && git log -1 --oneline)
+    echo "  Latest commit: $latest_commit"
+  else
+    echo "  [WARNING] Worktree has $dirty_count uncommitted change(s). Please commit your work."
+  fi
+  echo ""
+  echo "Patch File Check (in patch/):"
+  patch_file=$(find "$TARGET_DIR/patch" -name "${task_id}*.patch" 2>/dev/null | head -n 1)
+  if [[ -n "$patch_file" ]]; then
+    echo "  [OK] Found patch file: $patch_file"
+  else
+    echo "  [WARNING] No patch file found in patch/ matching ${task_id}*.patch"
+  fi
   echo ""
   echo "Report Check:"
   report_file=$(find "$TARGET_DIR/docs/reports" -name "${task_id}*" 2>/dev/null | head -n 1)

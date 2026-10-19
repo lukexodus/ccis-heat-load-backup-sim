@@ -38,11 +38,11 @@ Status: **open**
 
 | ID           | Task                                                                             | Status | Notes / Report        |
 | :----------- | :------------------------------------------------------------------------------- | :----- | :-------------------- |
-| **CORE-001** | **Implement Canonical Domain Models & Interface Contracts**                      | `open` |                       |
-| CORE-001.1   | Implement `Building`, `SolarArray`, and `Battery` dataclasses                    | `open` | Immutability & typing |
-| CORE-001.2   | Implement `OutageEvent` and `HourlyRecord` time-step models                      | `open` | State contracts       |
-| CORE-001.3   | Build CSV/dict serialization protocols for simulation output                     | `open` | Serialization         |
-| CORE-001.4   | Write unit test suite for domain models and data invariants                      | `open` | Conformance           |
+| **CORE-001** | **Implement Canonical Domain Models & Interface Contracts**                      | `done` | [CORE-001-gemini-domain-models.md](../reports/CORE-001-gemini-domain-models.md) |
+| CORE-001.1   | Implement `Building`, `SolarArray`, and `Battery` dataclasses                    | `done` | Building (18 rooms), SolarArray, Battery                                         |
+| CORE-001.2   | Implement `OutageEvent` and `HourlyRecord` time-step models                      | `done` | OutageEvent & HourlyRecord (18 fields)                                           |
+| CORE-001.3   | Build CSV/dict serialization protocols for simulation output                     | `done` | to_dict / from_dict serialization                                                |
+| CORE-001.4   | Write unit test suite for domain models and data invariants                      | `done` | 29 pytest tests passing (100% green)                                             |
 | **CORE-002** | **NASA POWER Weather Ingestion & Offline CSV Fixture Cache**                     | `open` | Outline §4            |
 | CORE-002.1   | Implement NASA POWER API client for Batac (18.06°N, 120.56°E)                    | `open` | REST client           |
 | CORE-002.2   | Build hourly/daily weather parser (T2M, RH2M, ALLSKY_SFC_SW_DWN)                 | `open` | Met parsing           |
@@ -163,21 +163,21 @@ Status: **open**
 
 Status: **open**
 
-| ID | Task | Status | Notes / Report |
-| :--- | :--- | :--- | :--- |
-| **DOC-001** | **Visualizations & Labelled Sample Output Generator** | `open` | Outline §8 |
-| DOC-001.1 | Generate daily load vs. outdoor temperature regression curve | `open` | Temp-load curve |
-| DOC-001.2 | Plot 12-hour heatwave outage hourly dispatch profile | `open` | Dispatch plot |
-| DOC-001.3 | Plot Monte Carlo P5/P50/P95 histograms and risk boxplots | `open` | Risk distributions |
-| DOC-001.4 | Plot Pareto sizing trade-off frontier (Cost vs. Outage Hours) | `open` | Pareto frontier |
-| DOC-001.5 | Plot AHP criteria sensitivity tornado diagram | `open` | AHP sensitivity |
-| **DOC-002** | **Course Project Final Report Compilation** | `open` | Outline §1–10 |
-| DOC-002.1 | Draft §1 Overview, §2 Formulation & §3 Conceptual Model | `open` | Sections 1–3 |
-| DOC-002.2 | Draft §4 Data Collection & Input Modeling & §5 Implementation | `open` | Sections 4–5 |
-| DOC-002.3 | Draft §6 Verification & Validation & §7 Results & Analysis | `open` | Sections 6–7 |
-| DOC-002.4 | Assemble §8 Labelled Sample Outputs & §9 IEEE References | `open` | Sections 8–9 |
-| DOC-002.5 | Compile §10 Program Listing and format final report PDF/Markdown | `open` | Section 10 |
-| **DOC-003** | **Defense Presentation Deck & Group Handoff** | `open` | |
-| DOC-003.1 | Construct presentation slide deck structured for 4 group members | `open` | Slide deck |
-| DOC-003.2 | Prepare speaking notes aligned with course syllabus topics | `open` | Speaking notes |
-| DOC-003.3 | Compile dry-run Q&A defense cheat sheet | `open` | Defense prep |
+| ID          | Task                                                             | Status | Notes / Report     |
+| :---------- | :--------------------------------------------------------------- | :----- | :----------------- |
+| **DOC-001** | **Visualizations & Labelled Sample Output Generator**            | `open` | Outline §8         |
+| DOC-001.1   | Generate daily load vs. outdoor temperature regression curve     | `open` | Temp-load curve    |
+| DOC-001.2   | Plot 12-hour heatwave outage hourly dispatch profile             | `open` | Dispatch plot      |
+| DOC-001.3   | Plot Monte Carlo P5/P50/P95 histograms and risk boxplots         | `open` | Risk distributions |
+| DOC-001.4   | Plot Pareto sizing trade-off frontier (Cost vs. Outage Hours)    | `open` | Pareto frontier    |
+| DOC-001.5   | Plot AHP criteria sensitivity tornado diagram                    | `open` | AHP sensitivity    |
+| **DOC-002** | **Course Project Final Report Compilation**                      | `open` | Outline §1–10      |
+| DOC-002.1   | Draft §1 Overview, §2 Formulation & §3 Conceptual Model          | `open` | Sections 1–3       |
+| DOC-002.2   | Draft §4 Data Collection & Input Modeling & §5 Implementation    | `open` | Sections 4–5       |
+| DOC-002.3   | Draft §6 Verification & Validation & §7 Results & Analysis       | `open` | Sections 6–7       |
+| DOC-002.4   | Assemble §8 Labelled Sample Outputs & §9 IEEE References         | `open` | Sections 8–9       |
+| DOC-002.5   | Compile §10 Program Listing and format final report PDF/Markdown | `open` | Section 10         |
+| **DOC-003** | **Defense Presentation Deck & Group Handoff**                    | `open` |                    |
+| DOC-003.1   | Construct presentation slide deck structured for 4 group members | `open` | Slide deck         |
+| DOC-003.2   | Prepare speaking notes aligned with course syllabus topics       | `open` | Speaking notes     |
+| DOC-003.3   | Compile dry-run Q&A defense cheat sheet                          | `open` | Defense prep       |
