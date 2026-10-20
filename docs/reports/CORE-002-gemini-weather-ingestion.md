@@ -152,6 +152,14 @@ Results (4.64s):
 4. **Psychrometric Sanity Bounds:** Injected invalid temperatures ($60^\circ\text{C}$), humidities ($105\%$), and negative irradiance ($-10\text{ W/m}^2$), verifying `PsychrometricValidationError` triggers reliably.
 5. **Network Outage Robustness:** Verified client throws clean `ConnectionError` on DNS or HTTP failure, and verified offline file loading succeeds when completely offline.
 
+### 3.3 Post-Merge Landing Verification & Statistical Spot-Checks
+
+Following merge into `master` alongside `CORE-001.5` and `CORE-003.5`, full repository verification was re-executed:
+- **Total Test Suite:** 79 passed (0 failures, 0 skipped) under `pytest -v` in 5.89s.
+- **2016 Fixture Daily Maxima:** Spot-checked directly against `data/fixtures/batac-weather-hourly-2016.csv`. Confirmed exactly **25 days** with $T_{\max} \ge 34.0^\circ\text{C}$ and **11 days** with $T_{\max} \ge 35.0^\circ\text{C}$, peak temperature $36.64^\circ\text{C}$, mean temperature $26.54^\circ\text{C}$.
+- **2019 Fixture Baseline:** Confirmed mean temperature $26.44^\circ\text{C}$, peak temperature $35.68^\circ\text{C}$, annual solar insolation $1,900.6\text{ kWh/m}^2$.
+- **Diurnal Solar Peak Timing:** Midday solar insolation peaks at 11:00–12:00 PST (average diurnal flux $741.2\text{ W/m}^2$), with exactly $0.00\text{ W/m}^2$ across nighttime hours (00:00–05:00 and 19:00–23:00 PST), proving zero phase shift in timezone conversion.
+
 ---
 
 ## 4. Decisions Recorded
