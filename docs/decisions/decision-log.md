@@ -123,3 +123,23 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** Confirms empirical data availability directly from NASA POWER MERRA-2/CERES hourly product for Batac, avoiding synthetic disaggregation approximations for canonical simulation baselines. Preserves strict energy and state vector contracts across 8,760 annual hours [D-05].
 - **Affects:** `CORE-002`, `CORE-005`, `DEM-002`, `SOL-001`, `INT-001`.
 
+**[D-21]** Cumulative energy conservation tolerance scaling and battery boundary verification methodology locked.  
+- **Date / Session:** 2026-10-20  
+- **Decision:**
+  1. The shared test harness checks per-hour energy conservation against $\epsilon_{\text{hour}} = 10^{-5}\text{ kWh}$ using the canonical formula:
+     $$\text{residual}_t = |(\text{solar}_t + \text{grid}_t + \text{bat\_dis}_t) - (\text{demand\_served}_t + \text{bat\_chg}_t + \text{solar\_curt}_t)|$$
+     reusing `HourlyRecord.energy_balance_residual_kwh` and `HourlyRecord.is_energy_conserved()`.
+  2. Cumulative time-series conservation tolerance across $N$ hours scales statistically as:
+     $$\text{tolerance}_{\text{cum}} = \max\left(\epsilon_{\text{hour}},\; \sqrt{N} \times \epsilon_{\text{hour}}\right)$$
+     For an 8,760-hour annual simulation run, $\text{tolerance}_{\text{cum}} = \sqrt{8760} \times 10^{-5} \approx 9.359 \times 10^{-4}\text{ kWh}$ (~$0.001\text{ kWh}$). Cumulative conservation evaluates the absolute net drift:
+     $$\Delta E_{\text{net}} = \left| \sum_{t=1}^N \left[(\text{solar}_t + \text{grid}_t + \text{bat\_dis}_t) - (\text{demand\_served}_t + \text{bat\_chg}_t + \text{solar\_curt}_t)\right] \right|$$
+  3. Battery boundary validator enforces four physical invariants:
+     - Hard physical bounds: $0 \le SoC(t) \le C_{\text{bat}}$.
+     - Non-discretionary minimum protection floor: $SoC(t) \ge SoC_{\min} = 0.10 \times C_{\text{bat}}$ [D-09] during normal operation (`grid_available == True` or `active_load_tier == 3`). Drawdown below $SoC_{\min}$ (down to 0) is permitted only when `allow_emergency_drawdown=True` during active utility blackouts (`grid_available == False` and `active_load_tier < 3`).
+     - Continuous C-rate power limits: $P_{\text{chg}}(t) \le 0.5\text{C}$ and $P_{\text{dis}}(t) \le 1.0\text{C}$ (evaluated over $\Delta t = 1.0\text{h}$).
+     - Mutual exclusivity: simultaneous charging and discharging in the same hour ($P_{\text{chg}} > 10^{-6}\text{ kWh}$ and $P_{\text{dis}} > 10^{-6}\text{ kWh}$) is strictly prohibited.
+  4. Provides a reusable 48-hour golden reference fixture (`create_golden_scenario()`) covering all microgrid operating regimes with exact $0.000000\text{ kWh}$ residual.
+- **Reasoning:** Zero-mean IEEE 754 floating-point rounding jitter across $N$ independent steps behaves as a 1D random walk with standard deviation $\sigma_N = \sqrt{N} \epsilon$. Scaling cumulative tolerance by $\sqrt{N}$ accommodates harmless numerical rounding while rigorously tripping on any systematic numerical leakage or bias (e.g. an uncorrected bias of $0.9 \times 10^{-5}\text{ kWh/hr}$ accumulates to $0.07884\text{ kWh}$, which is ~84× the allowable threshold, triggering an immediate failure).
+- **Affects:** `CORE-004`, `CORE-005`, `DEM-001`, `DEM-002`, `BAT-001`, `BAT-002`, `SOL-001`, `OUT-001`, `INT-001`, `INT-002`, `INT-003`.
+
+

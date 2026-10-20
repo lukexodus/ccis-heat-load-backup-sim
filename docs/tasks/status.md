@@ -57,10 +57,10 @@ Status: **open**
 | CORE-003.3   | Implement synthetic monthly electricity bill generator                           | `done` | `SyntheticBillGenerator` + noise       |
 | CORE-003.4   | Validate synthetic bills against regional EUI (150–300 kWh/m²·yr)                | `done` | EUI = 159.41 kWh/m²·yr (pass)          |
 | CORE-003.5   | Reconcile equipment audit connected load & tier split summary                    | `done` | [CORE-003.5-gemini-equipment-totals-fixup.md](../reports/CORE-003.5-gemini-equipment-totals-fixup.md) (147.81 kW) |
-| **CORE-004** | **Shared Test Harness & Energy Balance Invariant Checker**                       | `open` | Critical test gate    |
-| CORE-004.1   | Implement strict energy conservation checker ($\le 10^{-5}\text{ kWh}$)          | `open` | Conservation rule     |
-| CORE-004.2   | Implement battery boundary validator ($0 \le \text{SoC} \le \text{Cap}$, C-rate) | `open` | State boundaries      |
-| CORE-004.3   | Build shared golden fixture runner for sub-model validation                      | `open` | Shared runner         |
+| **CORE-004** | **Shared Test Harness & Energy Balance Invariant Checker**                       | `done` | [CORE-004-gemini-conservation-harness.md](../reports/CORE-004-gemini-conservation-harness.md) |
+| CORE-004.1   | Implement strict energy conservation checker ($\le 10^{-5}\text{ kWh}$)          | `done` | Hourly residual + cumulative drift tolerance [D-21]                              |
+| CORE-004.2   | Implement battery boundary validator ($0 \le \text{SoC} \le \text{Cap}$, C-rate) | `done` | Physical bounds, min SoC floor, C-rate limits, mutual exclusivity                |
+| CORE-004.3   | Build shared golden fixture runner for sub-model validation                      | `done` | 48h reference fixture `create_golden_scenario()` + self-test                     |
 | **CORE-005** | **Baseline Engine Smoke Test (Phase 1 Exit Gate)**                               | `open` | Exit gate             |
 | CORE-005.1   | Implement grid-only, zero-solar, zero-battery simulation                         | `open` | Baseline engine       |
 | CORE-005.2   | Run 8,760-hour baseline through energy-balance test harness                      | `open` | Zero-leak test        |
