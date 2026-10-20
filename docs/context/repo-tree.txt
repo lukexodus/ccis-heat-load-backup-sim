@@ -18,6 +18,7 @@
 │   │   ├── apc-handoff-template.md
 │   │   ├── complete-context.md
 │   │   ├── conceptual-model.md
+│   │   ├── phase2-interface-contract.md
 │   │   ├── repo-tree.txt
 │   │   └── research-synthesis.md
 │   ├── decisions
@@ -39,6 +40,8 @@
 │   │   ├── ARCH-001-PROMPT.md
 │   │   ├── ARCH-002.4-FIXUP-PROMPT.md
 │   │   ├── ARCH-002-PROMPT.md
+│   │   ├── BAT-001-PROMPT.md
+│   │   ├── BAT-002-PROMPT.md
 │   │   ├── CORE-001.5-FIXUP-PROMPT.md
 │   │   ├── CORE-001.6-PROCESS-FIXUP-PROMPT.md
 │   │   ├── CORE-001-PROMPT.md
@@ -50,6 +53,14 @@
 │   │   ├── CORE-004.5-FIXUP-PROMPT.md
 │   │   ├── CORE-004-PROMPT.md
 │   │   ├── CORE-005-PROMPT.md
+│   │   ├── CORE-006-PROMPT.md
+│   │   ├── DEM-001-PROMPT.md
+│   │   ├── DEM-002-PROMPT.md
+│   │   ├── OUT-001-PROMPT.md
+│   │   ├── OUT-002-PROMPT.md
+│   │   ├── PHASE2-DISPATCH-PLAN.md
+│   │   ├── SOL-001-PROMPT.md
+│   │   ├── SOL-002-PROMPT.md
 │   │   ├── STANDALONE-ADOPTION-PROMPT.md
 │   │   └── STANDALONE-PROMPT-TEMPLATE.md
 │   ├── reports
@@ -66,12 +77,13 @@
 │   │   ├── CORE-004.5-gemini-phase1-closeout.md
 │   │   ├── CORE-004-gemini-conservation-harness.md
 │   │   ├── CORE-005-gemini-baseline-smoke-test.md
+│   │   ├── CORE-006-gemini-phase2-contracts.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
 │       └── status.md
 ├── patch
-│   └── CORE-004.5-gemini-phase1-closeout.patch
+│   └── CORE-006-gemini-phase2-contracts.patch
 ├── scripts
 │   ├── apc-bundle.bat
 │   ├── apc-bundle.ps1
@@ -92,6 +104,7 @@
 │       │   └── __init__.py
 │       ├── core
 │       │   ├── __init__.py
+│       │   ├── interfaces.py
 │       │   ├── models.py
 │       │   ├── verification.py
 │       │   └── weather.py
@@ -124,6 +137,7 @@
 │   ├── test_conservation_checker.py
 │   ├── test_core_models.py
 │   ├── test_equipment_audit.py
+│   ├── test_interfaces.py
 │   ├── test_mock_bills.py
 │   ├── test_smoke.py
 │   └── test_weather_ingest.py

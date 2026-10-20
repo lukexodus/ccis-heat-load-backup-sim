@@ -68,6 +68,10 @@ Status: **done**
 | CORE-005.1   | Implement grid-only, zero-solar, zero-battery simulation                         | `done` | 8,760h continuous simulation `simulate_baseline` [D-23]                                                           |
 | CORE-005.2   | Run 8,760-hour baseline through energy-balance test harness                      | `done` | Zero residual, zero drift, negative control verified                                                              |
 | CORE-005.3   | Generate baseline summary metrics (annual kWh, peak kW, base EUI)                | `done` | 398,525 kWh/yr, 159.41 EUI, 124.44 kW peak, 2016 sensitivity                                                      |
+| **CORE-006** | **Phase 2 Interface Contracts & Harness Idle-Loss Allowance**                    | `done` | [CORE-006-gemini-phase2-contracts.md](../reports/CORE-006-gemini-phase2-contracts.md) [D-26]                      |
+| CORE-006.1   | Define shared interface types in `interfaces.py`                                 | `done` | TieredDemand, OccupancySchedule, OutageSchedule, BatteryStepResult, ShedResult                                    |
+| CORE-006.2   | Author Phase 2 interface contract document                                       | `done` | [phase2-interface-contract.md](../context/phase2-interface-contract.md) locked signatures & dispatch loop          |
+| CORE-006.3   | Harness idle-loss allowance and cumulative SoC continuity drift                  | `done` | One-sided continuity, idle allowance, and SOC_CUMULATIVE_DRIFT [D-26]                                              |
 
 ---
 

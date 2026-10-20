@@ -121,6 +121,8 @@ class Battery:
     max_charge_c_rate: float = 0.5           # 0.5C maximum charging rate per [D-09]
     max_discharge_c_rate: float = 1.0        # 1.0C maximum continuous discharge per [D-09]
     emergency_reserve_pct: float = 0.20      # [D-17] Default 20% emergency blackout reserve (configurable in [0.10, 0.50] for BAT-002)
+    self_discharge_pct_per_month: float = 2.0  # [D-26] Monthly ambient self-discharge rate (default 2.0%/month for LFP)
+    tare_loss_kw: float = 0.0                # [D-26] Standby tare loss in kW (inverter/BMS tare modeled on SoC-side)
 
     def __post_init__(self) -> None:
         if self.capacity_kwh < 0.0:
@@ -137,6 +139,12 @@ class Battery:
             raise ValueError(
                 f"emergency_reserve_pct must be in [0, 1], got {self.emergency_reserve_pct}"
             )
+        if self.self_discharge_pct_per_month < 0.0:
+            raise ValueError(
+                f"self_discharge_pct_per_month must be non-negative, got {self.self_discharge_pct_per_month}"
+            )
+        if self.tare_loss_kw < 0.0:
+            raise ValueError(f"tare_loss_kw must be non-negative, got {self.tare_loss_kw}")
         if self.min_soc_pct + self.usable_dod > 1.0 + 1e-9:
             raise ValueError(
                 f"min_soc_pct + usable_dod cannot exceed 1.0, got {self.min_soc_pct + self.usable_dod}"
