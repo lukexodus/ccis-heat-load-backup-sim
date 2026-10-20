@@ -84,14 +84,25 @@ Check `docs/tasks/status.md` to confirm the task is marked `open` or `in-progres
 Never let an AI agent modify the main repository checkout while another task is running. Always create a dedicated git worktree from the repo root:
 
 ```bash
+# Linux / macOS / Git Bash:
 ./scripts/task-worktree.sh start CORE-001
+
+# Windows CMD:
+.\scripts\task-worktree.bat start CORE-001
+
+# Windows PowerShell:
+.\scripts\task-worktree.ps1 start CORE-001
 ```
 
 This creates a clean workspace directory at `../<project-name>-CORE-001` on a new branch `task/CORE-001`.
 
 Now change into your new worktree:
 ```bash
+# Linux / macOS / Git Bash:
 cd ../<project-name>-CORE-001
+
+# Windows CMD / PowerShell:
+cd ..\<project-name>-CORE-001
 ```
 
 ---
