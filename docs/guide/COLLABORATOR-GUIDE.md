@@ -260,6 +260,7 @@ When an external AI chat session nears its token limit or credit ceiling:
 
 ## 5. Quick Command Reference
 
+### Linux / macOS / Git Bash
 ```bash
 # --- Worktree Management ---
 ./scripts/task-worktree.sh start <TASK-ID>    # Create isolated task worktree
@@ -287,6 +288,40 @@ When an external AI chat session nears its token limit or credit ceiling:
 ./scripts/apc-bundle.sh full                  # Generate complete snapshot bundle
 ./scripts/apc-bundle.sh --with-reports        # Include recent task reports in archive
 ```
+
+### Windows (CMD & PowerShell)
+On Windows, use `.bat` from Command Prompt or `.ps1` from PowerShell with identical syntax and behavior:
+
+```cmd
+:: --- Worktree Management (CMD) ---
+.\scripts\task-worktree.bat start <TASK-ID>
+.\scripts\task-worktree.bat list
+.\scripts\task-worktree.bat status <TASK-ID>
+.\scripts\task-worktree.bat diff <TASK-ID>
+.\scripts\task-worktree.bat handoff <TASK-ID>
+.\scripts\task-worktree.bat remove <TASK-ID>
+
+:: --- Quality & Validation (CMD) ---
+.\scripts\validate-report.bat
+.\scripts\validate-report.bat docs\reports\<report-file>.md
+.\scripts\validate-report.bat --all
+
+:: --- Decision Log Management (CMD) ---
+.\scripts\manage-decisions.bat next
+.\scripts\manage-decisions.bat list
+.\scripts\manage-decisions.bat reserve --title "Title"
+
+:: --- APC Context Packaging (CMD) ---
+.\scripts\apc-bundle.bat --list
+.\scripts\apc-bundle.bat --tokens
+.\scripts\apc-bundle.bat core
+.\scripts\apc-bundle.bat full
+.\scripts\apc-bundle.bat --with-reports
+```
+
+> [!TIP]
+> **Windows Python Virtual Environment:** On Windows, activate your virtual environment using `.\.venv\Scripts\activate.bat` (Command Prompt) or `.\.venv\Scripts\Activate.ps1` (PowerShell), or use the Python launcher `py -3 -m venv .venv`. Line endings are automatically normalized by `.gitattributes`.
+
 
 ---
 
