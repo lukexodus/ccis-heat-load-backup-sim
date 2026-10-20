@@ -43,6 +43,7 @@ Status: **open**
 | CORE-001.2   | Implement `OutageEvent` and `HourlyRecord` time-step models                      | `done` | OutageEvent & HourlyRecord (18 fields)                                           |
 | CORE-001.3   | Build CSV/dict serialization protocols for simulation output                     | `done` | to_dict / from_dict serialization                                                |
 | CORE-001.4   | Write unit test suite for domain models and data invariants                      | `done` | 29 pytest tests passing (100% green)                                             |
+| CORE-001.5   | Reconcile uncredited assumptions in Battery & Building ([D-17], [D-18])          | `done` | [CORE-001.5-gemini-decision-gap-fixup.md](../reports/CORE-001.5-gemini-decision-gap-fixup.md) |
 | **CORE-002** | **NASA POWER Weather Ingestion & Offline CSV Fixture Cache**                     | `open` | Outline §4            |
 | CORE-002.1   | Implement NASA POWER API client for Batac (18.06°N, 120.56°E)                    | `open` | REST client           |
 | CORE-002.2   | Build hourly/daily weather parser (T2M, RH2M, ALLSKY_SFC_SW_DWN)                 | `open` | Met parsing           |

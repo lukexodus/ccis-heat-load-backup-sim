@@ -53,15 +53,17 @@ class RoomInventory:
 
 @dataclass(frozen=True)
 class Building:
-    """Building envelope and architectural baseline for MMSU CCIS per decision [D-06].
+    """Building envelope and architectural baseline for MMSU CCIS per decisions [D-06], [D-07], and [D-18].
 
     Static building envelope parameters. Equipment electrical loading and schedules
     are parameterized and loaded separately in CORE-003.
+    usable_rooftop_area_m2 is derived from the ~1,250 m² footprint of the 2-storey facility
+    minus parapets and mechanical setbacks, accommodating up to 200 kWp PV at 6.0 m²/kWp (per [D-18]).
     """
 
     name: str = "MMSU College of Computing and Information Sciences"
     gross_floor_area_m2: float = 2500.0
-    usable_rooftop_area_m2: float = 1200.0
+    usable_rooftop_area_m2: float = 1200.0   # [ASSUMPTION / [D-18]] ~1,250 m² 2-storey footprint minus setbacks (~1,200 m² usable)
     floors: int = 2
     rooms: RoomInventory = field(default_factory=RoomInventory)
     t_base_cooling_c: float = 24.0           # Balance-point temperature per [D-07]
@@ -104,10 +106,12 @@ class SolarArray:
 
 @dataclass(frozen=True)
 class Battery:
-    """Lithium Iron Phosphate (LFP) Battery Energy Storage System (BESS) per decision [D-09].
+    """Lithium Iron Phosphate (LFP) Battery Energy Storage System (BESS) per decisions [D-09] and [D-17].
 
     Can be instantiated across scenario matrix capacities (0, 50, 100, 200 kWh).
     Static parameters and boundary limits. Dispatch logic is handled in Phase 2 (BAT-001/002).
+    emergency_reserve_pct specifies a configurable operational blackout reserve (per [D-17] and BAT-002),
+    distinct from and additional to the non-discretionary 10% min SoC protection floor from [D-09].
     """
 
     capacity_kwh: float
@@ -116,7 +120,7 @@ class Battery:
     min_soc_pct: float = 0.10                # 10% minimum SoC reserve per [D-09]
     max_charge_c_rate: float = 0.5           # 0.5C maximum charging rate per [D-09]
     max_discharge_c_rate: float = 1.0        # 1.0C maximum continuous discharge per [D-09]
-    emergency_reserve_pct: float = 0.20      # 20% reserved for blackouts per [D-09]
+    emergency_reserve_pct: float = 0.20      # [D-17] Default 20% emergency blackout reserve (configurable in [0.10, 0.50] for BAT-002)
 
     def __post_init__(self) -> None:
         if self.capacity_kwh < 0.0:
@@ -129,6 +133,10 @@ class Battery:
             raise ValueError(f"usable_dod must be in (0, 1], got {self.usable_dod}")
         if not (0.0 <= self.min_soc_pct < 1.0):
             raise ValueError(f"min_soc_pct must be in [0, 1), got {self.min_soc_pct}")
+        if not (0.0 <= self.emergency_reserve_pct <= 1.0):
+            raise ValueError(
+                f"emergency_reserve_pct must be in [0, 1], got {self.emergency_reserve_pct}"
+            )
         if self.min_soc_pct + self.usable_dod > 1.0 + 1e-9:
             raise ValueError(
                 f"min_soc_pct + usable_dod cannot exceed 1.0, got {self.min_soc_pct + self.usable_dod}"

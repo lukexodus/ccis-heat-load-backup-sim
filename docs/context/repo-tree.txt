@@ -18,12 +18,25 @@
 │   │   └── decision-log.md
 │   ├── guide
 │   │   └── COLLABORATOR-GUIDE.md
+│   ├── misc
+│   │   ├── deep-research-report (1).md
+│   │   ├── deep-research-report (2).md
+│   │   ├── deep-research-report (3).md
+│   │   ├── deep-research-report (4).md
+│   │   ├── deep-research-report (5).md
+│   │   ├── deep-research-report (6).md
+│   │   ├── deep-research-report (7).md
+│   │   ├── deep-research-report.md
+│   │   └── M&S Project Ideas.md
 │   ├── prompts
 │   │   ├── ARCH-001-PROMPT.md
 │   │   ├── ARCH-002.4-FIXUP-PROMPT.md
 │   │   ├── ARCH-002-PROMPT.md
+│   │   ├── CORE-001.5-FIXUP-PROMPT.md
 │   │   ├── CORE-001-PROMPT.md
 │   │   ├── CORE-002-PROMPT.md
+│   │   ├── CORE-002-REDISPATCH-PROMPT.md
+│   │   ├── CORE-003.5-FIXUP-PROMPT.md
 │   │   ├── CORE-003-PROMPT.md
 │   │   ├── STANDALONE-ADOPTION-PROMPT.md
 │   │   └── STANDALONE-PROMPT-TEMPLATE.md
@@ -31,6 +44,7 @@
 │   │   ├── ARCH-001-gemini-lock-conceptual-model.md
 │   │   ├── ARCH-002.4-gemini-research-synthesis-fixup.md
 │   │   ├── ARCH-002-gemini-repo-scaffolding.md
+│   │   ├── CORE-001.5-gemini-decision-gap-fixup.md
 │   │   ├── CORE-001-gemini-domain-models.md
 │   │   ├── CORE-003-gemini-equipment-mock-bills.md
 │   │   └── TASK-TEMPLATE.md
@@ -41,6 +55,7 @@
 │   ├── ARCH-001-gemini-lock-conceptual-model.patch
 │   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
 │   ├── ARCH-002-gemini-repo-scaffolding.patch
+│   ├── CORE-001.5-gemini-decision-gap-fixup.patch
 │   ├── CORE-001-gemini-domain-models.patch
 │   └── CORE-003-gemini-equipment-mock-bills.patch
 ├── scripts

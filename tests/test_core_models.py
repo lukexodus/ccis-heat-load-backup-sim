@@ -151,6 +151,22 @@ def test_battery_invalid():
     with pytest.raises(ValueError, match="min_soc_pct \\+ usable_dod"):
         Battery(capacity_kwh=50.0, min_soc_pct=0.20, usable_dod=0.85)
 
+    with pytest.raises(ValueError, match="emergency_reserve_pct"):
+        Battery(capacity_kwh=50.0, emergency_reserve_pct=1.5)
+
+
+def test_battery_configurable_emergency_reserve():
+    """Verify emergency_reserve_pct is configurable across [0.10, 0.50] for BAT-002 per [D-17]."""
+    bat_low = Battery(capacity_kwh=100.0, emergency_reserve_pct=0.10)
+    assert bat_low.emergency_reserve_kwh == 10.0
+
+    bat_mid = Battery(capacity_kwh=100.0, emergency_reserve_pct=0.20)
+    assert bat_mid.emergency_reserve_kwh == 20.0
+
+    bat_high = Battery(capacity_kwh=100.0, emergency_reserve_pct=0.50)
+    assert bat_high.emergency_reserve_kwh == 50.0
+
+
 
 # --- 5. OutageEvent Tests ---
 

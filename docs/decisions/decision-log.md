@@ -86,3 +86,27 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Decision:** Parameterize the MMSU CCIS 18-room facility (~2,500 m²) with a bottom-up equipment audit of 140.0 kW total connected capacity across 38 distinct equipment categories. Loads are strictly mapped to the three priority tiers defined in [D-10]: Tier 1 life safety (1.21 kW connected, ~1% connected, ~1.5% peak; 24/7 continuous egress, FACP, CCTV), Tier 2 operational continuity (17.5 kW connected, ~12% connected, ~17% peak; 24/7 IDF switches, spot cooling, Dean/COD offices, faculty PCs, and water pump), and Tier 3 comfort cooling & sheddable loads (121.3 kW connected, ~87% connected, ~81% peak; lab PCs, lecture rooms, and split AC units). Synthetic 12-month billing calibrated with Philippine SUC academic schedule, Batac seasonal cooling degree factors (0.85–1.25), 10% nighttime standby baseload (8.0 kW), and Gaussian meter noise ($\sigma = 2.5\%$). Yields annual consumption of ~398,500 kWh/yr and annual Energy Use Intensity (EUI) of 159.41 kWh/m²·yr, strictly conforming to the regional benchmark band of 150–300 kWh/m²·yr.  
 - **Reasoning:** Reconciles the operator-confirmed 18-room spatial ground truth [D-06] with verified hardware power ratings (dual 3.0 HP inverter ACs and 40 desktop PCs per lab to reject high thermal heat loads in Batac). Replaces inaccessible real utility bills with an auditable, reproducible synthetic calibration baseline satisfying the zero-institutional-data constraint [D-03].  
 - **Affects:** `CORE-003`, `CORE-005`, `DEM-001`, `DEM-002`, `OUT-002`, `INT-001`.
+
+**[D-17]** Battery configurable emergency outage reserve allocation locked.  
+- **Date / Session:** 2026-10-20  
+- **Decision:** Establish `Battery.emergency_reserve_pct` with a provisional default value of 0.20 (20% of rated capacity), representing a dedicated operational blackout reserve buffer. This parameter is distinct from and additional to the non-discretionary 10% minimum state-of-charge protection floor ($SoC_{\text{min}} = 0.10 \times C_{\text{bat}}$) locked in [D-09]. It is configurable across $[0.10, 0.50]$ to support the outage resilience sweeps in `BAT-002.2` and multi-criteria decision analysis in `DEC-002`.  
+- **Reasoning:** While [D-09] protects battery cell physical longevity by preventing deep discharge below 10% SoC under all conditions, resilience during extended blackouts requires an operational buffer held in reserve rather than depleted during daily evening peak load. A default 20% allocation ensures critical Tier 1 and Tier 2 loads can sustain initial transfer and runtime during unanticipated utility outages while preserving the cell longevity floor.  
+- **Affects:** `Battery`, `BAT-001`, `BAT-002`, `INT-001`, `DEC-002`.
+
+**[D-18]** CCIS usable rooftop solar PV area sizing constraint locked.  
+- **Date / Session:** 2026-10-20  
+- **Decision:** Parameterize the CCIS facility with a maximum usable unshaded rooftop PV mounting area of 1,200 m² (`Building.usable_rooftop_area_m2 = 1200.0`), tagged as an explicit `[ASSUMPTION]`. At a commercial monocrystalline packing density of 6.0 m²/kWp (~167 W/m² module rating accounting for maintenance walkways and inter-row spacing), this directly caps maximum rooftop solar capacity at 200 kWp, bounding the project's scenario matrix ($P_{\text{kWp}} \in \{0, 50, 100, 200\}\text{ kWp}$).  
+- **Reasoning:** Conforms to physical building geometry: a 2-storey building of ~2,500 m² gross floor area has a building footprint of ~1,250 m². Deducting ~50 m² for parapets, rooftop access, and mechanical HVAC compressor clearances yields ~1,200 m² of usable racking space.  
+- **Affects:** `Building`, `SOL-001`, `SOL-002`, `INT-003`.
+
+**[D-19]** Equipment audit connected-load and tier-percentage summary figures corrected.  
+- **Date / Session:** 2026-10-20  
+- **Decision:** Corrects the connected-load and tier-percentage figures stated in [D-16]; the underlying equipment list (38 item categories across 18 rooms plus infrastructure), tier assignments, and EUI conclusion are unchanged — only the summary numbers in prose were wrong. Recomputed directly from `data/fixtures/equipment-audit-ccis.csv`:  
+  - Total connected electrical capacity: **147.81 kW** (147.805 kW), not 140.0 kW.  
+  - Tier 1 (Life safety): **1.215 kW** (~0.82% of connected load; ~1.5% peak), 4 items.  
+  - Tier 2 (Operational continuity): **15.36 kW** (~10.39% of connected load; ~17% peak), 16 items.  
+  - Tier 3 (Comfort cooling & sheddable loads): **131.23 kW** (~88.79% of connected load; ~81% peak), 18 items.  
+  Re-verified downstream billing and EUI: Annual electricity consumption remains **398,536.77 kWh/yr**, yielding an annual Energy Use Intensity (EUI) of **159.41 kWh/m²·yr**, strictly within the regional benchmark band of 150.0–300.0 kWh/m²·yr.  
+- **Reasoning:** In `CORE-003`, equipment line counts and ratings were upgraded during final calibration (including student PCs from 228 to 240 units to reflect 40 PCs/lab, and dual 3.0 HP lab AC units to 2.8 kW for Batac heat conditions). The synthetic bill fixture was correctly computed from the final CSV, but the prose in [D-16] and the initial report retained pre-final draft totals (140.0 kW).  
+- **Affects:** `CORE-003`, `CORE-003.5`, `CORE-005`, `DEM-001`, `DEM-002`, `OUT-002`.
+
