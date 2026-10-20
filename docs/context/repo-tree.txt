@@ -63,6 +63,7 @@
 │   │   ├── CORE-002-gemini-weather-ingestion.md
 │   │   ├── CORE-003.5-gemini-equipment-totals-fixup.md
 │   │   ├── CORE-003-gemini-equipment-mock-bills.md
+│   │   ├── CORE-004.5-gemini-phase1-closeout.md
 │   │   ├── CORE-004-gemini-conservation-harness.md
 │   │   ├── CORE-005-gemini-baseline-smoke-test.md
 │   │   └── TASK-TEMPLATE.md
@@ -70,17 +71,7 @@
 │       ├── high-level-tasks.md
 │       └── status.md
 ├── patch
-│   ├── ARCH-001-gemini-lock-conceptual-model.patch
-│   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
-│   ├── ARCH-002.5-gemini-windows-interop.patch
-│   ├── ARCH-002-gemini-repo-scaffolding.patch
-│   ├── CORE-001.5-gemini-decision-gap-fixup.patch
-│   ├── CORE-001-gemini-domain-models.patch
-│   ├── CORE-002-gemini-weather-ingestion.patch
-│   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
-│   ├── CORE-003-gemini-equipment-mock-bills.patch
-│   ├── CORE-004-gemini-conservation-harness.patch
-│   └── CORE-005-gemini-baseline-smoke-test.patch
+│   └── CORE-004.5-gemini-phase1-closeout.patch
 ├── scripts
 │   ├── apc-bundle.bat
 │   ├── apc-bundle.ps1

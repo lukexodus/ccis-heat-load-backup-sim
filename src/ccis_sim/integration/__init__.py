@@ -2,6 +2,7 @@
 
 from ccis_sim.integration.baseline import (
     CALIBRATION_FACTOR_2019,
+    DEFAULT_COOLING_DUTY_FACTOR,
     BaselineMetrics,
     compute_baseline_metrics,
     compute_placeholder_demand,
@@ -11,6 +12,7 @@ from ccis_sim.integration.baseline import (
 
 __all__ = [
     "CALIBRATION_FACTOR_2019",
+    "DEFAULT_COOLING_DUTY_FACTOR",
     "BaselineMetrics",
     "compute_baseline_metrics",
     "compute_placeholder_demand",

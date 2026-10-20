@@ -6,6 +6,7 @@ validation, and the shared golden reference fixture.
 
 from __future__ import annotations
 
+import dataclasses
 import pytest
 
 from ccis_sim.core import (
@@ -14,6 +15,7 @@ from ccis_sim.core import (
     ViolationType,
     assert_simulation_valid,
     check_energy_conservation,
+    check_subflow_balance,
     compute_cumulative_tolerance,
     create_golden_scenario,
     run_verification_harness,
@@ -336,3 +338,172 @@ def test_empty_records_handling():
     assert report.is_valid
     assert report.total_records == 0
     assert report.max_residual_kwh == 0.0
+
+
+# =========================================================================
+# CORE-004.5: Verification Harness Gap Fixup Tests [D-25]
+# =========================================================================
+
+
+def test_soc_continuity_golden_scenario_passes():
+    """Verify that the 48-hour golden scenario strictly satisfies hour-to-hour SoC continuity."""
+    bat = Battery(capacity_kwh=100.0)
+    records = create_golden_scenario(battery=bat)
+
+    # Initial SoC is 50.0 kWh per scenario definition
+    violations = validate_battery_boundaries(
+        records,
+        battery=bat,
+        initial_soc_kwh=50.0,
+    )
+    continuity_violations = [v for v in violations if v.violation_type == ViolationType.SOC_CONTINUITY]
+    assert len(continuity_violations) == 0
+
+    # Also check full harness passes
+    report = run_verification_harness(records, battery=bat, initial_soc_kwh=50.0)
+    assert report.is_valid
+    assert len(report.battery_violations) == 0
+
+
+def test_soc_continuity_teleport_violation_caught():
+    """Verify that an arbitrary SoC teleportation without flow conservation trips SOC_CONTINUITY."""
+    bat = Battery(capacity_kwh=100.0)
+    records = create_golden_scenario(battery=bat)
+
+    # Teleport Hour 10 SoC from 100.0 to 80.0 without any discharge
+    tampered = records[9]
+    records[9] = HourlyRecord(
+        hour=tampered.hour,
+        timestamp=tampered.timestamp,
+        temp_ambient_c=tampered.temp_ambient_c,
+        humidity_rel_pct=tampered.humidity_rel_pct,
+        ghi_w_m2=tampered.ghi_w_m2,
+        demand_gross_kwh=tampered.demand_gross_kwh,
+        demand_served_kwh=tampered.demand_served_kwh,
+        solar_generation_kwh=tampered.solar_generation_kwh,
+        solar_to_demand_kwh=tampered.solar_to_demand_kwh,
+        solar_to_battery_kwh=tampered.solar_to_battery_kwh,
+        solar_curtailed_kwh=tampered.solar_curtailed_kwh,
+        battery_soc_kwh=80.0,  # Teleported from 100.0 -> 80.0
+        battery_charge_kwh=tampered.battery_charge_kwh,
+        battery_discharge_kwh=tampered.battery_discharge_kwh,
+        grid_import_kwh=tampered.grid_import_kwh,
+        unserved_load_kwh=tampered.unserved_load_kwh,
+        grid_available=tampered.grid_available,
+        active_load_tier=tampered.active_load_tier,
+    )
+
+    violations = validate_battery_boundaries(records, battery=bat)
+    continuity_violations = [v for v in violations if v.violation_type == ViolationType.SOC_CONTINUITY]
+    assert len(continuity_violations) >= 1
+    v = continuity_violations[0]
+    assert v.hour == 10
+    assert abs(v.actual_value - 80.0) < 1e-6
+    assert abs(v.limit_value - 100.0) < 1e-3
+
+    # Also trips in run_verification_harness
+    report = run_verification_harness(records, battery=bat)
+    assert not report.is_valid
+    assert any(bv.violation_type == ViolationType.SOC_CONTINUITY for bv in report.battery_violations)
+
+
+def test_soc_continuity_zero_capacity_skipped():
+    """Verify that SoC continuity is skipped when battery capacity is 0 (grid-only baseline)."""
+    bat = Battery(capacity_kwh=0.0)
+    rec = _make_dummy_record(hour=1, soc=0.0)
+    violations = validate_battery_boundaries([rec], battery=bat, initial_soc_kwh=0.0)
+    assert len(violations) == 0
+
+
+def test_non_finite_value_caught_in_conservation():
+    """Verify that NaN and inf values in HourlyRecord numeric fields trip NON_FINITE_VALUE."""
+    # NaN in demand_gross_kwh (instantiated via object.__setattr__ on frozen record)
+    rec_nan = _make_dummy_record(hour=1)
+    object.__setattr__(rec_nan, "demand_gross_kwh", float("nan"))
+
+    violations_nan = check_energy_conservation([rec_nan])
+    assert any(v.violation_type == ViolationType.NON_FINITE_VALUE for v in violations_nan)
+
+    # inf in solar_generation_kwh
+    rec_inf = _make_dummy_record(hour=2)
+    object.__setattr__(rec_inf, "solar_generation_kwh", float("inf"))
+
+    violations_inf = check_energy_conservation([rec_inf])
+    assert any(v.violation_type == ViolationType.NON_FINITE_VALUE for v in violations_inf)
+
+    # Full harness failure
+    report = run_verification_harness([rec_nan])
+    assert not report.is_valid
+
+
+def test_non_finite_value_caught_in_battery_boundaries():
+    """Verify that NaN or inf in battery fields trips NON_FINITE_VALUE in validate_battery_boundaries."""
+    bat = Battery(capacity_kwh=100.0)
+    rec = _make_dummy_record(hour=1, soc=50.0)
+    object.__setattr__(rec, "battery_soc_kwh", float("nan"))
+
+    violations = validate_battery_boundaries([rec], battery=bat)
+    assert any(v.violation_type == ViolationType.NON_FINITE_VALUE for v in violations)
+
+
+def test_solar_flow_balance_violation_caught():
+    """Verify that solar flow discrepancy (gen != to_demand + to_battery + curtailed) is caught."""
+    base_rec = _make_dummy_record(hour=1, solar_gen=50.0)
+    # solar_to_demand = 10, solar_to_battery = 0, solar_curtailed = 35 -> sum = 45 != 50 (missing 5 kWh)
+    rec = dataclasses.replace(
+        base_rec,
+        solar_to_demand_kwh=10.0,
+        solar_to_battery_kwh=0.0,
+        solar_curtailed_kwh=35.0,
+    )
+
+    violations = check_subflow_balance([rec])
+    assert len(violations) == 1
+    assert violations[0].violation_type == ViolationType.SOLAR_FLOW_BALANCE
+    assert violations[0].hour == 1
+    assert abs(violations[0].residual_kwh - 5.0) < 1e-9
+
+    report = run_verification_harness([rec])
+    assert not report.is_valid
+    assert len(report.subflow_violations) == 1
+
+
+def test_demand_flow_balance_violation_caught():
+    """Verify that demand flow discrepancy (gross != served + unserved) is caught."""
+    base_rec = _make_dummy_record(hour=1)
+    # gross = 30, served = 10, unserved = 15 -> sum = 25 != 30 (missing 5 kWh)
+    rec = dataclasses.replace(
+        base_rec,
+        demand_gross_kwh=30.0,
+        demand_served_kwh=10.0,
+        unserved_load_kwh=15.0,
+    )
+
+    violations = check_subflow_balance([rec])
+    assert len(violations) == 1
+    assert violations[0].violation_type == ViolationType.DEMAND_FLOW_BALANCE
+    assert violations[0].hour == 1
+    assert abs(violations[0].residual_kwh - 5.0) < 1e-9
+
+    report = run_verification_harness([rec])
+    assert not report.is_valid
+    assert len(report.subflow_violations) == 1
+
+
+def test_hourly_record_signed_residual_property():
+    """Verify signed_residual_kwh accurately tracks polarity and absolute magnitude."""
+    # Balanced record: residual == 0, signed_residual == 0
+    rec_bal = _make_dummy_record(hour=1, grid_import=10.0, demand_served=10.0)
+    assert rec_bal.signed_residual_kwh == 0.0
+    assert rec_bal.energy_balance_residual_kwh == 0.0
+
+    # Surplus energy in (+2.0 kWh): In = 12, Out = 10 -> signed = +2.0
+    rec_pos = _make_dummy_record(hour=2, grid_import=12.0, demand_served=10.0)
+    assert abs(rec_pos.signed_residual_kwh - 2.0) < 1e-9
+    assert abs(rec_pos.energy_balance_residual_kwh - 2.0) < 1e-9
+
+    # Deficit energy in (-3.0 kWh): In = 7, Out = 10 -> signed = -3.0
+    rec_neg = _make_dummy_record(hour=3, grid_import=7.0, demand_served=10.0)
+    assert abs(rec_neg.signed_residual_kwh - (-3.0)) < 1e-9
+    assert abs(rec_neg.energy_balance_residual_kwh - 3.0) < 1e-9
+

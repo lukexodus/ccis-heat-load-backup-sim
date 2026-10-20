@@ -24,6 +24,11 @@ logger = logging.getLogger(__name__)
 # Fixed calibration factor derived on 2019 baseline weather fixture to hit 159.41 kWh/m²·yr (398,525 kWh)
 CALIBRATION_FACTOR_2019 = 1.2285756306528773
 
+# Assumed average coincident cooling equipment operational duty factor during daytime occupied hours.
+# Represents that on average ~35% of the total 77.20 kW connected AC capacity is actively compressor-cycling
+# when ambient temperature exceeds the cooling base setpoint (24.0°C per [D-07]).
+DEFAULT_COOLING_DUTY_FACTOR = 0.35
+
 
 @dataclass(frozen=True)
 class BaselineMetrics:
@@ -127,7 +132,7 @@ def compute_placeholder_demand(
         if temp > building.t_base_cooling_c and (f_occ > 0.0 or (dow < 5 and 7 <= h <= 18)):
             delta_t = temp - building.t_base_cooling_c
             cooling_adjustment = (
-                cooling_connected_kw * 0.35 * building.cooling_sensitivity_per_c * delta_t
+                cooling_connected_kw * DEFAULT_COOLING_DUTY_FACTOR * building.cooling_sensitivity_per_c * delta_t
             )
 
         hourly_uncalibrated = p_sched + cooling_adjustment

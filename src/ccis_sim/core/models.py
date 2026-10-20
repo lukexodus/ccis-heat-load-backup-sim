@@ -251,6 +251,18 @@ class HourlyRecord:
         energy_out = self.demand_served_kwh + self.battery_charge_kwh + self.solar_curtailed_kwh
         return abs(energy_in - energy_out)
 
+    @property
+    def signed_residual_kwh(self) -> float:
+        """Calculate signed energy balance residual: Total Energy In - Total Energy Out.
+
+        Total In = solar_generation_kwh + grid_import_kwh + battery_discharge_kwh
+        Total Out = demand_served_kwh + battery_charge_kwh + solar_curtailed_kwh
+        Signed Residual = Total In - Total Out
+        """
+        energy_in = self.solar_generation_kwh + self.grid_import_kwh + self.battery_discharge_kwh
+        energy_out = self.demand_served_kwh + self.battery_charge_kwh + self.solar_curtailed_kwh
+        return energy_in - energy_out
+
     def is_energy_conserved(self, tolerance: float = 1e-5) -> bool:
         """Verify strict energy balance invariant (residual <= 10^-5 kWh)."""
         return self.energy_balance_residual_kwh <= tolerance

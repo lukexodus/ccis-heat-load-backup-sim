@@ -16,7 +16,7 @@ Constructs a 48-hour continuous synthetic scenario (Hour 1 to Hour 48) containin
 - **Grid outage & priority load shedding**: Hours 30–37 simulate an 8-hour utility blackout (`grid_available = False`), shedding Tier 3 load to Tier 2 essential load ($5.0\text{ kW}$), sustained by islanded battery and depressed solar.
 - **Grid restoration & recovery**: Grid returns at Hour 38, restoring normal Tier 3 operations.
 
-Every single record has an exact residual of $0.000000\text{ kWh}$ and strictly satisfies all battery boundary conditions.
+Every single record has an exact residual of $0.000000\text{ kWh}$, strictly satisfies all battery boundary conditions, and rigorously satisfies hour-to-hour SoC continuity ($SoC_t = SoC_{t-1} + \eta_{\text{chg}} P_{\text{chg}} - P_{\text{dis}}/\eta_{\text{dis}}$ with $\eta = \sqrt{0.92}$ per [D-25]).
 
 ## Usage in Downstream Test Suites
 
@@ -29,6 +29,7 @@ from ccis_sim.core import (
     HourlyRecord,
     assert_simulation_valid,
     check_energy_conservation,
+    check_subflow_balance,
     create_golden_scenario,
     run_verification_harness,
     validate_battery_boundaries,
@@ -40,7 +41,7 @@ def test_my_submodel_energy_balance():
     records = create_golden_scenario(battery=battery)
 
     # 2. Run verification harness
-    report = run_verification_harness(records, battery=battery)
+    report = run_verification_harness(records, battery=battery, initial_soc_kwh=50.0)
     assert report.is_valid, report.summary()
 
 def test_my_submodel_assertions():
@@ -53,13 +54,20 @@ def test_my_submodel_assertions():
 
 1. `check_energy_conservation(records, tolerance=1e-5, cumulative_tolerance=None) -> list[ConservationViolation]`
    - Validates per-hour energy conservation ($\text{residual} \le 10^{-5}\text{ kWh}$).
-   - Validates cumulative conservation drift ($\Delta E_{\text{net}} \le \max(10^{-5}, \sqrt{N} \times 10^{-5})$ per decision `[D-21]`).
-2. `validate_battery_boundaries(records, battery, allow_emergency_drawdown=False) -> list[BatteryBoundaryViolation]`
+   - Validates cumulative conservation drift ($\Delta E_{\text{net}} \le \max(10^{-5}, \sqrt{N} \times 10^{-5})$ using `HourlyRecord.signed_residual_kwh` per decisions `[D-21]` and `[D-25]`).
+   - Rejects non-finite values (NaN / ±inf) in all numeric record fields (`ViolationType.NON_FINITE_VALUE`).
+2. `check_subflow_balance(records, tolerance=1e-5) -> list[ConservationViolation]`
+   - Validates solar generation flow decomposition: $P_{\text{solar}} = P_{\text{to\_demand}} + P_{\text{to\_battery}} + P_{\text{curtailed}}$ (`ViolationType.SOLAR_FLOW_BALANCE`).
+   - Validates gross demand flow decomposition: $P_{\text{demand}} = P_{\text{served}} + P_{\text{unserved}}$ (`ViolationType.DEMAND_FLOW_BALANCE`).
+3. `validate_battery_boundaries(records, battery, allow_emergency_drawdown=False, delta_t_hours=1.0, initial_soc_kwh=None) -> list[BatteryBoundaryViolation]`
    - Validates $0 \le SoC(t) \le C_{\text{bat}}$.
    - Validates $SoC(t) \ge SoC_{\min}$ (10% floor outside permitted emergency blackouts).
    - Validates C-rate power bounds ($0.5\text{C}$ charge, $1.0\text{C}$ discharge).
    - Validates mutual exclusivity (no simultaneous charge and discharge $> 10^{-6}\text{ kWh}$).
-3. `run_verification_harness(records, battery=None, ...) -> VerificationReport`
+   - Validates hour-to-hour SoC continuity with symmetric efficiency split $\eta = \sqrt{\eta_{\text{rt}}}$ (`ViolationType.SOC_CONTINUITY`).
+   - Rejects non-finite values (NaN / ±inf) in battery fields.
+4. `run_verification_harness(records, battery=None, ...) -> VerificationReport`
    - Complete verification run returning structured diagnostic report with `summary()`.
-4. `assert_simulation_valid(records, battery=None, ...) -> None`
-   - Test assertion helper.
+5. `assert_simulation_valid(records, battery=None, ...) -> None`
+   - Test assertion helper raising AssertionError on any physical or boundary violation.
+

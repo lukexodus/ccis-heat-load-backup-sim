@@ -177,5 +177,40 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** Demonstrates end-to-end continuous 8,760-hour execution and verification harness closure for Phase 1 without pre-empting the detailed physics or empirical regressions reserved for Phase 2 demand sub-models.
 - **Affects:** `CORE-005`, `DEM-001`, `DEM-002`, `INT-001`.
 
+**[D-24]** Baseline demand placeholder disclosure addendum, uncalibrated EUI, and provisional peak classification (amending [D-23]).  
+- **Date / Session:** 2026-10-20  
+- **Decision:**  
+  1. **Uncalibrated Baseline Metrics:** With calibration multiplier $c_{\text{calib}} = 1.0$, the uncalibrated 2019 baseline annual electricity consumption totals **324,379.71 kWh/yr**, yielding an uncalibrated annual Energy Use Intensity (EUI) of **129.75 kWh/m²·yr** on the 2,500 m² archetype facility, with an uncalibrated peak electrical demand of **101.29 kW**. The fixed calibration factor $c_{\text{calib}} = 1.22857563$ represents a $+22.86\%$ upward correction to align with the empirical target of 159.41 kWh/m²·yr ($398,525.00\text{ kWh/yr}$).
+  2. **Match by Construction:** The exact match between the baseline simulation annual EUI (159.4100 kWh/m²·yr) and the synthetic billing target ([D-16]/[D-19]) is **by construction** via this calibration constant, and does **not** constitute independent validation of building thermal or operational physics.
+  3. **Documented Cooling Duty Factor:** The daytime cooling temperature response includes an assumed coincident operational duty factor of **0.35** (`DEFAULT_COOLING_DUTY_FACTOR = 0.35`), representing that approximately 35% of the total 77.20 kW installed air-conditioning capacity actively compressor-cycles during daytime occupied hours when ambient temperature exceeds $T_{\text{base}} = 24.0^\circ\text{C}$ per [D-07].
+  4. **Provisional Peak Classification:** The headline peak electrical demand of **124.44 kW** (Hour 2030, 2019-03-26T13:00:00+08:00) is scaled by the same calibration multiplier and lacks independent empirical load metering; it is formally classified as **provisional** and must be superseded by the bottom-up academic diversity schedules (`DEM-001`) and dynamic psychrometric building heat load model (`DEM-002`) prior to final microgrid inverter/battery sizing.
+  5. **Climate Sensitivity Context:** The un-tuned 2016 El Niño hot-year simulation yielded a modest peak demand increase of $+1.11\text{ kW}$ (+0.89%, reaching 125.55 kW) and a slight annual consumption decrease of $-273.79\text{ kWh}$ (-0.07%, 398,251.21 kWh vs 398,525.00 kWh) due to 2016 having 260 weekdays vs 261 in 2019. This sensitivity is weak due to the placeholder's simplified linear cooling response and must not be cited as a real climate finding.
+  6. The underlying behavior and committed simulation headline numbers remain bit-identical.
+- **Reasoning:** Full scientific disclosure and methodological transparency ensure that placeholder approximations are not mistaken for validated empirical physics by downstream sizing or economic tracks.
+- **Affects:** `CORE-005`, `DEM-001`, `DEM-002`, `INT-001`, `BAT-001`.
+
+**[D-25]** Verification harness gap closures: SoC continuity convention, non-finite guards, sub-flow decompositions, and D-09/D-21 reconciliation.  
+- **Date / Session:** 2026-10-20  
+- **Decision:**  
+  1. **Hour-to-Hour SoC Continuity Invariant:** For consecutive hourly records ($t \ge 1$), the battery state-of-charge must strictly obey physical energy conservation:
+     $$\text{SoC}_t = \text{SoC}_{t-1} + \eta_{\text{chg}} P_{\text{chg},t} \Delta t - \frac{P_{\text{dis},t} \Delta t}{\eta_{\text{dis}}}$$
+     within a numerical tolerance of $10^{-5}\text{ kWh}$ (`ViolationType.SOC_CONTINUITY`).
+  2. **Symmetric Efficiency Split:** In the absence of separate manufacturer charge/discharge curves in `Battery`, the 92% round-trip efficiency locked in [D-09] is split symmetrically:
+     $$\eta_{\text{chg}} = \eta_{\text{dis}} = \sqrt{\eta_{\text{rt}}} = \sqrt{0.92} \approx 0.9591663$$
+     Battery charge ($P_{\text{chg}}$) and discharge ($P_{\text{dis}}$) are defined strictly as AC-side flows (matching the quantities in the hourly grid/solar energy balance); all electrochemical and inverter conversion losses appear strictly in the stored chemical SoC. The continuity check is bypassed when `Battery.capacity_kwh == 0.0`. For the initial record ($t = 1$), continuity is evaluated against an optional `initial_soc_kwh` parameter if provided; otherwise skipped.
+  3. **Non-Finite Numerical Guards:** Any occurrence of `NaN`, `+inf`, or `-inf` in any numeric float field of `HourlyRecord` or `Battery` is strictly classified as an invariant failure (`ViolationType.NON_FINITE_VALUE`) across all verification checkers.
+  4. **Sub-Flow Decomposition Balances:** Added explicit conservation checks (`check_subflow_balance`):
+     - Solar flow decomposition: $P_{\text{solar}} = P_{\text{to\_demand}} + P_{\text{to\_battery}} + P_{\text{curtailed}}$ (`ViolationType.SOLAR_FLOW_BALANCE`).
+     - Demand flow decomposition: $P_{\text{gross}} = P_{\text{served}} + P_{\text{unserved}}$ (`ViolationType.DEMAND_FLOW_BALANCE`).
+  5. **Canonical Signed Residual Property:** Introduced `HourlyRecord.signed_residual_kwh` ($E_{\text{in}} - E_{\text{out}}$) for directional tracking of cumulative numerical drift in `check_energy_conservation` and `run_verification_harness`. The scalar absolute residual property `energy_balance_residual_kwh` and `is_energy_conserved()` remain unchanged.
+  6. **Reconciliation of [D-09] and [D-21]:**
+     - The 10% minimum SoC protection floor ($SoC_{\min} = 0.10 \times C_{\text{bat}}$) defined in [D-09] is strictly non-discretionary under all normal, grid-connected operating regimes to prevent accelerated lithium-ion degradation.
+     - The emergency drawdown override permitted under [D-21] (allowing SoC to discharge down to 0 kWh) is strictly restricted to active utility grid blackouts (`grid_available = False`) where priority shedding is active (`active_load_tier in (1, 2)`) and `allow_emergency_drawdown = True`.
+     - Relation to [D-17] Emergency Reserve: The 20% emergency blackout reserve ([D-17]) is an operational scheduling buffer allocated to sustain Tier 1 and Tier 2 critical loads through outages, whereas the 10% floor ([D-09]) is physical cell-protection hardware reserve. The emergency drawdown override bridges the two by allowing life-safety survival operation to consume the hardware floor only in declared catastrophic emergencies.
+  7. **Golden Reference Fixture Update:** Updated `create_golden_scenario()` to incorporate symmetric conversion efficiency while maintaining exact $0.000000\text{ kWh}$ residual across all 48 hours.
+- **Reasoning:** Closes potential simulation verification blind spots (energy teleportation, silent NaN propagation, sub-flow leakage) before parallel Phase 2 model tracks commence.
+- **Affects:** `CORE-004`, `CORE-005`, `DEM-001`, `DEM-002`, `BAT-001`, `BAT-002`, `SOL-001`, `SOL-002`, `OUT-001`, `OUT-002`, `INT-001`, `INT-002`, `INT-003`.
+
+
 
 
