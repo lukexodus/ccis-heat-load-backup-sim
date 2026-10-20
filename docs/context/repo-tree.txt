@@ -15,9 +15,11 @@
 │   ├── context
 │   │   ├── apc-bundle-quickref.md
 │   │   ├── apc-handoff-2026-10-19.md
+│   │   ├── apc-handoff-2026-10-20.md
 │   │   ├── apc-handoff-template.md
 │   │   ├── complete-context.md
 │   │   ├── conceptual-model.md
+│   │   ├── PHASE2-DISPATCH-PLAN.md
 │   │   ├── phase2-interface-contract.md
 │   │   ├── repo-tree.txt
 │   │   └── research-synthesis.md
@@ -83,7 +85,17 @@
 │       ├── high-level-tasks.md
 │       └── status.md
 ├── patch
-│   └── CORE-006-gemini-phase2-contracts.patch
+│   ├── ARCH-001-gemini-lock-conceptual-model.patch
+│   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
+│   ├── ARCH-002.5-gemini-windows-interop.patch
+│   ├── ARCH-002-gemini-repo-scaffolding.patch
+│   ├── CORE-001.5-gemini-decision-gap-fixup.patch
+│   ├── CORE-001-gemini-domain-models.patch
+│   ├── CORE-002-gemini-weather-ingestion.patch
+│   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
+│   ├── CORE-003-gemini-equipment-mock-bills.patch
+│   ├── CORE-004-gemini-conservation-harness.patch
+│   └── CORE-005-gemini-baseline-smoke-test.patch
 ├── scripts
 │   ├── apc-bundle.bat
 │   ├── apc-bundle.ps1
