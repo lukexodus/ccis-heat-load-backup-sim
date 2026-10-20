@@ -54,6 +54,7 @@
 │   ├── reports
 │   │   ├── ARCH-001-gemini-lock-conceptual-model.md
 │   │   ├── ARCH-002.4-gemini-research-synthesis-fixup.md
+│   │   ├── ARCH-002.5-gemini-windows-interop.md
 │   │   ├── ARCH-002-gemini-repo-scaffolding.md
 │   │   ├── CORE-001.5-gemini-decision-gap-fixup.md
 │   │   ├── CORE-001.6-gemini-process-fixup.md
@@ -69,6 +70,7 @@
 ├── patch
 │   ├── ARCH-001-gemini-lock-conceptual-model.patch
 │   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
+│   ├── ARCH-002.5-gemini-windows-interop.patch
 │   ├── ARCH-002-gemini-repo-scaffolding.patch
 │   ├── CORE-001.5-gemini-decision-gap-fixup.patch
 │   ├── CORE-001-gemini-domain-models.patch
