@@ -95,7 +95,8 @@
 │   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
 │   ├── CORE-003-gemini-equipment-mock-bills.patch
 │   ├── CORE-004-gemini-conservation-harness.patch
-│   └── CORE-005-gemini-baseline-smoke-test.patch
+│   ├── CORE-005-gemini-baseline-smoke-test.patch
+│   └── CORE-006-gemini-phase2-contracts.patch
 ├── scripts
 │   ├── apc-bundle.bat
 │   ├── apc-bundle.ps1

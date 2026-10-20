@@ -6,6 +6,7 @@
 - **Branch / Worktree:** `./scripts/task-worktree.sh start OUT-001` (or `git worktree add ../ccis-heat-load-backup-sim-OUT-001 -b task/OUT-001`). **Branch from the current tip of `master` and confirm `src/ccis_sim/core/interfaces.py` and `docs/context/phase2-interface-contract.md` exist; if not, stop: CORE-006 has not landed.**
 - **Depends on:** CORE-006. **Runs in parallel with:** OUT-002, DEM-*, SOL-*, BAT-*. Touch only files in your own track; edit only your own rows in `status.md`.
 - **Stop-and-report rule:** if the repo differs from this prompt (a signature conflicts with the contract, a reserved ID is already used, a file you need is missing), stop that step and report. Do not improvise or silently change a contract signature.
+- **Time-box:** The deadline is tight. Skip stretch goals; if a subtask would take more than ~45 minutes, implement the simplest version, log it as a limitation in the report, and move on.
 
 ## Orientation & Required Reading
 1. `AGENTS.md` and `docs/context/complete-context.md`
