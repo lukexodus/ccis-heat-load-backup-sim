@@ -34,7 +34,7 @@ Status: **done**
 
 ## Phase 1 — Core Infrastructure & Data Pipelines
 
-Status: **open**
+Status: **done**
 
 | ID           | Task                                                                             | Status | Notes / Report                                                                                                    |
 | :----------- | :------------------------------------------------------------------------------- | :----- | :---------------------------------------------------------------------------------------------------------------- |
@@ -61,10 +61,11 @@ Status: **open**
 | CORE-004.1   | Implement strict energy conservation checker ($\le 10^{-5}\text{ kWh}$)          | `done` | Hourly residual + cumulative drift tolerance [D-21]                                                               |
 | CORE-004.2   | Implement battery boundary validator ($0 \le \text{SoC} \le \text{Cap}$, C-rate) | `done` | Physical bounds, min SoC floor, C-rate limits, mutual exclusivity                                                 |
 | CORE-004.3   | Build shared golden fixture runner for sub-model validation                      | `done` | 48h reference fixture `create_golden_scenario()` + self-test                                                      |
-| **CORE-005** | **Baseline Engine Smoke Test (Phase 1 Exit Gate)**                               | `open` | Exit gate                                                                                                         |
-| CORE-005.1   | Implement grid-only, zero-solar, zero-battery simulation                         | `open` | Baseline engine                                                                                                   |
-| CORE-005.2   | Run 8,760-hour baseline through energy-balance test harness                      | `open` | Zero-leak test                                                                                                    |
-| CORE-005.3   | Generate baseline summary metrics (annual kWh, peak kW, base EUI)                | `open` | Baseline KPIs                                                                                                     |
+| **CORE-005** | **Baseline Engine Smoke Test (Phase 1 Exit Gate)**                               | `done` | [CORE-005-gemini-baseline-smoke-test.md](../reports/CORE-005-gemini-baseline-smoke-test.md) |
+| CORE-005.1   | Implement grid-only, zero-solar, zero-battery simulation                         | `done` | 8,760h continuous simulation `simulate_baseline` [D-22]                                                           |
+| CORE-005.2   | Run 8,760-hour baseline through energy-balance test harness                      | `done` | Zero residual, zero drift, negative control verified                                                              |
+| CORE-005.3   | Generate baseline summary metrics (annual kWh, peak kW, base EUI)                | `done` | 398,525 kWh/yr, 159.41 EUI, 124.44 kW peak, 2016 sensitivity                                                      |
+
 |              |                                                                                  |        |                                                                                                                   |
 
 ---
