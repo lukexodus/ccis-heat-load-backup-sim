@@ -29,6 +29,8 @@ Status: **done**
 | ARCH-002.2   | Create package directory layout (`src/ccis_sim/`, `tests/`)  | `done` | Scaffolding (subpackages, tests, data)                                                                    |
 | ARCH-002.3   | Configure linting, formatting, and pytest test harness       | `done` | Verification gate (pytest 10/10 passing)                                                                  |
 | ARCH-002.4   | Create and commit `docs/context/research-synthesis.md`       | `done` | [ARCH-002.4-gemini-research-synthesis-fixup.md](../reports/ARCH-002.4-gemini-research-synthesis-fixup.md) |
+| ARCH-002.5   | Windows interoperability & cross-platform script parity      | `done` | [ARCH-002.5-gemini-windows-interop.md](../reports/ARCH-002.5-gemini-windows-interop.md)                   |
+
 
 ---
 

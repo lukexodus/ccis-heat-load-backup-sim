@@ -142,4 +142,22 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** Zero-mean IEEE 754 floating-point rounding jitter across $N$ independent steps behaves as a 1D random walk with standard deviation $\sigma_N = \sqrt{N} \epsilon$. Scaling cumulative tolerance by $\sqrt{N}$ accommodates harmless numerical rounding while rigorously tripping on any systematic numerical leakage or bias (e.g. an uncorrected bias of $0.9 \times 10^{-5}\text{ kWh/hr}$ accumulates to $0.07884\text{ kWh}$, which is ~84× the allowable threshold, triggering an immediate failure).
 - **Affects:** `CORE-004`, `CORE-005`, `DEM-001`, `DEM-002`, `BAT-001`, `BAT-002`, `SOL-001`, `OUT-001`, `INT-001`, `INT-002`, `INT-003`.
 
+**[D-22]** Windows developer interoperability, script parity, and repository line-ending normalization locked.  
+- **Date / Session:** 2026-10-20  
+- **Decision:**  
+  1. Full cross-platform parity between Linux/macOS and Windows developer environments:
+     - Implemented native PowerShell (`.ps1`) scripts and Windows Command Prompt (`.bat`) wrappers for all repository automation tools: `apc-bundle` (`.bat`, `.ps1`), `task-worktree` (`.bat`, `.ps1`), `validate-report` (`.bat`, `.ps1`), and `manage-decisions` (`.bat`, `.ps1`).
+     - Batch wrappers invoke PowerShell with `-NoProfile -ExecutionPolicy Bypass -File` to prevent Windows execution policy restrictions from blocking developer workflows, and automatically auto-detect `pwsh` (PowerShell Core) or `powershell.exe` (Windows PowerShell).
+     - Python runners dynamically detect `py -3`, `python`, or `python3` across Windows environments.
+     - `task-worktree.sh` and `apc-bundle.sh` hardened with fallback detection for `python` on Windows Git Bash and GNU tree verification to avoid clashes with Windows `tree.com`.
+  2. Repository-wide line-ending normalization via `.gitattributes`:
+     - Global default `* text=auto eol=lf`.
+     - Explicit `*.bat` and `*.cmd` locked to `eol=crlf` to prevent CMD parser anomalies.
+     - Shell scripts `*.sh` and PowerShell `*.ps1` locked to `eol=lf` to prevent syntax corruption in WSL/Git Bash/Linux CI.
+     - Source files (`*.py`), documentation (`*.md`), and data files (`*.csv`, `*.toml`, `*.json`) locked to `eol=lf`.
+     - Binary asset patterns explicitly flagged as `binary`.
+- **Reasoning:** Accommodates Windows teammates without requiring WSL, third-party shells, or manual line-ending conversions, while ensuring Git does not introduce CRLF corruption into Linux/WSL environments.  
+- **Affects:** All developers, `scripts/`, `.gitattributes`, `docs/guide/COLLABORATOR-GUIDE.md`.
+
+
 
