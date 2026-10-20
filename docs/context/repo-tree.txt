@@ -62,20 +62,13 @@
 │   │   ├── CORE-003.5-gemini-equipment-totals-fixup.md
 │   │   ├── CORE-003-gemini-equipment-mock-bills.md
 │   │   ├── CORE-004-gemini-conservation-harness.md
+│   │   ├── CORE-005-gemini-baseline-smoke-test.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
 │       └── status.md
 ├── patch
-│   ├── ARCH-001-gemini-lock-conceptual-model.patch
-│   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
-│   ├── ARCH-002-gemini-repo-scaffolding.patch
-│   ├── CORE-001.5-gemini-decision-gap-fixup.patch
-│   ├── CORE-001-gemini-domain-models.patch
-│   ├── CORE-002-gemini-weather-ingestion.patch
-│   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
-│   ├── CORE-003-gemini-equipment-mock-bills.patch
-│   └── CORE-004-gemini-conservation-harness.patch
+│   └── CORE-005-gemini-baseline-smoke-test.patch
 ├── scripts
 │   ├── apc-bundle.bat
 │   ├── apc-bundle.ps1
@@ -106,6 +99,7 @@
 │       │   ├── __init__.py
 │       │   └── mock_bills.py
 │       ├── integration
+│       │   ├── baseline.py
 │       │   └── __init__.py
 │       ├── outage
 │       │   └── __init__.py
@@ -123,6 +117,7 @@
 │   ├── fixtures
 │   │   └── README.md
 │   ├── __init__.py
+│   ├── test_baseline_smoke.py
 │   ├── test_conservation_checker.py
 │   ├── test_core_models.py
 │   ├── test_equipment_audit.py
