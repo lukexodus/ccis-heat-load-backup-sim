@@ -507,3 +507,78 @@ def test_hourly_record_signed_residual_property():
     assert abs(rec_neg.signed_residual_kwh - (-3.0)) < 1e-9
     assert abs(rec_neg.energy_balance_residual_kwh - 3.0) < 1e-9
 
+
+# =========================================================================
+# CORE-006: Battery Idle-Loss Allowance and Cumulative Continuity Tests [D-26]
+# =========================================================================
+
+
+def test_soc_continuity_idle_loss_passes():
+    """Verify that a time series with physical idle losses within allowance passes continuity."""
+    bat = Battery(capacity_kwh=100.0, self_discharge_pct_per_month=2.0, tare_loss_kw=0.01)
+    # Allowed idle loss per hour = (100 * 0.02 / 730) + 0.01 = 0.002740 + 0.01 = 0.012740 kWh
+    r1 = _make_dummy_record(hour=1, soc=50.0 - 0.008)  # Loses 0.008 kWh (< 0.012740)
+    r2 = _make_dummy_record(hour=2, soc=50.0 - 0.016)  # Loses another 0.008 kWh
+
+    violations = validate_battery_boundaries([r1, r2], battery=bat, initial_soc_kwh=50.0)
+    assert len(violations) == 0
+
+
+def test_soc_continuity_excessive_idle_loss_fails():
+    """Verify that a battery losing SoC faster than maximum allowable idle loss trips SOC_CONTINUITY."""
+    bat = Battery(capacity_kwh=100.0, self_discharge_pct_per_month=2.0, tare_loss_kw=0.0)
+    # Allowed idle loss per hour = (100 * 0.02 / 730) = 0.002740 kWh
+    r1 = _make_dummy_record(hour=1, soc=50.0 - 0.010)  # Loses 0.010 kWh (> 0.002740 + 1e-5)
+
+    violations = validate_battery_boundaries([r1], battery=bat, initial_soc_kwh=50.0)
+    cont_violations = [v for v in violations if v.violation_type == ViolationType.SOC_CONTINUITY]
+    assert len(cont_violations) == 1
+    assert cont_violations[0].violation_type == ViolationType.SOC_CONTINUITY
+    assert cont_violations[0].hour == 1
+
+
+def test_soc_continuity_higher_than_ideal_recursion_fails():
+    """Verify that an unexpected SoC increase without charging energy flow trips SOC_CONTINUITY."""
+    bat = Battery(capacity_kwh=100.0, self_discharge_pct_per_month=2.0)
+    # SoC increases from 50.0 to 50.05 kWh with zero charge flow
+    r1 = _make_dummy_record(hour=1, soc=50.05)
+
+    violations = validate_battery_boundaries([r1], battery=bat, initial_soc_kwh=50.0)
+    cont_violations = [v for v in violations if v.violation_type == ViolationType.SOC_CONTINUITY]
+    assert len(cont_violations) == 1
+    assert cont_violations[0].violation_type == ViolationType.SOC_CONTINUITY
+    assert cont_violations[0].hour == 1
+
+
+def test_soc_cumulative_drift_bias_trips():
+    """Verify that a 0.9e-5 kWh/hr biased SoC series (zero idle allowance) passes hourly but trips cumulative check."""
+    bat = Battery(capacity_kwh=100.0, self_discharge_pct_per_month=0.0, tare_loss_kw=0.0)
+    n_hours = 8760
+    records = []
+    current_soc = 50.0
+    bias_per_hour = 0.9e-5  # <= 1e-5 hourly tolerance, so hourly check passes
+
+    for h in range(1, n_hours + 1):
+        # Without charging or discharging, SoC drops by bias_per_hour
+        current_soc -= bias_per_hour
+        rec = _make_dummy_record(
+            hour=h,
+            soc=current_soc,
+            bat_chg=0.0,
+            bat_dis=0.0,
+        )
+        records.append(rec)
+
+    violations = validate_battery_boundaries(records, battery=bat, initial_soc_kwh=50.0)
+
+    # Hourly violations must be 0
+    hourly_violations = [v for v in violations if v.violation_type == ViolationType.SOC_CONTINUITY]
+    assert len(hourly_violations) == 0
+
+    # Cumulative drift violation must be present
+    cum_violations = [v for v in violations if v.violation_type == ViolationType.SOC_CUMULATIVE_DRIFT]
+    assert len(cum_violations) == 1
+    assert cum_violations[0].violation_type == ViolationType.SOC_CUMULATIVE_DRIFT
+    assert abs(cum_violations[0].actual_value - (8760 * bias_per_hour)) < 1e-6
+
+

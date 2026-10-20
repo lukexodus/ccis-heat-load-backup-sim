@@ -28,6 +28,7 @@ class ViolationType(str, Enum):
     DISCHARGE_RATE_EXCEEDED = "discharge_rate_exceeded"
     SIMULTANEOUS_CHARGE_DISCHARGE = "simultaneous_charge_discharge"
     SOC_CONTINUITY = "soc_continuity"
+    SOC_CUMULATIVE_DRIFT = "soc_cumulative_drift"
     NON_FINITE_VALUE = "non_finite_value"
     SOLAR_FLOW_BALANCE = "solar_flow_balance"
     DEMAND_FLOW_BALANCE = "demand_flow_balance"
@@ -400,6 +401,18 @@ def validate_battery_boundaries(
     eta_chg = math.sqrt(battery.round_trip_efficiency)
     eta_dis = math.sqrt(battery.round_trip_efficiency)
 
+    # Maximum allowable idle loss per hour per [D-26] (self-discharge + tare)
+    HOURS_PER_MONTH = 730.0  # 8,760 h / 12 months per [D-26]
+    self_discharge_loss_per_hour = (
+        battery.capacity_kwh * (battery.self_discharge_pct_per_month / 100.0) / HOURS_PER_MONTH
+    )
+    max_idle_loss_per_hour = self_discharge_loss_per_hour + battery.tare_loss_kw
+    max_idle_loss_step = max_idle_loss_per_hour * delta_t_hours
+
+    cum_soc_diff = 0.0
+    total_allowed_idle_loss = 0.0
+    evaluated_continuity_steps = 0
+
     for idx, r in enumerate(records):
         # 1. Non-finite values guard
         has_non_finite = False
@@ -522,7 +535,7 @@ def validate_battery_boundaries(
                 )
             )
 
-        # 8. Hour-to-hour SoC continuity check
+        # 8. Hour-to-hour SoC continuity check (one-sided with idle allowance per [D-26])
         if battery.capacity_kwh > 0.0:
             if idx == 0:
                 if initial_soc_kwh is not None:
@@ -531,8 +544,12 @@ def validate_battery_boundaries(
                         + eta_chg * r.battery_charge_kwh
                         - (r.battery_discharge_kwh / eta_dis)
                     )
-                    soc_diff = abs(r.battery_soc_kwh - expected_soc)
-                    if soc_diff > tolerance:
+                    diff = expected_soc - r.battery_soc_kwh
+                    evaluated_continuity_steps += 1
+                    cum_soc_diff += diff
+                    total_allowed_idle_loss += max_idle_loss_step
+
+                    if diff < -tolerance:
                         violations.append(
                             BatteryBoundaryViolation(
                                 hour=r.hour,
@@ -541,9 +558,24 @@ def validate_battery_boundaries(
                                 actual_value=r.battery_soc_kwh,
                                 limit_value=expected_soc,
                                 details=(
-                                    f"Hour {r.hour} SoC ({r.battery_soc_kwh:.6f} kWh) does not match expected continuity "
+                                    f"Hour {r.hour} SoC ({r.battery_soc_kwh:.6f} kWh) is higher than ideal recursion "
                                     f"from initial SoC ({initial_soc_kwh:.6f} kWh) [expected {expected_soc:.6f} kWh, "
-                                    f"delta={soc_diff:.6e} kWh > tol {tolerance:.6e} kWh]."
+                                    f"delta={-diff:.6e} kWh > tol {tolerance:.6e} kWh]."
+                                ),
+                            )
+                        )
+                    elif diff > max_idle_loss_step + tolerance:
+                        violations.append(
+                            BatteryBoundaryViolation(
+                                hour=r.hour,
+                                timestamp=r.timestamp,
+                                violation_type=ViolationType.SOC_CONTINUITY,
+                                actual_value=r.battery_soc_kwh,
+                                limit_value=expected_soc,
+                                details=(
+                                    f"Hour {r.hour} SoC loss ({diff:.6f} kWh) exceeds maximum allowable idle loss "
+                                    f"({max_idle_loss_step:.6f} kWh) from initial SoC [excess={diff - max_idle_loss_step:.6e} kWh "
+                                    f"> tol {tolerance:.6e} kWh]."
                                 ),
                             )
                         )
@@ -554,8 +586,12 @@ def validate_battery_boundaries(
                     + eta_chg * r.battery_charge_kwh
                     - (r.battery_discharge_kwh / eta_dis)
                 )
-                soc_diff = abs(r.battery_soc_kwh - expected_soc)
-                if soc_diff > tolerance:
+                diff = expected_soc - r.battery_soc_kwh
+                evaluated_continuity_steps += 1
+                cum_soc_diff += diff
+                total_allowed_idle_loss += max_idle_loss_step
+
+                if diff < -tolerance:
                     violations.append(
                         BatteryBoundaryViolation(
                             hour=r.hour,
@@ -564,12 +600,60 @@ def validate_battery_boundaries(
                             actual_value=r.battery_soc_kwh,
                             limit_value=expected_soc,
                             details=(
-                                f"Hour {r.hour} SoC ({r.battery_soc_kwh:.6f} kWh) does not match expected continuity "
+                                f"Hour {r.hour} SoC ({r.battery_soc_kwh:.6f} kWh) is higher than ideal recursion "
                                 f"from Hour {prev.hour} ({prev.battery_soc_kwh:.6f} kWh) [expected {expected_soc:.6f} kWh, "
-                                f"delta={soc_diff:.6e} kWh > tol {tolerance:.6e} kWh]."
+                                f"delta={-diff:.6e} kWh > tol {tolerance:.6e} kWh]."
                             ),
                         )
                     )
+                elif diff > max_idle_loss_step + tolerance:
+                    violations.append(
+                        BatteryBoundaryViolation(
+                            hour=r.hour,
+                            timestamp=r.timestamp,
+                            violation_type=ViolationType.SOC_CONTINUITY,
+                            actual_value=r.battery_soc_kwh,
+                            limit_value=expected_soc,
+                            details=(
+                                f"Hour {r.hour} SoC loss ({diff:.6f} kWh) exceeds maximum allowable idle loss "
+                                f"({max_idle_loss_step:.6f} kWh) from Hour {prev.hour} [excess={diff - max_idle_loss_step:.6e} kWh "
+                                f"> tol {tolerance:.6e} kWh]."
+                            ),
+                        )
+                    )
+
+    # 9. Cumulative SoC continuity drift check per [D-26]
+    if battery.capacity_kwh > 0.0 and evaluated_continuity_steps > 0:
+        soc_cum_tol = compute_cumulative_tolerance(evaluated_continuity_steps, tolerance)
+        if cum_soc_diff < -soc_cum_tol:
+            violations.append(
+                BatteryBoundaryViolation(
+                    hour=records[-1].hour if records else 0,
+                    timestamp=records[-1].timestamp if records else "",
+                    violation_type=ViolationType.SOC_CUMULATIVE_DRIFT,
+                    actual_value=cum_soc_diff,
+                    limit_value=-soc_cum_tol,
+                    details=(
+                        f"Cumulative SoC gain ({-cum_soc_diff:.6e} kWh) exceeded cumulative tolerance "
+                        f"({soc_cum_tol:.6e} kWh) across {evaluated_continuity_steps} evaluated hours."
+                    ),
+                )
+            )
+        elif cum_soc_diff > total_allowed_idle_loss + soc_cum_tol:
+            violations.append(
+                BatteryBoundaryViolation(
+                    hour=records[-1].hour if records else 0,
+                    timestamp=records[-1].timestamp if records else "",
+                    violation_type=ViolationType.SOC_CUMULATIVE_DRIFT,
+                    actual_value=cum_soc_diff,
+                    limit_value=total_allowed_idle_loss + soc_cum_tol,
+                    details=(
+                        f"Cumulative SoC drift ({cum_soc_diff:.6e} kWh) exceeded total allowed idle loss "
+                        f"({total_allowed_idle_loss:.6e} kWh) plus cumulative tolerance ({soc_cum_tol:.6e} kWh) "
+                        f"[limit={total_allowed_idle_loss + soc_cum_tol:.6e} kWh] across {evaluated_continuity_steps} evaluated hours."
+                    ),
+                )
+            )
 
     return violations
 

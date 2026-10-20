@@ -1,5 +1,12 @@
 """Core domain models, interface protocols, and conservation invariants."""
 
+from ccis_sim.core.interfaces import (
+    BatteryStepResult,
+    OccupancySchedule,
+    OutageSchedule,
+    ShedResult,
+    TieredDemand,
+)
 from ccis_sim.core.models import (
     Battery,
     Building,
@@ -27,14 +34,19 @@ from ccis_sim.core.verification import (
 __all__ = [
     "Battery",
     "BatteryBoundaryViolation",
+    "BatteryStepResult",
     "Building",
     "ConservationViolation",
     "HourlyRecord",
     "LoadTier",
+    "OccupancySchedule",
     "OutageEvent",
+    "OutageSchedule",
     "OutageType",
     "RoomInventory",
+    "ShedResult",
     "SolarArray",
+    "TieredDemand",
     "VerificationReport",
     "ViolationType",
     "assert_simulation_valid",

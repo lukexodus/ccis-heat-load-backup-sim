@@ -211,6 +211,20 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** Closes potential simulation verification blind spots (energy teleportation, silent NaN propagation, sub-flow leakage) before parallel Phase 2 model tracks commence.
 - **Affects:** `CORE-004`, `CORE-005`, `DEM-001`, `DEM-002`, `BAT-001`, `BAT-002`, `SOL-001`, `SOL-002`, `OUT-001`, `OUT-002`, `INT-001`, `INT-002`, `INT-003`.
 
+**[D-26]** Phase 2 Interface Contracts, Battery Idle-Loss Convention, and Cumulative Continuity Drift Invariant.  
+- **Date / Session:** 2026-10-20  
+- **Decision:**  
+  1. **Phase 2 Interface Contracts:** Formalized canonical shared data structures in `src/ccis_sim/core/interfaces.py` (`TieredDemand`, `OccupancySchedule`, `OutageSchedule`, `BatteryStepResult`, `ShedResult`) and locked function signatures and cross-track integration contracts in `docs/context/phase2-interface-contract.md`.
+  2. **Battery Idle-Loss Attributes:** Added `self_discharge_pct_per_month: float = 2.0` (ambient monthly self-discharge) and `tare_loss_kw: float = 0.0` (inverter/BMS standby loss) to the `Battery` dataclass. Both attributes are validated non-negative.
+  3. **SoC-Side Standby Loss Assumption:** Tare loss and self-discharge are modeled strictly as **SoC-side** standby losses (electrochemical and internal dissipation). This ensures internal dissipation reduces stored chemical State-of-Charge without introducing phantom AC-side electrical demand on the microgrid bus, preserving exact AC bus energy balance.
+  4. **One-Sided Continuity with Idle Allowance:** Updated hour-to-hour battery State-of-Charge continuity verification to be one-sided with a physical idle-loss allowance:
+     $$0 - \epsilon \le \text{SoC}_{t, \text{ideal}} - \text{SoC}_t \le \Delta E_{\text{idle, max}} + \epsilon$$
+     where $\Delta E_{\text{idle, max}} = \left(\frac{C_{\text{bat}} \cdot r_{\text{self}}}{730} + P_{\text{tare}}\right) \Delta t$, based on 730 hours per nominal month ($8,760\text{ h} / 12$). Stored chemical SoC may never exceed the lossless ideal recursion ($SoC_t \le SoC_{t, \text{ideal}} + \epsilon$). When idle loss parameters are zero, the formulation collapses identically to the bilateral tolerance of [D-25].
+  5. **Cumulative Continuity Drift Invariant:** Accumulated step differences $\sum (\text{SoC}_{\text{ideal}} - \text{SoC})$ across $N$ evaluated hours must not exceed total allowed idle loss plus the statistical cumulative tolerance $\max(\epsilon, \sqrt{N}\epsilon)$ per [D-21]. Unaccounted cumulative leakage or upward drift trips `ViolationType.SOC_CUMULATIVE_DRIFT`.
+- **Reasoning:** Establishes unambiguous API contracts across all eight parallel Phase 2 sub-models to prevent divergence, while closing physical verification blind spots for standby battery self-discharge and cumulative SoC drift prior to BAT-001/002.
+- **Affects:** `CORE-006`, `DEM-001`, `DEM-002`, `SOL-001`, `SOL-002`, `BAT-001`, `BAT-002`, `OUT-001`, `OUT-002`, `INT-001`, `INT-003`.
+
+
 
 
 
