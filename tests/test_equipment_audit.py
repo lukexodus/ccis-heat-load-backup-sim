@@ -173,3 +173,15 @@ def test_load_nonexistent_file_raises():
     """Verify loading a nonexistent CSV file raises FileNotFoundError."""
     with pytest.raises(FileNotFoundError):
         EquipmentAudit.load_from_csv("data/fixtures/non_existent_file.csv")
+
+
+def test_exact_connected_capacity_reconciliation():
+    """Verify exact reconciled connected capacities per decision [D-19]."""
+    audit = EquipmentAudit.load_from_csv(AUDIT_CSV_PATH)
+    tot_kw = audit.total_connected_kw()
+    by_tier = audit.tier_breakdown_kw()
+
+    assert tot_kw == pytest.approx(147.805, abs=1e-3)
+    assert by_tier[1] == pytest.approx(1.215, abs=1e-3)
+    assert by_tier[2] == pytest.approx(15.360, abs=1e-3)
+    assert by_tier[3] == pytest.approx(131.230, abs=1e-3)

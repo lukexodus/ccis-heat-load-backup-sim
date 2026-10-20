@@ -46,6 +46,7 @@
 │   │   ├── ARCH-002-gemini-repo-scaffolding.md
 │   │   ├── CORE-001.5-gemini-decision-gap-fixup.md
 │   │   ├── CORE-001-gemini-domain-models.md
+│   │   ├── CORE-003.5-gemini-equipment-totals-fixup.md
 │   │   ├── CORE-003-gemini-equipment-mock-bills.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
@@ -57,6 +58,7 @@
 │   ├── ARCH-002-gemini-repo-scaffolding.patch
 │   ├── CORE-001.5-gemini-decision-gap-fixup.patch
 │   ├── CORE-001-gemini-domain-models.patch
+│   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
 │   └── CORE-003-gemini-equipment-mock-bills.patch
 ├── scripts
 │   ├── apc-bundle.sh
