@@ -116,11 +116,11 @@ Status: **open**
 | OUT-001.2   | Implement Lognormal duration sampler (Normal: $\mu=1.2, \sigma=0.8$; Typhoon: $\mu=2.3, \sigma=1.0$) | `open` | Duration sampler   |
 | OUT-001.3   | Implement typhoon multi-day solar depression (20–30% GHI for 3–5 days)                               | `open` | Storm coupling     |
 | OUT-001.4   | Add Kolmogorov-Smirnov distribution goodness-of-fit validator                                        | `open` | Distribution fit   |
-| **OUT-002** | **Priority-Based Tiered Load Shedding Controller**                                                   | `open` |                    |
-| OUT-002.1   | Implement load categorization: Tier 1 (2%), Tier 2 (18%), Tier 3 (80%)                               | `open` | Tier mapping       |
-| OUT-002.2   | Build automated shedding logic on grid failure (instant Tier 3 drop)                                 | `open` | Shedding logic     |
-| OUT-002.3   | Implement battery low-SoC Tier 2 shedding rule (<20% SoC)                                            | `open` | Second-tier shed   |
-| OUT-002.4   | Track unserved energy (kWh) and outage hours covered per tier                                        | `open` | Unserved metrics   |
+| **OUT-002** | **Priority-Based Tiered Load Shedding Controller**                                                   | `done` | [Report](docs/reports/OUT-002-gemini-load-shedding.md) |
+| OUT-002.1   | Implement load categorization: Tier 1 (2%), Tier 2 (18%), Tier 3 (80%)                               | `done` | Tier mapping helper |
+| OUT-002.2   | Build automated shedding logic on grid failure (instant Tier 3 drop)                                 | `done` | Shedding logic     |
+| OUT-002.3   | Implement battery low-SoC Tier 2 shedding rule (<20% SoC)                                            | `done` | Second-tier shed   |
+| OUT-002.4   | Track unserved energy (kWh) and outage hours covered per tier                                        | `done` | Unserved metrics   |
 
 ---
 

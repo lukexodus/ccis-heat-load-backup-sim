@@ -224,7 +224,22 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** Establishes unambiguous API contracts across all eight parallel Phase 2 sub-models to prevent divergence, while closing physical verification blind spots for standby battery self-discharge and cumulative SoC drift prior to BAT-001/002.
 - **Affects:** `CORE-006`, `DEM-001`, `DEM-002`, `SOL-001`, `SOL-002`, `BAT-001`, `BAT-002`, `OUT-001`, `OUT-002`, `INT-001`, `INT-003`.
 
-
-
-
-
+**[D-34]** Priority-Based Tiered Load Shedding Policy, Low-SoC Threshold Decoupling, and Unserved Energy Tracking Conventions.  
+- **Date / Session:** 2026-10-20  
+- **Decision:**  
+  1. **Hierarchical Shedding Policy (`shed_for_hour`):**
+     - When utility grid is energized (`grid_available = True`), all tiers are fully served (`active_tier = LoadTier.TIER_3_SHEDDABLE`, `served = demand`, `unserved = (0, 0, 0)`).
+     - Upon utility failure (`grid_available = False`), Tier 3 discretionary loads (HVAC, non-essential PC labs) are shed immediately to preserve microgrid reserves per [D-10].
+     - When battery State-of-Charge falls strictly below the low-SoC threshold (`soc_kwh < tier2_shed_soc_fraction * capacity_kwh`), Tier 2 essential loads (faculty rooms, admin, servers/smart rooms) are also shed (`active_tier = LoadTier.TIER_1_CRITICAL`), dedicating remaining battery capacity exclusively to Tier 1 life-safety. At or above threshold, Tier 2 is served (`active_tier = LoadTier.TIER_2_ESSENTIAL`).
+     - Per-tier energy conservation invariant strictly holds across all states: $\text{served}_i + \text{unserved}_i = \text{demand}_i$ for every tier $i \in \{1, 2, 3\}$.
+  2. **Parameter Decoupling from Emergency Reserve:**
+     - The 20% low-SoC Tier 2 shedding threshold (`tier2_shed_soc_fraction: float = 0.20`) is implemented as an explicit parameter decoupled from `Battery.emergency_reserve_pct` ([D-17]).
+     - `tier2_shed_soc_fraction` dictates the operational load-shedding control policy (when to drop Tier 2 during an outage), whereas `emergency_reserve_pct` dictates the battery dispatch scheduling cushion (preventing normal daily cycling from eating into outage energy buffer). Both default to 0.20, but keeping them decoupled enables independent sensitivity sweeps in `INT-001` and `INT-002`.
+  3. **Reverse-Priority Shortfall Allocation (`UnservedTracker`):**
+     - When physical battery discharge capacity cannot deliver the full policy-served demand during an outage (`battery_shortfall_kwh > 0.0`), the delivery deficit is allocated strictly in reverse-priority order: cutting into Tier 3 served first, then Tier 2, and finally Tier 1.
+     - Outage hours in which each tier was fully served (100% service with zero unserved energy) and cumulative unserved kWh per tier are tracked continuously.
+  4. **Audit Tier Share Discrepancy Reporting:**
+     - The audited equipment connected load (`data/fixtures/equipment-audit-ccis.csv`) yields 147.805 kW total: Tier 1 = 1.215 kW (~0.82%), Tier 2 = 15.360 kW (~10.39%), Tier 3 = 131.230 kW (~88.79%).
+     - In accordance with the prompt specification, this discrepancy from D-10's nominal 2/18/80 split is explicitly exposed via `compute_tier_audit_shares` and reported as an audit reality rather than forced to match nominal assumptions.
+- **Reasoning:** Formalizes exact deterministic load-shedding dispatch rules and energy accounting, guaranteeing conservation and clean policy decoupling ahead of full system integration.
+- **Affects:** `OUT-002`, `INT-001`, `INT-002`, `DEC-002`.
