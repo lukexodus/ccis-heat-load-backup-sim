@@ -30,11 +30,13 @@ No domain models, test logic, or decision log entries were altered.
    - Prepend an Archival Provenance Notice banner clarifying that early draft concepts (e.g., real electricity bills, daily time step, simplified battery model) are superseded by `[D-01]`–`[D-18]`.
 4. `scripts/validate-report.py`:
    - Removed check #6 that previously enforced patch file presence in `patch/`, conforming to the APC specification that patch files are output formats for diff relay rather than tracked repository artifacts.
-5. `patch/CORE-001.5-gemini-decision-gap-fixup.patch`:
-   - Removed from repository git tracking via `git rm`.
-6. `docs/tasks/status.md`:
+5. `.gitignore`:
+   - Added `patch/*.patch` rule to prevent future patch files from being accidentally staged or tracked in git commits.
+6. `patch/*.patch`:
+   - Removed from repository git tracking via `git rm --cached`, ensuring that `git ls-files patch/` contains only `.gitkeep`.
+7. `docs/tasks/status.md`:
    - Appended `CORE-001.6` tracking row under `CORE-001` block, marked `done`.
-7. `docs/prompts/CORE-001.6-PROCESS-FIXUP-PROMPT.md`:
+8. `docs/prompts/CORE-001.6-PROCESS-FIXUP-PROMPT.md`:
    - Standardized prompt filename from `CORE-001.6-PROCESS-FIXUP-standalone-prompt.md`.
 
 ---

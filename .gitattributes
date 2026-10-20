@@ -1,0 +1,41 @@
+# .gitattributes — Cross-platform line ending normalization and file attributes
+
+# Default: normalize all text files to LF in git repository
+* text=auto eol=lf
+
+# Linux/Unix shell scripts MUST use LF line endings
+*.sh text eol=lf
+
+# Windows batch files MUST use CRLF line endings
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# PowerShell scripts (can be LF, git normalizes to LF)
+*.ps1 text eol=lf
+
+# Python source files
+*.py text eol=lf
+
+# Documentation and text files
+*.md text eol=lf
+*.txt text eol=lf
+*.rst text eol=lf
+
+# Configuration and data files
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+*.patch text eol=lf
+
+# Binary file types
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.tar.gz binary
+*.zip binary
+*.parquet binary

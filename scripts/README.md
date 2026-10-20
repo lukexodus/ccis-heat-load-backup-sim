@@ -1,29 +1,47 @@
 # Helper Scripts Guide — CCIS Heat, Load and Backup Power Simulation
 
 This directory contains automation utilities that enforce the APC + Local Agent operational protocol.
+All scripts provide dual **Linux/macOS** (`.sh` / Python) and **Windows** (`.bat` / `.ps1`) support with 100% feature parity.
 
 ---
 
-## 1. `apc-bundle.sh` — Context Packaging Utility
+## Quick Reference by Platform
+
+| Utility | Linux / macOS / Git Bash | Windows Command Prompt (CMD) | Windows PowerShell |
+| :--- | :--- | :--- | :--- |
+| **APC Bundle** | `./scripts/apc-bundle.sh` | `.\scripts\apc-bundle.bat` | `.\scripts\apc-bundle.ps1` |
+| **Task Worktree** | `./scripts/task-worktree.sh` | `.\scripts\task-worktree.bat` | `.\scripts\task-worktree.ps1` |
+| **Validate Report** | `./scripts/validate-report.py` | `.\scripts\validate-report.bat` | `.\scripts\validate-report.ps1` |
+| **Manage Decisions** | `./scripts/manage-decisions.py` | `.\scripts\manage-decisions.bat` | `.\scripts\manage-decisions.ps1` |
+
+---
+
+## 1. `apc-bundle` (`apc-bundle.sh` / `apc-bundle.bat` / `apc-bundle.ps1`) — Context Packaging Utility
 
 Packages repository files into self-describing, verifiable `.tar.gz` archives for upload to the external APC AI session.
 
 ### Common Commands:
 ```bash
-# Preview default 'core' bundle files and sizes
+# Linux / macOS:
 ./scripts/apc-bundle.sh --list
-
-# Estimate token count of the bundle
 ./scripts/apc-bundle.sh --tokens
-
-# Package the core bundle
-./scripts/apc-bundle.sh
-
-# Package the dev bundle with an ad hoc file
+./scripts/apc-bundle.sh core
 ./scripts/apc-bundle.sh dev --add path/to/extra-file.py
-
-# Package including recent task reports
 ./scripts/apc-bundle.sh --with-reports
+
+# Windows CMD:
+.\scripts\apc-bundle.bat --list
+.\scripts\apc-bundle.bat --tokens
+.\scripts\apc-bundle.bat core
+.\scripts\apc-bundle.bat dev --add path\to\extra-file.py
+.\scripts\apc-bundle.bat --with-reports
+
+# Windows PowerShell:
+.\scripts\apc-bundle.ps1 -List
+.\scripts\apc-bundle.ps1 -Tokens
+.\scripts\apc-bundle.ps1 core
+.\scripts\apc-bundle.ps1 dev -Add path/to/extra-file.py
+.\scripts\apc-bundle.ps1 -WithReports
 ```
 
 ### Safety Features:
@@ -34,66 +52,84 @@ Packages repository files into self-describing, verifiable `.tar.gz` archives fo
 
 ---
 
-## 2. `task-worktree.sh` — Worktree Lifecycle Helper
+## 2. `task-worktree` (`task-worktree.sh` / `task-worktree.bat` / `task-worktree.ps1`) — Worktree Lifecycle Helper
 
 Enforces worktree isolation when running multiple local agents or tasks in parallel.
 
 ### Common Commands:
 ```bash
-# Create an isolated task worktree and branch
+# Linux / macOS:
 ./scripts/task-worktree.sh start CORE-001
-
-# Inspect active worktrees
 ./scripts/task-worktree.sh list
-
-# Review status inside a worktree
 ./scripts/task-worktree.sh status CORE-001
-
-# Generate clean git diff from a worktree
 ./scripts/task-worktree.sh diff CORE-001
-
-# Validate worktree state before operator commit
 ./scripts/task-worktree.sh handoff CORE-001
-
-# Clean up worktree after merge
 ./scripts/task-worktree.sh remove CORE-001
+
+# Windows CMD:
+.\scripts\task-worktree.bat start CORE-001
+.\scripts\task-worktree.bat list
+.\scripts\task-worktree.bat status CORE-001
+.\scripts\task-worktree.bat diff CORE-001
+.\scripts\task-worktree.bat handoff CORE-001
+.\scripts\task-worktree.bat remove CORE-001
+
+# Windows PowerShell:
+.\scripts\task-worktree.ps1 start CORE-001
+.\scripts\task-worktree.ps1 list
+.\scripts\task-worktree.ps1 status CORE-001
+.\scripts\task-worktree.ps1 diff CORE-001
+.\scripts\task-worktree.ps1 handoff CORE-001
+.\scripts\task-worktree.ps1 remove CORE-001
 ```
 
 ---
 
-## 3. `validate-report.py` — Report Linter & Verification
+## 3. `validate-report` (`validate-report.py` / `validate-report.bat` / `validate-report.ps1`) — Report Linter & Verification
 
 Verifies that local agent task reports conform to the required schema, match `docs/tasks/status.md`, and contain valid unified git diffs.
 
 ### Common Commands:
 ```bash
-# Validate the most recently written report:
+# Linux / macOS:
 ./scripts/validate-report.py
-
-# Validate a specific report file:
 ./scripts/validate-report.py docs/reports/CORE-001-agent-title.md
-
-# Validate all reports in docs/reports/:
 ./scripts/validate-report.py --all
+
+# Windows CMD:
+.\scripts\validate-report.bat
+.\scripts\validate-report.bat docs\reports\CORE-001-agent-title.md
+.\scripts\validate-report.bat --all
+
+# Windows PowerShell:
+.\scripts\validate-report.ps1
+.\scripts\validate-report.ps1 docs/reports/CORE-001-agent-title.md
+.\scripts\validate-report.ps1 --all
 ```
 
 ---
 
-## 4. `manage-decisions.py` — Decision ID Allocator & Log Inspector
+## 4. `manage-decisions` (`manage-decisions.py` / `manage-decisions.bat` / `manage-decisions.ps1`) — Decision ID Allocator & Log Inspector
 
 Prevents decision ID collisions when multiple parallel worktrees operate concurrently.
 
 ### Common Commands:
 ```bash
-# Show next available Decision ID:
+# Linux / macOS:
 ./scripts/manage-decisions.py next
-
-# List all recorded decision IDs:
 ./scripts/manage-decisions.py list
-
-# Check if a specific ID is available:
 ./scripts/manage-decisions.py check --id 42
-
-# Reserve an ID in decision-log.md for an upcoming task:
 ./scripts/manage-decisions.py reserve --title "Select PostgreSQL over SQLite"
+
+# Windows CMD:
+.\scripts\manage-decisions.bat next
+.\scripts\manage-decisions.bat list
+.\scripts\manage-decisions.bat check --id 42
+.\scripts\manage-decisions.bat reserve --title "Select PostgreSQL over SQLite"
+
+# Windows PowerShell:
+.\scripts\manage-decisions.ps1 next
+.\scripts\manage-decisions.ps1 list
+.\scripts\manage-decisions.ps1 check --id 42
+.\scripts\manage-decisions.ps1 reserve --title "Select PostgreSQL over SQLite"
 ```

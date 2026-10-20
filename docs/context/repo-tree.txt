@@ -48,6 +48,7 @@
 │   │   ├── CORE-003.5-FIXUP-PROMPT.md
 │   │   ├── CORE-003-PROMPT.md
 │   │   ├── CORE-004-PROMPT.md
+│   │   ├── CORE-005-PROMPT.md
 │   │   ├── STANDALONE-ADOPTION-PROMPT.md
 │   │   └── STANDALONE-PROMPT-TEMPLATE.md
 │   ├── reports
@@ -76,10 +77,18 @@
 │   ├── CORE-003-gemini-equipment-mock-bills.patch
 │   └── CORE-004-gemini-conservation-harness.patch
 ├── scripts
+│   ├── apc-bundle.bat
+│   ├── apc-bundle.ps1
 │   ├── apc-bundle.sh
+│   ├── manage-decisions.bat
+│   ├── manage-decisions.ps1
 │   ├── manage-decisions.py
 │   ├── README.md
+│   ├── task-worktree.bat
+│   ├── task-worktree.ps1
 │   ├── task-worktree.sh
+│   ├── validate-report.bat
+│   ├── validate-report.ps1
 │   └── validate-report.py
 ├── src
 │   └── ccis_sim

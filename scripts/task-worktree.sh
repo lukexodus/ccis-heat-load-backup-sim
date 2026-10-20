@@ -120,7 +120,11 @@ handoff)
     echo "  [OK] Found report file: $report_file"
     if [[ -f "$TARGET_DIR/scripts/validate-report.py" ]]; then
       echo "  Running report validator..."
-      python3 "$TARGET_DIR/scripts/validate-report.py" "$report_file" --repo-root "$TARGET_DIR" || echo "  [WARNING] Report validation returned issues."
+      PYTHON_BIN="python3"
+      if ! command -v python3 >/dev/null 2>&1 && command -v python >/dev/null 2>&1; then
+        PYTHON_BIN="python"
+      fi
+      "$PYTHON_BIN" "$TARGET_DIR/scripts/validate-report.py" "$report_file" --repo-root "$TARGET_DIR" || echo "  [WARNING] Report validation returned issues."
     fi
   else
     echo "  [WARNING] No report file found in docs/reports/ matching $task_id"

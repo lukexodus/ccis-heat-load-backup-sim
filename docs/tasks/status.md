@@ -15,20 +15,20 @@ Live tracker — what is actually done right now, not the long-term plan (the pl
 
 Status: **done**
 
-| ID           | Task                                                         | Status | Notes / Report                                                                                  |
-| :----------- | :----------------------------------------------------------- | :----- | :---------------------------------------------------------------------------------------------- |
-| **ARCH-001** | **Lock Scope, Conceptual Model & Interface Contracts**       | `done` | [ARCH-001-gemini-lock-conceptual-model.md](../reports/ARCH-001-gemini-lock-conceptual-model.md) |
-| ARCH-001.1   | Formalize system boundary, entities, and environment         | `done` | Building (18 rooms), PV, BESS, grid                                                             |
-| ARCH-001.2   | Define state variables, discrete events, and transitions     | `done` | Hourly, continuous & discrete states                                                            |
-| ARCH-001.3   | Specify performance measures and decision variables          | `done` | SSR, SCR, Autonomy, EUE, kWp, kWh                                                               |
-| ARCH-001.4   | Review and record decisions `[D-05]` through `[D-11]`        | `done` | Logged in decision-log.md                                                                       |
-| ARCH-001.5   | Lock `HourlyRecord` schema and function signatures           | `done` | Canonical contract                                                                              |
-| ARCH-001.6   | Generate conceptual model Mermaid flowcharts                 | `done` | Architecture & dispatch diagrams                                                                |
-| **ARCH-002** | **Scaffold Repository, Toolchain, Linting & Research Index** | `done` | [ARCH-002-gemini-repo-scaffolding.md](../reports/ARCH-002-gemini-repo-scaffolding.md)           |
-| ARCH-002.1   | Set up Python env, `pyproject.toml`, and `requirements.txt`  | `done` | pandas, numpy, scipy, matplotlib, pytest                                                        |
-| ARCH-002.2   | Create package directory layout (`src/ccis_sim/`, `tests/`)  | `done` | Scaffolding (subpackages, tests, data)                                                          |
-| ARCH-002.3   | Configure linting, formatting, and pytest test harness       | `done` | Verification gate (pytest 10/10 passing)                                                        |
-| ARCH-002.4   | Create and commit `docs/context/research-synthesis.md`       | `done` | [ARCH-002.4-gemini-research-synthesis-fixup.md](../reports/ARCH-002.4-gemini-research-synthesis-fixup.md)     |
+| ID           | Task                                                         | Status | Notes / Report                                                                                            |
+| :----------- | :----------------------------------------------------------- | :----- | :-------------------------------------------------------------------------------------------------------- |
+| **ARCH-001** | **Lock Scope, Conceptual Model & Interface Contracts**       | `done` | [ARCH-001-gemini-lock-conceptual-model.md](../reports/ARCH-001-gemini-lock-conceptual-model.md)           |
+| ARCH-001.1   | Formalize system boundary, entities, and environment         | `done` | Building (18 rooms), PV, BESS, grid                                                                       |
+| ARCH-001.2   | Define state variables, discrete events, and transitions     | `done` | Hourly, continuous & discrete states                                                                      |
+| ARCH-001.3   | Specify performance measures and decision variables          | `done` | SSR, SCR, Autonomy, EUE, kWp, kWh                                                                         |
+| ARCH-001.4   | Review and record decisions `[D-05]` through `[D-11]`        | `done` | Logged in decision-log.md                                                                                 |
+| ARCH-001.5   | Lock `HourlyRecord` schema and function signatures           | `done` | Canonical contract                                                                                        |
+| ARCH-001.6   | Generate conceptual model Mermaid flowcharts                 | `done` | Architecture & dispatch diagrams                                                                          |
+| **ARCH-002** | **Scaffold Repository, Toolchain, Linting & Research Index** | `done` | [ARCH-002-gemini-repo-scaffolding.md](../reports/ARCH-002-gemini-repo-scaffolding.md)                     |
+| ARCH-002.1   | Set up Python env, `pyproject.toml`, and `requirements.txt`  | `done` | pandas, numpy, scipy, matplotlib, pytest                                                                  |
+| ARCH-002.2   | Create package directory layout (`src/ccis_sim/`, `tests/`)  | `done` | Scaffolding (subpackages, tests, data)                                                                    |
+| ARCH-002.3   | Configure linting, formatting, and pytest test harness       | `done` | Verification gate (pytest 10/10 passing)                                                                  |
+| ARCH-002.4   | Create and commit `docs/context/research-synthesis.md`       | `done` | [ARCH-002.4-gemini-research-synthesis-fixup.md](../reports/ARCH-002.4-gemini-research-synthesis-fixup.md) |
 
 ---
 
@@ -36,36 +36,36 @@ Status: **done**
 
 Status: **open**
 
-| ID           | Task                                                                             | Status | Notes / Report        |
-| :----------- | :------------------------------------------------------------------------------- | :----- | :-------------------- |
-| **CORE-001** | **Implement Canonical Domain Models & Interface Contracts**                      | `done` | [CORE-001-gemini-domain-models.md](../reports/CORE-001-gemini-domain-models.md) |
-| CORE-001.1   | Implement `Building`, `SolarArray`, and `Battery` dataclasses                    | `done` | Building (18 rooms), SolarArray, Battery                                         |
-| CORE-001.2   | Implement `OutageEvent` and `HourlyRecord` time-step models                      | `done` | OutageEvent & HourlyRecord (18 fields)                                           |
-| CORE-001.3   | Build CSV/dict serialization protocols for simulation output                     | `done` | to_dict / from_dict serialization                                                |
-| CORE-001.4   | Write unit test suite for domain models and data invariants                      | `done` | 29 pytest tests passing (100% green)                                             |
-| CORE-001.5   | Reconcile uncredited assumptions in Battery & Building ([D-17], [D-18])          | `done` | [CORE-001.5-gemini-decision-gap-fixup.md](../reports/CORE-001.5-gemini-decision-gap-fixup.md) |
-| CORE-001.6   | Process & reporting fixup for provenance files and patch cleanup                 | `done` | [CORE-001.6-gemini-process-fixup.md](../reports/CORE-001.6-gemini-process-fixup.md)           |
-| **CORE-002** | **NASA POWER Weather Ingestion & Offline CSV Fixture Cache**                     | `done` | [CORE-002-gemini-weather-ingestion.md](../reports/CORE-002-gemini-weather-ingestion.md) |
-| CORE-002.1   | Implement NASA POWER API client for Batac (18.06°N, 120.56°E)                    | `done` | REST client (hourly & daily endpoints, raw cache)                               |
-| CORE-002.2   | Build hourly/daily weather parser (T2M, RH2M, ALLSKY_SFC_SW_DWN)                 | `done` | Native hourly parser + auxiliary disaggregator [D-20]                           |
-| CORE-002.3   | Add missing value sentinel `-999` filter & UTC→PST alignment                     | `done` | -999 filter, interpolation, LST/UTC→PST (+08:00)                                |
-| CORE-002.4   | Commit cached offline CSV fixtures (baseline, hot-year 2016/2019)                | `done` | Committed 2019 baseline & 2016 hot year fixtures                                |
-| CORE-002.5   | Write unit tests for weather ingest and psychrometric sanity                     | `done` | 22 pytest tests passing (100% green)                                            |
-| **CORE-003** | **Equipment Audit Model & Synthetic Mock Bill Generator**                        | `done` | [CORE-003-gemini-equipment-mock-bills.md](../reports/CORE-003-gemini-equipment-mock-bills.md) |
-| CORE-003.1   | Define equipment audit CSV schema (`item, count, kW, hours, tier`)               | `done` | `equipment-audit-schema.csv` committed |
-| CORE-003.2   | Create CCIS archetype fixture (~2,500 m², 18 rooms, ACs, labs)                   | `done` | `equipment-audit-ccis.csv` (147.81 kW) |
-| CORE-003.3   | Implement synthetic monthly electricity bill generator                           | `done` | `SyntheticBillGenerator` + noise       |
-| CORE-003.4   | Validate synthetic bills against regional EUI (150–300 kWh/m²·yr)                | `done` | EUI = 159.41 kWh/m²·yr (pass)          |
+| ID           | Task                                                                             | Status | Notes / Report                                                                                                    |
+| :----------- | :------------------------------------------------------------------------------- | :----- | :---------------------------------------------------------------------------------------------------------------- |
+| **CORE-001** | **Implement Canonical Domain Models & Interface Contracts**                      | `done` | [CORE-001-gemini-domain-models.md](../reports/CORE-001-gemini-domain-models.md)                                   |
+| CORE-001.1   | Implement `Building`, `SolarArray`, and `Battery` dataclasses                    | `done` | Building (18 rooms), SolarArray, Battery                                                                          |
+| CORE-001.2   | Implement `OutageEvent` and `HourlyRecord` time-step models                      | `done` | OutageEvent & HourlyRecord (18 fields)                                                                            |
+| CORE-001.3   | Build CSV/dict serialization protocols for simulation output                     | `done` | to_dict / from_dict serialization                                                                                 |
+| CORE-001.4   | Write unit test suite for domain models and data invariants                      | `done` | 29 pytest tests passing (100% green)                                                                              |
+| CORE-001.5   | Reconcile uncredited assumptions in Battery & Building ([D-17], [D-18])          | `done` | [CORE-001.5-gemini-decision-gap-fixup.md](../reports/CORE-001.5-gemini-decision-gap-fixup.md)                     |
+| CORE-001.6   | Process & reporting fixup for provenance files and patch cleanup                 | `done` | [CORE-001.6-gemini-process-fixup.md](../reports/CORE-001.6-gemini-process-fixup.md)                               |
+| **CORE-002** | **NASA POWER Weather Ingestion & Offline CSV Fixture Cache**                     | `done` | [CORE-002-gemini-weather-ingestion.md](../reports/CORE-002-gemini-weather-ingestion.md)                           |
+| CORE-002.1   | Implement NASA POWER API client for Batac (18.06°N, 120.56°E)                    | `done` | REST client (hourly & daily endpoints, raw cache)                                                                 |
+| CORE-002.2   | Build hourly/daily weather parser (T2M, RH2M, ALLSKY_SFC_SW_DWN)                 | `done` | Native hourly parser + auxiliary disaggregator [D-20]                                                             |
+| CORE-002.3   | Add missing value sentinel `-999` filter & UTC→PST alignment                     | `done` | -999 filter, interpolation, LST/UTC→PST (+08:00)                                                                  |
+| CORE-002.4   | Commit cached offline CSV fixtures (baseline, hot-year 2016/2019)                | `done` | Committed 2019 baseline & 2016 hot year fixtures                                                                  |
+| CORE-002.5   | Write unit tests for weather ingest and psychrometric sanity                     | `done` | 22 pytest tests passing (100% green)                                                                              |
+| **CORE-003** | **Equipment Audit Model & Synthetic Mock Bill Generator**                        | `done` | [CORE-003-gemini-equipment-mock-bills.md](../reports/CORE-003-gemini-equipment-mock-bills.md)                     |
+| CORE-003.1   | Define equipment audit CSV schema (`item, count, kW, hours, tier`)               | `done` | `equipment-audit-schema.csv` committed                                                                            |
+| CORE-003.2   | Create CCIS archetype fixture (~2,500 m², 18 rooms, ACs, labs)                   | `done` | `equipment-audit-ccis.csv` (147.81 kW)                                                                            |
+| CORE-003.3   | Implement synthetic monthly electricity bill generator                           | `done` | `SyntheticBillGenerator` + noise                                                                                  |
+| CORE-003.4   | Validate synthetic bills against regional EUI (150–300 kWh/m²·yr)                | `done` | EUI = 159.41 kWh/m²·yr (pass)                                                                                     |
 | CORE-003.5   | Reconcile equipment audit connected load & tier split summary                    | `done` | [CORE-003.5-gemini-equipment-totals-fixup.md](../reports/CORE-003.5-gemini-equipment-totals-fixup.md) (147.81 kW) |
-| **CORE-004** | **Shared Test Harness & Energy Balance Invariant Checker**                       | `done` | [CORE-004-gemini-conservation-harness.md](../reports/CORE-004-gemini-conservation-harness.md) |
-| CORE-004.1   | Implement strict energy conservation checker ($\le 10^{-5}\text{ kWh}$)          | `done` | Hourly residual + cumulative drift tolerance [D-21]                              |
-| CORE-004.2   | Implement battery boundary validator ($0 \le \text{SoC} \le \text{Cap}$, C-rate) | `done` | Physical bounds, min SoC floor, C-rate limits, mutual exclusivity                |
-| CORE-004.3   | Build shared golden fixture runner for sub-model validation                      | `done` | 48h reference fixture `create_golden_scenario()` + self-test                     |
-| **CORE-005** | **Baseline Engine Smoke Test (Phase 1 Exit Gate)**                               | `open` | Exit gate             |
-| CORE-005.1   | Implement grid-only, zero-solar, zero-battery simulation                         | `open` | Baseline engine       |
-| CORE-005.2   | Run 8,760-hour baseline through energy-balance test harness                      | `open` | Zero-leak test        |
-| CORE-005.3   | Generate baseline summary metrics (annual kWh, peak kW, base EUI)                | `open` | Baseline KPIs         |
-|              |                                                                                  |        |                       |
+| **CORE-004** | **Shared Test Harness & Energy Balance Invariant Checker**                       | `done` | [CORE-004-gemini-conservation-harness.md](../reports/CORE-004-gemini-conservation-harness.md)                     |
+| CORE-004.1   | Implement strict energy conservation checker ($\le 10^{-5}\text{ kWh}$)          | `done` | Hourly residual + cumulative drift tolerance [D-21]                                                               |
+| CORE-004.2   | Implement battery boundary validator ($0 \le \text{SoC} \le \text{Cap}$, C-rate) | `done` | Physical bounds, min SoC floor, C-rate limits, mutual exclusivity                                                 |
+| CORE-004.3   | Build shared golden fixture runner for sub-model validation                      | `done` | 48h reference fixture `create_golden_scenario()` + self-test                                                      |
+| **CORE-005** | **Baseline Engine Smoke Test (Phase 1 Exit Gate)**                               | `open` | Exit gate                                                                                                         |
+| CORE-005.1   | Implement grid-only, zero-solar, zero-battery simulation                         | `open` | Baseline engine                                                                                                   |
+| CORE-005.2   | Run 8,760-hour baseline through energy-balance test harness                      | `open` | Zero-leak test                                                                                                    |
+| CORE-005.3   | Generate baseline summary metrics (annual kWh, peak kW, base EUI)                | `open` | Baseline KPIs                                                                                                     |
+|              |                                                                                  |        |                                                                                                                   |
 
 ---
 

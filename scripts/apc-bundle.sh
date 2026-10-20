@@ -169,8 +169,8 @@ fi
 
 PROFILE="${PROFILE:-core}"
 
-# Auto-update docs/context/repo-tree.txt if tree is available
-if command -v tree >/dev/null 2>&1; then
+# Auto-update docs/context/repo-tree.txt if GNU tree is available
+if command -v tree >/dev/null 2>&1 && tree --version >/dev/null 2>&1; then
   mkdir -p docs/context
   tree -I ".git|.venv|venv|__pycache__|*.egg-info|node_modules|dist|build|*.tar.gz|*.log" --dirsfirst --noreport > docs/context/repo-tree.txt
 fi
