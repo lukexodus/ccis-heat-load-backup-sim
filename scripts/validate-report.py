@@ -79,13 +79,6 @@ def validate_report(report_path: Path, repo_root: Path) -> list[str]:
             if d_tag not in d_log_text:
                 errors.append(f"Report mentions decision {d_tag}, but it is missing from 'docs/decisions/decision-log.md'.")
 
-    # 6. Check patch file existence in patch/
-    patch_dir = repo_root / "patch"
-    if patch_dir.exists() and task_id:
-        patch_files = list(patch_dir.glob(f"{task_id}*.patch"))
-        if not patch_files:
-            errors.append(f"No corresponding patch file found in 'patch/' matching '{task_id}*.patch'.")
-
     return errors
 
 

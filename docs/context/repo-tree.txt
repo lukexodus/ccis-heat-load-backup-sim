@@ -33,17 +33,21 @@
 │   │   ├── deep-research-report (6).md
 │   │   ├── deep-research-report (7).md
 │   │   ├── deep-research-report.md
-│   │   └── M&S Project Ideas.md
+│   │   ├── M&S Project Ideas.md
+│   │   └── README.md
 │   ├── prompts
 │   │   ├── ARCH-001-PROMPT.md
 │   │   ├── ARCH-002.4-FIXUP-PROMPT.md
 │   │   ├── ARCH-002-PROMPT.md
 │   │   ├── CORE-001.5-FIXUP-PROMPT.md
+│   │   ├── CORE-001.6-PROCESS-FIXUP-PROMPT.md
 │   │   ├── CORE-001-PROMPT.md
 │   │   ├── CORE-002-PROMPT.md
 │   │   ├── CORE-002-REDISPATCH-PROMPT.md
+│   │   ├── CORE-002-VERIFY-AND-LAND-PROMPT.md
 │   │   ├── CORE-003.5-FIXUP-PROMPT.md
 │   │   ├── CORE-003-PROMPT.md
+│   │   ├── CORE-004-PROMPT.md
 │   │   ├── STANDALONE-ADOPTION-PROMPT.md
 │   │   └── STANDALONE-PROMPT-TEMPLATE.md
 │   ├── reports
@@ -51,6 +55,7 @@
 │   │   ├── ARCH-002.4-gemini-research-synthesis-fixup.md
 │   │   ├── ARCH-002-gemini-repo-scaffolding.md
 │   │   ├── CORE-001.5-gemini-decision-gap-fixup.md
+│   │   ├── CORE-001.6-gemini-process-fixup.md
 │   │   ├── CORE-001-gemini-domain-models.md
 │   │   ├── CORE-002-gemini-weather-ingestion.md
 │   │   ├── CORE-003.5-gemini-equipment-totals-fixup.md

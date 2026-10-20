@@ -44,6 +44,7 @@ Status: **open**
 | CORE-001.3   | Build CSV/dict serialization protocols for simulation output                     | `done` | to_dict / from_dict serialization                                                |
 | CORE-001.4   | Write unit test suite for domain models and data invariants                      | `done` | 29 pytest tests passing (100% green)                                             |
 | CORE-001.5   | Reconcile uncredited assumptions in Battery & Building ([D-17], [D-18])          | `done` | [CORE-001.5-gemini-decision-gap-fixup.md](../reports/CORE-001.5-gemini-decision-gap-fixup.md) |
+| CORE-001.6   | Process & reporting fixup for provenance files and patch cleanup                 | `done` | [CORE-001.6-gemini-process-fixup.md](../reports/CORE-001.6-gemini-process-fixup.md)           |
 | **CORE-002** | **NASA POWER Weather Ingestion & Offline CSV Fixture Cache**                     | `done` | [CORE-002-gemini-weather-ingestion.md](../reports/CORE-002-gemini-weather-ingestion.md) |
 | CORE-002.1   | Implement NASA POWER API client for Batac (18.06°N, 120.56°E)                    | `done` | REST client (hourly & daily endpoints, raw cache)                               |
 | CORE-002.2   | Build hourly/daily weather parser (T2M, RH2M, ALLSKY_SFC_SW_DWN)                 | `done` | Native hourly parser + auxiliary disaggregator [D-20]                           |

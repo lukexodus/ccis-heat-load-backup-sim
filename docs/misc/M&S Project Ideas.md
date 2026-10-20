@@ -1,3 +1,6 @@
+> [!NOTE]
+> **Archival Provenance Notice:** This document is an early course brainstorming draft predating project initialization. Its preliminary descriptions (e.g., real electricity bills, daily time step, simplified battery model) are superseded by the formal decision log (`docs/decisions/decision-log.md`, [D-01]–[D-18]) and the canonical conceptual model (`docs/context/conceptual-model.md`). Kept for historical provenance and traceability.
+
 # **IDEA \#1: CCIS Heat, Load and Backup Power Simulation**
 
 # **1\. Overview**

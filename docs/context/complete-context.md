@@ -61,13 +61,17 @@ Time-stepped (continuous) energy-balance model, daily and later hourly, wrapped 
 │   ├── decisions/
 │   │   └── decision-log.md     # Append-only immutable architectural decision log
 │   ├── reports/                # Completed task reports (one per task)
-│   └── prompts/                # Standalone prompt archive
+│   ├── prompts/                # Standalone prompt archive
+│   └── misc/                   # Pre-ARCH-001 archival source material & deep research
 ├── scripts/
 │   ├── apc-bundle.sh           # Safe packaging tool for APC context bundles
 │   └── task-worktree.sh        # Git worktree management script for parallel tasks
-├── src                 # Source code
+├── src/                        # Source code (ccis_sim package)
 └── tests/                      # Automated test suites
 ```
+
+> [!NOTE]
+> `docs/misc/` holds pre-ARCH-001 source material (original course project idea document, early deep-research inputs) preserved for historical provenance and parameter traceability. These files are not live specifications — `docs/decisions/decision-log.md` and `docs/context/conceptual-model.md` are the authoritative sources of truth for any decisions originally informed by these materials.
 
 ---
 
