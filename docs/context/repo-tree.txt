@@ -1,10 +1,16 @@
 .
 ├── data
 │   ├── fixtures
+│   │   ├── batac-weather-hourly-2016.csv
+│   │   ├── batac-weather-hourly-2019.csv
 │   │   ├── equipment-audit-ccis.csv
 │   │   ├── equipment-audit-schema.csv
 │   │   └── synthetic-mock-bills-ccis.csv
 │   └── raw
+│       ├── nasa_power_daily_batac_2016.json
+│       ├── nasa_power_daily_batac_2019.json
+│       ├── nasa_power_hourly_batac_2016.json
+│       └── nasa_power_hourly_batac_2019.json
 ├── docs
 │   ├── context
 │   │   ├── apc-bundle-quickref.md
@@ -46,6 +52,7 @@
 │   │   ├── ARCH-002-gemini-repo-scaffolding.md
 │   │   ├── CORE-001.5-gemini-decision-gap-fixup.md
 │   │   ├── CORE-001-gemini-domain-models.md
+│   │   ├── CORE-002-gemini-weather-ingestion.md
 │   │   ├── CORE-003.5-gemini-equipment-totals-fixup.md
 │   │   ├── CORE-003-gemini-equipment-mock-bills.md
 │   │   └── TASK-TEMPLATE.md
@@ -58,6 +65,7 @@
 │   ├── ARCH-002-gemini-repo-scaffolding.patch
 │   ├── CORE-001.5-gemini-decision-gap-fixup.patch
 │   ├── CORE-001-gemini-domain-models.patch
+│   ├── CORE-002-gemini-weather-ingestion.patch
 │   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
 │   └── CORE-003-gemini-equipment-mock-bills.patch
 ├── scripts
@@ -72,7 +80,8 @@
 │       │   └── __init__.py
 │       ├── core
 │       │   ├── __init__.py
-│       │   └── models.py
+│       │   ├── models.py
+│       │   └── weather.py
 │       ├── decision
 │       │   └── __init__.py
 │       ├── demand
@@ -85,13 +94,21 @@
 │       │   └── __init__.py
 │       ├── solar
 │       │   └── __init__.py
+│       ├── weather
+│       │   ├── client.py
+│       │   ├── disaggregator.py
+│       │   ├── __init__.py
+│       │   ├── loader.py
+│       │   ├── parser.py
+│       │   └── sanitizer.py
 │       └── __init__.py
 ├── tests
 │   ├── __init__.py
 │   ├── test_core_models.py
 │   ├── test_equipment_audit.py
 │   ├── test_mock_bills.py
-│   └── test_smoke.py
+│   ├── test_smoke.py
+│   └── test_weather_ingest.py
 ├── AGENTS.md
 ├── pyproject.toml
 └── requirements.txt
