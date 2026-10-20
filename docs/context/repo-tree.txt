@@ -60,6 +60,7 @@
 │   │   ├── CORE-002-gemini-weather-ingestion.md
 │   │   ├── CORE-003.5-gemini-equipment-totals-fixup.md
 │   │   ├── CORE-003-gemini-equipment-mock-bills.md
+│   │   ├── CORE-004-gemini-conservation-harness.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
@@ -72,7 +73,8 @@
 │   ├── CORE-001-gemini-domain-models.patch
 │   ├── CORE-002-gemini-weather-ingestion.patch
 │   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
-│   └── CORE-003-gemini-equipment-mock-bills.patch
+│   ├── CORE-003-gemini-equipment-mock-bills.patch
+│   └── CORE-004-gemini-conservation-harness.patch
 ├── scripts
 │   ├── apc-bundle.sh
 │   ├── manage-decisions.py
@@ -86,6 +88,7 @@
 │       ├── core
 │       │   ├── __init__.py
 │       │   ├── models.py
+│       │   ├── verification.py
 │       │   └── weather.py
 │       ├── decision
 │       │   └── __init__.py
@@ -108,7 +111,10 @@
 │       │   └── sanitizer.py
 │       └── __init__.py
 ├── tests
+│   ├── fixtures
+│   │   └── README.md
 │   ├── __init__.py
+│   ├── test_conservation_checker.py
 │   ├── test_core_models.py
 │   ├── test_equipment_audit.py
 │   ├── test_mock_bills.py
