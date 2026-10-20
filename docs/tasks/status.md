@@ -63,6 +63,7 @@ Status: **done**
 | CORE-004.1   | Implement strict energy conservation checker ($\le 10^{-5}\text{ kWh}$)          | `done` | Hourly residual + cumulative drift tolerance [D-21]                                                               |
 | CORE-004.2   | Implement battery boundary validator ($0 \le \text{SoC} \le \text{Cap}$, C-rate) | `done` | Physical bounds, min SoC floor, C-rate limits, mutual exclusivity                                                 |
 | CORE-004.3   | Build shared golden fixture runner for sub-model validation                      | `done` | 48h reference fixture `create_golden_scenario()` + self-test                                                      |
+| CORE-004.5   | Phase 1 closeout fixup (repo hygiene, harness gaps, D-24 disclosures)            | `done` | [CORE-004.5-gemini-phase1-closeout.md](../reports/CORE-004.5-gemini-phase1-closeout.md) [D-24], [D-25]           |
 | **CORE-005** | **Baseline Engine Smoke Test (Phase 1 Exit Gate)**                               | `done` | [CORE-005-gemini-baseline-smoke-test.md](../reports/CORE-005-gemini-baseline-smoke-test.md) |
 | CORE-005.1   | Implement grid-only, zero-solar, zero-battery simulation                         | `done` | 8,760h continuous simulation `simulate_baseline` [D-23]                                                           |
 | CORE-005.2   | Run 8,760-hour baseline through energy-balance test harness                      | `done` | Zero residual, zero drift, negative control verified                                                              |

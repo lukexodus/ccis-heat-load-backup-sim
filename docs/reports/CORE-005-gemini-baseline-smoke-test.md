@@ -292,3 +292,12 @@ index 9143bf2..863abab 100644
 +    "simulate_baseline",
 +]
 ```
+
+---
+
+## 8. Addendum (Phase 1 Closeout Reconciliation)
+
+This addendum records two file omissions from the original Section 2.1 "Files Touched" list identified during Phase 1 exit review:
+1. `docs/context/repo-tree.txt`: Auto-regenerated during bundle capture and committed on `task/CORE-005` (commit `8c22545`) to reflect the new integration modules and test fixtures. It was omitted from the narrative list in §2.1. It is now explicitly documented and maintained clean.
+2. `docs/reports/ARCH-002.5-gemini-windows-interop.md`: The patch generated from `task/CORE-005` appeared to delete this file because `task/CORE-005` was branched from commit `08466a8` prior to `0bdfda2` (`ARCH-002.5`) landing on `master`. The file was never deleted on `master`; Git's three-way merge (`e97176a`) preserved the file and its corresponding row in `docs/tasks/status.md`.
+

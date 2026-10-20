@@ -9,7 +9,7 @@ simulation time series, per:
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Sequence
 
@@ -27,6 +27,10 @@ class ViolationType(str, Enum):
     CHARGE_RATE_EXCEEDED = "charge_rate_exceeded"
     DISCHARGE_RATE_EXCEEDED = "discharge_rate_exceeded"
     SIMULTANEOUS_CHARGE_DISCHARGE = "simultaneous_charge_discharge"
+    SOC_CONTINUITY = "soc_continuity"
+    NON_FINITE_VALUE = "non_finite_value"
+    SOLAR_FLOW_BALANCE = "solar_flow_balance"
+    DEMAND_FLOW_BALANCE = "demand_flow_balance"
 
 
 @dataclass(frozen=True)
@@ -81,6 +85,7 @@ class VerificationReport:
     cumulative_tolerance_kwh: float
     cumulative_conserved: bool
     max_residual_kwh: float
+    subflow_violations: list[ConservationViolation] = field(default_factory=list)
 
     @property
     def is_valid(self) -> bool:
@@ -89,6 +94,7 @@ class VerificationReport:
             self.cumulative_conserved
             and len(self.conservation_violations) == 0
             and len(self.battery_violations) == 0
+            and len(self.subflow_violations) == 0
         )
 
     @property
@@ -97,6 +103,7 @@ class VerificationReport:
         return (
             len(self.conservation_violations)
             + len(self.battery_violations)
+            + len(self.subflow_violations)
             + (0 if self.cumulative_conserved else 1)
         )
 
@@ -112,6 +119,7 @@ class VerificationReport:
             f"conserved: {self.cumulative_conserved})",
             f"Hourly Conservation Violations: {len(self.conservation_violations)}",
             f"Battery Boundary Violations: {len(self.battery_violations)}",
+            f"Sub-Flow Balance Violations: {len(self.subflow_violations)}",
         ]
 
         if self.conservation_violations:
@@ -127,6 +135,13 @@ class VerificationReport:
                 lines.append(f"  * {v.summary()}")
             if len(self.battery_violations) > 10:
                 lines.append(f"  ... and {len(self.battery_violations) - 10} more.")
+
+        if self.subflow_violations:
+            lines.append("\n--- Top Sub-Flow Violations ---")
+            for v in self.subflow_violations[:10]:
+                lines.append(f"  * {v.summary()}")
+            if len(self.subflow_violations) > 10:
+                lines.append(f"  ... and {len(self.subflow_violations) - 10} more.")
 
         return "\n".join(lines)
 
@@ -170,15 +185,55 @@ def check_energy_conservation(
     if not records:
         return violations
 
+    NUMERIC_FIELDS = (
+        "temp_ambient_c",
+        "humidity_rel_pct",
+        "ghi_w_m2",
+        "demand_gross_kwh",
+        "demand_served_kwh",
+        "solar_generation_kwh",
+        "solar_to_demand_kwh",
+        "solar_to_battery_kwh",
+        "solar_curtailed_kwh",
+        "battery_soc_kwh",
+        "battery_charge_kwh",
+        "battery_discharge_kwh",
+        "grid_import_kwh",
+        "unserved_load_kwh",
+    )
+
     total_in = 0.0
     total_out = 0.0
 
     for r in records:
+        # 1. Non-finite value guard
+        has_non_finite = False
+        for field_name in NUMERIC_FIELDS:
+            val = getattr(r, field_name, 0.0)
+            if math.isnan(val) or math.isinf(val):
+                has_non_finite = True
+                violations.append(
+                    ConservationViolation(
+                        hour=r.hour,
+                        timestamp=r.timestamp,
+                        residual_kwh=float("nan"),
+                        tolerance_kwh=tolerance,
+                        energy_in_kwh=float("nan"),
+                        energy_out_kwh=float("nan"),
+                        violation_type=ViolationType.NON_FINITE_VALUE,
+                        details=f"Field '{field_name}' contains non-finite value: {val}",
+                    )
+                )
+
+        if has_non_finite:
+            continue
+
         e_in = r.solar_generation_kwh + r.grid_import_kwh + r.battery_discharge_kwh
         e_out = r.demand_served_kwh + r.battery_charge_kwh + r.solar_curtailed_kwh
         total_in += e_in
         total_out += e_out
 
+        # 2. Hourly energy balance invariant
         residual = r.energy_balance_residual_kwh
         if not r.is_energy_conserved(tolerance=tolerance):
             violations.append(
@@ -197,7 +252,8 @@ def check_energy_conservation(
                 )
             )
 
-    net_drift = total_in - total_out
+    # 3. Cumulative drift using signed residual invariant property
+    net_drift = sum(r.signed_residual_kwh for r in records)
     cum_tol = (
         cumulative_tolerance
         if cumulative_tolerance is not None
@@ -224,21 +280,102 @@ def check_energy_conservation(
     return violations
 
 
+def check_subflow_balance(
+    records: Sequence[HourlyRecord],
+    tolerance: float = 1e-5,
+) -> list[ConservationViolation]:
+    """Verify sub-component physical flow conservation across a sequence of records.
+
+    Per [D-25], verifies:
+    1. Solar generation flow decomposition:
+       solar_generation_kwh = solar_to_demand_kwh + solar_to_battery_kwh + solar_curtailed_kwh
+    2. Gross demand flow decomposition:
+       demand_gross_kwh = demand_served_kwh + unserved_load_kwh
+
+    Args:
+        records: Sequence of HourlyRecord instances.
+        tolerance: Maximum allowable discrepancy per hour (default 1e-5 kWh).
+
+    Returns:
+        List of ConservationViolation instances for any sub-flow decomposition failures.
+    """
+    violations: list[ConservationViolation] = []
+    if not records:
+        return violations
+
+    for r in records:
+        # Solar sub-flow decomposition
+        expected_solar = r.solar_to_demand_kwh + r.solar_to_battery_kwh + r.solar_curtailed_kwh
+        solar_diff = abs(r.solar_generation_kwh - expected_solar)
+        if solar_diff > tolerance:
+            violations.append(
+                ConservationViolation(
+                    hour=r.hour,
+                    timestamp=r.timestamp,
+                    residual_kwh=solar_diff,
+                    tolerance_kwh=tolerance,
+                    energy_in_kwh=r.solar_generation_kwh,
+                    energy_out_kwh=expected_solar,
+                    violation_type=ViolationType.SOLAR_FLOW_BALANCE,
+                    details=(
+                        f"Solar generation {r.solar_generation_kwh:.6e} kWh does not equal sum of "
+                        f"solar_to_demand ({r.solar_to_demand_kwh:.6e}) + solar_to_battery ({r.solar_to_battery_kwh:.6e}) + "
+                        f"solar_curtailed ({r.solar_curtailed_kwh:.6e}) [delta={solar_diff:.6e} kWh > tol {tolerance:.6e} kWh]."
+                    ),
+                )
+            )
+
+        # Demand sub-flow decomposition
+        expected_demand = r.demand_served_kwh + r.unserved_load_kwh
+        demand_diff = abs(r.demand_gross_kwh - expected_demand)
+        if demand_diff > tolerance:
+            violations.append(
+                ConservationViolation(
+                    hour=r.hour,
+                    timestamp=r.timestamp,
+                    residual_kwh=demand_diff,
+                    tolerance_kwh=tolerance,
+                    energy_in_kwh=r.demand_gross_kwh,
+                    energy_out_kwh=expected_demand,
+                    violation_type=ViolationType.DEMAND_FLOW_BALANCE,
+                    details=(
+                        f"Gross demand {r.demand_gross_kwh:.6e} kWh does not equal sum of "
+                        f"demand_served ({r.demand_served_kwh:.6e}) + unserved_load ({r.unserved_load_kwh:.6e}) "
+                        f"[delta={demand_diff:.6e} kWh > tol {tolerance:.6e} kWh]."
+                    ),
+                )
+            )
+
+    return violations
+
+
 def validate_battery_boundaries(
     records: Sequence[HourlyRecord],
     battery: Battery,
     allow_emergency_drawdown: bool = False,
     delta_t_hours: float = 1.0,
+    initial_soc_kwh: float | None = None,
+    tolerance: float = 1e-5,
 ) -> list[BatteryBoundaryViolation]:
     """Validate physical and operational battery boundaries across a simulation time series.
 
-    Per [D-09] and [D-21], verifies:
-    1. 0 <= battery_soc_kwh <= Battery.capacity_kwh (hard physical limits)
-    2. battery_soc_kwh >= Battery.min_soc_kwh (cell protection floor, unless
-       allow_emergency_drawdown=True during an active grid blackout with Tier 1/2 shedding)
-    3. battery_charge_kwh <= max_charge_power_kw * delta_t_hours (0.5C limit)
-    4. battery_discharge_kwh <= max_discharge_power_kw * delta_t_hours (1.0C limit)
-    5. Mutual exclusivity: battery_charge_kwh and battery_discharge_kwh cannot both be > 1e-6 kWh
+    Per [D-09], [D-21], and [D-25], verifies:
+    1. Finite numerical values (no NaN or +-inf in SoC or charge/discharge flows).
+    2. 0 <= battery_soc_kwh <= Battery.capacity_kwh (hard physical limits).
+    3. battery_soc_kwh >= Battery.min_soc_kwh (cell protection floor, unless
+       allow_emergency_drawdown=True during an active grid blackout with Tier 1/2 shedding).
+    4. battery_charge_kwh <= max_charge_power_kw * delta_t_hours (0.5C limit).
+    5. battery_discharge_kwh <= max_discharge_power_kw * delta_t_hours (1.0C limit).
+    6. Mutual exclusivity: battery_charge_kwh and battery_discharge_kwh cannot both be > 1e-6 kWh.
+    7. Hour-to-hour SoC continuity:
+       SoC_t = SoC_{t-1} + eta_chg * charge_t - (discharge_t / eta_dis)
+       where round-trip efficiency (92% per [D-09]) is symmetrically split:
+       eta_chg = eta_dis = sqrt(Battery.round_trip_efficiency).
+       Charge and discharge are AC-side flows (matching hourly energy balance), so internal
+       conversion losses appear strictly in the stored chemical SoC.
+       The check is skipped if Battery.capacity_kwh == 0.0 (e.g. grid-only baseline).
+       For the first record (hour 1), continuity is evaluated against initial_soc_kwh if provided;
+       otherwise skipped for the first record.
 
     Args:
         records: Sequence of HourlyRecord instances.
@@ -246,6 +383,8 @@ def validate_battery_boundaries(
         allow_emergency_drawdown: If True, allows SoC to dip below min_soc_kwh (down to 0)
             strictly during active blackout hours (grid_available=False, active_load_tier in (1, 2)).
         delta_t_hours: Timestep duration in hours (default 1.0).
+        initial_soc_kwh: Optional initial SoC before record 0 for verifying first timestep.
+        tolerance: Numerical tolerance for SoC continuity (default 1e-5 kWh).
 
     Returns:
         List of BatteryBoundaryViolation instances for any boundary violations.
@@ -258,8 +397,34 @@ def validate_battery_boundaries(
     max_charge_kwh = battery.max_charge_power_kw * delta_t_hours
     max_discharge_kwh = battery.max_discharge_power_kw * delta_t_hours
 
-    for r in records:
-        # 1. Negative SoC check
+    eta_chg = math.sqrt(battery.round_trip_efficiency)
+    eta_dis = math.sqrt(battery.round_trip_efficiency)
+
+    for idx, r in enumerate(records):
+        # 1. Non-finite values guard
+        has_non_finite = False
+        for f_name, f_val in (
+            ("battery_soc_kwh", r.battery_soc_kwh),
+            ("battery_charge_kwh", r.battery_charge_kwh),
+            ("battery_discharge_kwh", r.battery_discharge_kwh),
+        ):
+            if math.isnan(f_val) or math.isinf(f_val):
+                has_non_finite = True
+                violations.append(
+                    BatteryBoundaryViolation(
+                        hour=r.hour,
+                        timestamp=r.timestamp,
+                        violation_type=ViolationType.NON_FINITE_VALUE,
+                        actual_value=float("nan"),
+                        limit_value=0.0,
+                        details=f"Field '{f_name}' has non-finite value: {f_val}",
+                    )
+                )
+
+        if has_non_finite:
+            continue
+
+        # 2. Negative SoC check
         if r.battery_soc_kwh < -fp_tol:
             violations.append(
                 BatteryBoundaryViolation(
@@ -272,7 +437,7 @@ def validate_battery_boundaries(
                 )
             )
 
-        # 2. Exceeds nameplate capacity check
+        # 3. Exceeds nameplate capacity check
         if r.battery_soc_kwh > battery.capacity_kwh + fp_tol:
             violations.append(
                 BatteryBoundaryViolation(
@@ -288,7 +453,7 @@ def validate_battery_boundaries(
                 )
             )
 
-        # 3. Minimum SoC floor check
+        # 4. Minimum SoC floor check
         is_emergency = (not r.grid_available) and (
             r.active_load_tier in (LoadTier.TIER_1_CRITICAL, LoadTier.TIER_2_ESSENTIAL, 1, 2)
         )
@@ -309,7 +474,7 @@ def validate_battery_boundaries(
                     )
                 )
 
-        # 4. Charge rate limit (C-rate)
+        # 5. Charge rate limit (C-rate)
         if r.battery_charge_kwh > max_charge_kwh + fp_tol:
             violations.append(
                 BatteryBoundaryViolation(
@@ -325,7 +490,7 @@ def validate_battery_boundaries(
                 )
             )
 
-        # 5. Discharge rate limit (C-rate)
+        # 6. Discharge rate limit (C-rate)
         if r.battery_discharge_kwh > max_discharge_kwh + fp_tol:
             violations.append(
                 BatteryBoundaryViolation(
@@ -341,7 +506,7 @@ def validate_battery_boundaries(
                 )
             )
 
-        # 6. Simultaneous charge and discharge prevention
+        # 7. Simultaneous charge and discharge prevention
         if r.battery_charge_kwh > 1e-6 and r.battery_discharge_kwh > 1e-6:
             violations.append(
                 BatteryBoundaryViolation(
@@ -357,6 +522,55 @@ def validate_battery_boundaries(
                 )
             )
 
+        # 8. Hour-to-hour SoC continuity check
+        if battery.capacity_kwh > 0.0:
+            if idx == 0:
+                if initial_soc_kwh is not None:
+                    expected_soc = (
+                        initial_soc_kwh
+                        + eta_chg * r.battery_charge_kwh
+                        - (r.battery_discharge_kwh / eta_dis)
+                    )
+                    soc_diff = abs(r.battery_soc_kwh - expected_soc)
+                    if soc_diff > tolerance:
+                        violations.append(
+                            BatteryBoundaryViolation(
+                                hour=r.hour,
+                                timestamp=r.timestamp,
+                                violation_type=ViolationType.SOC_CONTINUITY,
+                                actual_value=r.battery_soc_kwh,
+                                limit_value=expected_soc,
+                                details=(
+                                    f"Hour {r.hour} SoC ({r.battery_soc_kwh:.6f} kWh) does not match expected continuity "
+                                    f"from initial SoC ({initial_soc_kwh:.6f} kWh) [expected {expected_soc:.6f} kWh, "
+                                    f"delta={soc_diff:.6e} kWh > tol {tolerance:.6e} kWh]."
+                                ),
+                            )
+                        )
+            else:
+                prev = records[idx - 1]
+                expected_soc = (
+                    prev.battery_soc_kwh
+                    + eta_chg * r.battery_charge_kwh
+                    - (r.battery_discharge_kwh / eta_dis)
+                )
+                soc_diff = abs(r.battery_soc_kwh - expected_soc)
+                if soc_diff > tolerance:
+                    violations.append(
+                        BatteryBoundaryViolation(
+                            hour=r.hour,
+                            timestamp=r.timestamp,
+                            violation_type=ViolationType.SOC_CONTINUITY,
+                            actual_value=r.battery_soc_kwh,
+                            limit_value=expected_soc,
+                            details=(
+                                f"Hour {r.hour} SoC ({r.battery_soc_kwh:.6f} kWh) does not match expected continuity "
+                                f"from Hour {prev.hour} ({prev.battery_soc_kwh:.6f} kWh) [expected {expected_soc:.6f} kWh, "
+                                f"delta={soc_diff:.6e} kWh > tol {tolerance:.6e} kWh]."
+                            ),
+                        )
+                    )
+
     return violations
 
 
@@ -367,11 +581,12 @@ def run_verification_harness(
     cumulative_tolerance: float | None = None,
     allow_emergency_drawdown: bool = False,
     delta_t_hours: float = 1.0,
+    initial_soc_kwh: float | None = None,
 ) -> VerificationReport:
     """Execute complete verification harness across a simulation time series.
 
     Validates both hourly energy conservation invariants and (if battery is provided)
-    battery physical boundary conditions.
+    battery physical boundary conditions and hour-to-hour SoC continuity.
 
     Args:
         records: Sequence of HourlyRecord instances.
@@ -380,6 +595,7 @@ def run_verification_harness(
         cumulative_tolerance: Optional cumulative net drift tolerance (default per [D-21]).
         allow_emergency_drawdown: Whether to permit SoC below min_soc during emergency blackouts.
         delta_t_hours: Hourly timestep duration.
+        initial_soc_kwh: Optional initial SoC before record 0 for verifying first timestep.
 
     Returns:
         VerificationReport containing full diagnostics.
@@ -390,6 +606,11 @@ def run_verification_harness(
         cumulative_tolerance=cumulative_tolerance,
     )
 
+    subflow_violations = check_subflow_balance(
+        records=records,
+        tolerance=tolerance,
+    )
+
     battery_violations: list[BatteryBoundaryViolation] = []
     if battery is not None:
         battery_violations = validate_battery_boundaries(
@@ -397,16 +618,12 @@ def run_verification_harness(
             battery=battery,
             allow_emergency_drawdown=allow_emergency_drawdown,
             delta_t_hours=delta_t_hours,
+            initial_soc_kwh=initial_soc_kwh,
+            tolerance=tolerance,
         )
 
-    # Compute aggregate stats
-    total_in = sum(
-        r.solar_generation_kwh + r.grid_import_kwh + r.battery_discharge_kwh for r in records
-    )
-    total_out = sum(
-        r.demand_served_kwh + r.battery_charge_kwh + r.solar_curtailed_kwh for r in records
-    )
-    net_drift = total_in - total_out
+    # Compute aggregate stats using signed_residual_kwh
+    net_drift = sum(r.signed_residual_kwh for r in records)
     cum_tol = (
         cumulative_tolerance
         if cumulative_tolerance is not None
@@ -429,6 +646,7 @@ def run_verification_harness(
         cumulative_tolerance_kwh=cum_tol,
         cumulative_conserved=cum_conserved,
         max_residual_kwh=max_residual,
+        subflow_violations=subflow_violations,
     )
 
 
@@ -439,6 +657,7 @@ def assert_simulation_valid(
     cumulative_tolerance: float | None = None,
     allow_emergency_drawdown: bool = False,
     delta_t_hours: float = 1.0,
+    initial_soc_kwh: float | None = None,
 ) -> None:
     """Assertion helper for test suites. Raises AssertionError with detailed report on failure."""
     report = run_verification_harness(
@@ -448,6 +667,7 @@ def assert_simulation_valid(
         cumulative_tolerance=cumulative_tolerance,
         allow_emergency_drawdown=allow_emergency_drawdown,
         delta_t_hours=delta_t_hours,
+        initial_soc_kwh=initial_soc_kwh,
     )
     if not report.is_valid:
         raise AssertionError(f"Simulation verification failed:\n{report.summary()}")
@@ -458,10 +678,11 @@ def create_golden_scenario(battery: Battery | None = None) -> list[HourlyRecord]
 
     The scenario exercises all primary physical microgrid states:
     - Day 1 (Hours 1–24): Normal grid operation.
-      - Hours 1–4: Nighttime battery discharge down to min_soc floor (10.0 kWh).
+      - Hours 1–4: Nighttime battery discharge down to min_soc floor (10.0 kWh), accounting for
+        inverter/cell efficiency (losses reflected in stored SoC).
       - Hours 5–6: Nighttime grid import sustaining baseload while battery sits at floor.
-      - Hours 7–9: Morning solar generation ramp, serving demand and charging battery.
-      - Hours 10–14: Peak midday solar surplus filling battery to 100% capacity, then curtailing.
+      - Hours 7–9: Morning solar generation ramp, serving demand and charging battery with conversion efficiency.
+      - Hours 10–14: Peak midday solar surplus filling battery to 100% capacity (100.0 kWh), then curtailing.
       - Hour 15: Exact zero net-load balance (solar generation strictly equals demand).
       - Hours 16–20: Afternoon/evening solar decline supplemented by battery discharge.
       - Hours 21–24: Evening transition back to grid import after battery reaches min_soc.
@@ -471,82 +692,91 @@ def create_golden_scenario(battery: Battery | None = None) -> list[HourlyRecord]
         cooling to Tier 2 essential load (5.0 kWh), sustained by islanded battery and solar.
       - Hours 38–48: Grid restoration, battery post-outage evening discharge and recovery.
 
-    All 48 hours have identically zero energy balance residuals (residual = 0.000000)
-    and strictly conform to Battery boundaries.
+    All 48 hours have identically zero energy balance residuals (residual = 0.000000 kWh),
+    strictly conform to Battery boundaries, and satisfy hour-to-hour SoC continuity under [D-25].
     """
     bat = battery or Battery(capacity_kwh=100.0)
     records: list[HourlyRecord] = []
 
+    eta_chg = math.sqrt(bat.round_trip_efficiency)
+    eta_dis = math.sqrt(bat.round_trip_efficiency)
+
     # State tracking
     current_soc = 50.0  # Initial SoC at start of Day 1 (kWh)
 
-    # 48-hour schedule definitions: (hour, solar_gen, demand_gross, grid_avail, tier, target_bat_dis, target_bat_chg)
-    # We will compute the exact flows to guarantee strict mathematical balance.
-    # Day 1:
+    # Calculated schedule parameters maintaining strict exact balances:
+    dis_h1_4 = 10.0 * eta_dis
+    needed_chg_h10 = (100.0 - (10.0 + 10.0 * eta_chg + 25.0 * eta_chg + 45.0 * eta_chg)) / eta_chg
+
+    # H21: discharge exactly to 10.0 floor
+    soc_before_h21 = 100.0 - (15.0 + 15.0 + 20.0 + 15.0 + 15.0) / eta_dis
+    dis_h21 = (soc_before_h21 - 10.0) * eta_dis
+
+    # H27-29: pre-charge to 100.0 full capacity before outage
+    needed_chg_h29 = (100.0 - (10.0 + 15.0 * eta_chg + 40.0 * eta_chg)) / eta_chg
+
+    # Outage H30-37 (8 hours):
+    # H30 has solar 10, served 5, curtailed 5, bat_chg=0, bat_dis=0.
+    # H31-37 (7 hours): served 5.0, bat_dis = 5.0.
+    soc_after_outage = 100.0 - (7 * 5.0) / eta_dis
+
+    # H38-41: discharge down to 10.0 floor upon grid return
+    total_avail_ac = (soc_after_outage - 10.0) * eta_dis
+    dis_h38_40 = 15.0
+    dis_h41 = total_avail_ac - 3 * dis_h38_40
+
     day_1_plan = [
-        # Night: battery discharges 10 kWh/hr down to min_soc (10 kWh)
-        (1, 0.0, 10.0, True, 3, 10.0, 0.0),
-        (2, 0.0, 10.0, True, 3, 10.0, 0.0),
-        (3, 0.0, 10.0, True, 3, 10.0, 0.0),
-        (4, 0.0, 10.0, True, 3, 10.0, 0.0),  # hits 10.0 kWh min_soc
-        # Night: battery at floor, grid imports 10 kWh
+        (1, 0.0, 10.0, True, 3, dis_h1_4, 0.0),
+        (2, 0.0, 10.0, True, 3, dis_h1_4, 0.0),
+        (3, 0.0, 10.0, True, 3, dis_h1_4, 0.0),
+        (4, 0.0, 10.0, True, 3, dis_h1_4, 0.0),
         (5, 0.0, 10.0, True, 3, 0.0, 0.0),
         (6, 0.0, 10.0, True, 3, 0.0, 0.0),
-        # Morning ramp: solar serves demand and charges battery
-        (7, 20.0, 10.0, True, 3, 0.0, 10.0),  # SoC -> 20.0
-        (8, 40.0, 15.0, True, 3, 0.0, 25.0),  # SoC -> 45.0
-        (9, 65.0, 20.0, True, 3, 0.0, 45.0),  # SoC -> 90.0 (45 <= 50kW max charge)
-        # Midday: battery reaches full (100 kWh), remainder curtailed
-        (10, 80.0, 25.0, True, 3, 0.0, 10.0), # SoC -> 100.0, curtailed = 45.0
-        (11, 85.0, 30.0, True, 3, 0.0, 0.0),  # SoC = 100.0, curtailed = 55.0
-        (12, 90.0, 30.0, True, 3, 0.0, 0.0),  # SoC = 100.0, curtailed = 60.0
-        (13, 70.0, 30.0, True, 3, 0.0, 0.0),  # SoC = 100.0, curtailed = 40.0
-        (14, 45.0, 25.0, True, 3, 0.0, 0.0),  # SoC = 100.0, curtailed = 20.0
-        # Zero net-load hour
-        (15, 25.0, 25.0, True, 3, 0.0, 0.0),  # Net load = 0
-        # Afternoon decline: solar + battery discharge
-        (16, 10.0, 25.0, True, 3, 15.0, 0.0), # SoC -> 85.0
-        (17, 5.0, 20.0, True, 3, 15.0, 0.0),  # SoC -> 70.0
-        (18, 0.0, 20.0, True, 3, 20.0, 0.0),  # SoC -> 50.0
-        # Evening: battery discharge down to min_soc
-        (19, 0.0, 15.0, True, 3, 15.0, 0.0),  # SoC -> 35.0
-        (20, 0.0, 15.0, True, 3, 15.0, 0.0),  # SoC -> 20.0
-        (21, 0.0, 15.0, True, 3, 10.0, 0.0),  # SoC -> 10.0 (hits floor), grid import = 5
-        (22, 0.0, 10.0, True, 3, 0.0, 0.0),   # grid import = 10
-        (23, 0.0, 10.0, True, 3, 0.0, 0.0),   # grid import = 10
-        (24, 0.0, 10.0, True, 3, 0.0, 0.0),   # grid import = 10
+        (7, 20.0, 10.0, True, 3, 0.0, 10.0),
+        (8, 40.0, 15.0, True, 3, 0.0, 25.0),
+        (9, 65.0, 20.0, True, 3, 0.0, 45.0),
+        (10, 80.0, 25.0, True, 3, 0.0, needed_chg_h10),
+        (11, 85.0, 30.0, True, 3, 0.0, 0.0),
+        (12, 90.0, 30.0, True, 3, 0.0, 0.0),
+        (13, 70.0, 30.0, True, 3, 0.0, 0.0),
+        (14, 45.0, 25.0, True, 3, 0.0, 0.0),
+        (15, 25.0, 25.0, True, 3, 0.0, 0.0),
+        (16, 10.0, 25.0, True, 3, 15.0, 0.0),
+        (17, 5.0, 20.0, True, 3, 15.0, 0.0),
+        (18, 0.0, 20.0, True, 3, 20.0, 0.0),
+        (19, 0.0, 15.0, True, 3, 15.0, 0.0),
+        (20, 0.0, 15.0, True, 3, 15.0, 0.0),
+        (21, 0.0, 15.0, True, 3, dis_h21, 0.0),
+        (22, 0.0, 10.0, True, 3, 0.0, 0.0),
+        (23, 0.0, 10.0, True, 3, 0.0, 0.0),
+        (24, 0.0, 10.0, True, 3, 0.0, 0.0),
     ]
 
-    # Day 2:
     day_2_plan = [
-        # Early morning grid import
-        (25, 0.0, 10.0, True, 3, 0.0, 0.0),   # SoC = 10.0
-        (26, 0.0, 10.0, True, 3, 0.0, 0.0),   # SoC = 10.0
-        # Solar ramp pre-charging battery
-        (27, 25.0, 10.0, True, 3, 0.0, 15.0), # SoC -> 25.0
-        (28, 50.0, 15.0, True, 3, 0.0, 35.0), # SoC -> 60.0
-        (29, 60.0, 20.0, True, 3, 0.0, 40.0), # SoC -> 100.0 (full!)
-        # Hours 30-37: 8-hour blackout! Shedding to Tier 2 (served = 5.0 kW)
-        (30, 10.0, 25.0, False, 2, 0.0, 0.0), # Solar 10 serves 5kW, curtails 5kW, SoC=100
-        (31, 0.0, 25.0, False, 2, 5.0, 0.0),  # Islanded battery discharge -> SoC 95.0
-        (32, 0.0, 25.0, False, 2, 5.0, 0.0),  # SoC -> 90.0
-        (33, 0.0, 25.0, False, 2, 5.0, 0.0),  # SoC -> 85.0
-        (34, 0.0, 25.0, False, 2, 5.0, 0.0),  # SoC -> 80.0
-        (35, 0.0, 25.0, False, 2, 5.0, 0.0),  # SoC -> 75.0
-        (36, 0.0, 25.0, False, 2, 5.0, 0.0),  # SoC -> 70.0
-        (37, 0.0, 25.0, False, 2, 5.0, 0.0),  # SoC -> 65.0
-        # Hours 38-48: Grid restored, Tier 3 active
-        (38, 0.0, 15.0, True, 3, 15.0, 0.0),  # SoC -> 50.0
-        (39, 0.0, 15.0, True, 3, 15.0, 0.0),  # SoC -> 35.0
-        (40, 0.0, 15.0, True, 3, 15.0, 0.0),  # SoC -> 20.0
-        (41, 0.0, 15.0, True, 3, 10.0, 0.0),  # SoC -> 10.0 (hits floor), grid import = 5
-        (42, 0.0, 10.0, True, 3, 0.0, 0.0),   # grid import = 10
-        (43, 0.0, 10.0, True, 3, 0.0, 0.0),   # grid import = 10
-        (44, 0.0, 10.0, True, 3, 0.0, 0.0),   # grid import = 10
-        (45, 0.0, 10.0, True, 3, 0.0, 0.0),   # grid import = 10
-        (46, 0.0, 10.0, True, 3, 0.0, 0.0),   # grid import = 10
-        (47, 0.0, 10.0, True, 3, 0.0, 0.0),   # grid import = 10
-        (48, 0.0, 10.0, True, 3, 0.0, 0.0),   # grid import = 10
+        (25, 0.0, 10.0, True, 3, 0.0, 0.0),
+        (26, 0.0, 10.0, True, 3, 0.0, 0.0),
+        (27, 25.0, 10.0, True, 3, 0.0, 15.0),
+        (28, 55.0, 15.0, True, 3, 0.0, 40.0),
+        (29, 65.0, 20.0, True, 3, 0.0, needed_chg_h29),
+        (30, 10.0, 25.0, False, 2, 0.0, 0.0),
+        (31, 0.0, 25.0, False, 2, 5.0, 0.0),
+        (32, 0.0, 25.0, False, 2, 5.0, 0.0),
+        (33, 0.0, 25.0, False, 2, 5.0, 0.0),
+        (34, 0.0, 25.0, False, 2, 5.0, 0.0),
+        (35, 0.0, 25.0, False, 2, 5.0, 0.0),
+        (36, 0.0, 25.0, False, 2, 5.0, 0.0),
+        (37, 0.0, 25.0, False, 2, 5.0, 0.0),
+        (38, 0.0, 15.0, True, 3, dis_h38_40, 0.0),
+        (39, 0.0, 15.0, True, 3, dis_h38_40, 0.0),
+        (40, 0.0, 15.0, True, 3, dis_h38_40, 0.0),
+        (41, 0.0, 15.0, True, 3, dis_h41, 0.0),
+        (42, 0.0, 10.0, True, 3, 0.0, 0.0),
+        (43, 0.0, 10.0, True, 3, 0.0, 0.0),
+        (44, 0.0, 10.0, True, 3, 0.0, 0.0),
+        (45, 0.0, 10.0, True, 3, 0.0, 0.0),
+        (46, 0.0, 10.0, True, 3, 0.0, 0.0),
+        (47, 0.0, 10.0, True, 3, 0.0, 0.0),
+        (48, 0.0, 10.0, True, 3, 0.0, 0.0),
     ]
 
     for (h, solar_gen, demand_gross, grid_avail, tier, bat_dis, bat_chg) in (day_1_plan + day_2_plan):
@@ -573,7 +803,7 @@ def create_golden_scenario(battery: Battery | None = None) -> list[HourlyRecord]
         else:
             grid_import = 0.0
 
-        current_soc = current_soc + bat_chg - bat_dis
+        current_soc = current_soc + eta_chg * bat_chg - (bat_dis / eta_dis)
 
         # Format ISO timestamp (starting 2026-04-15)
         day_offset = (h - 1) // 24
@@ -592,7 +822,7 @@ def create_golden_scenario(battery: Battery | None = None) -> list[HourlyRecord]
             solar_to_demand_kwh=solar_to_demand,
             solar_to_battery_kwh=solar_to_bat,
             solar_curtailed_kwh=solar_curtailed,
-            battery_soc_kwh=round(current_soc, 6),
+            battery_soc_kwh=round(current_soc, 8),
             battery_charge_kwh=bat_chg,
             battery_discharge_kwh=bat_dis,
             grid_import_kwh=grid_import,
