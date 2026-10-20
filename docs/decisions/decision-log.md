@@ -159,5 +159,23 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** Accommodates Windows teammates without requiring WSL, third-party shells, or manual line-ending conversions, while ensuring Git does not introduce CRLF corruption into Linux/WSL environments.  
 - **Affects:** All developers, `scripts/`, `.gitattributes`, `docs/guide/COLLABORATOR-GUIDE.md`.
 
+**[D-23]** Baseline placeholder demand method, calibration target, and Phase 1 exit gate metrics locked.  
+- **Date / Session:** 2026-10-20  
+- **Decision:**
+  1. For the Phase 1 exit-gate baseline smoke test (`CORE-005`), implement a lightweight, isolated placeholder demand model:
+     - Baseload: 10% continuous 24/7 standby power (~14.78 kW) for IDF switches, telecom headend, and life safety egress lighting.
+     - Scheduled Occupancy: Documented hourly diurnal step profile (weekdays: 08:00–12:00 at 45%, 12:00–13:00 at 30%, 13:00–17:00 at 50%, 17:00–19:00 at 20%; Saturdays: 08:00–13:00 at 15%; Sundays: 0% occupancy).
+     - Cooling Response: Piecewise-linear temperature adjustment adding $+4.0\%/^\circ\text{C}$ to daytime active cooling equipment load when ambient temperature exceeds $T_{\text{base}} = 24.0^\circ\text{C}$ per [D-07].
+  2. The placeholder demand is scaled by a single fixed calibration factor ($c_{\text{calib}} = 1.22857563$) so that the 2019 baseline annual electricity consumption lands on **398,525.00 kWh/yr**, yielding an annual Energy Use Intensity (EUI) of **159.4100 kWh/m²·yr**, strictly matching the target benchmark established in [D-16]/[D-19] and the 150.0–300.0 kWh/m²·yr regional benchmark band.
+  3. Locked baseline headline figures for the 2019 baseline weather fixture (`Building.gross_floor_area_m2 = 2500.0`):
+     - Annual Consumption: 398,525.00 kWh/yr
+     - Annual EUI: 159.41 kWh/m²·yr
+     - Peak Electrical Demand: 124.44 kW (occurring at Hour 2030, 2019-03-26T13:00:00+08:00)
+     - Annual Load Factor: 0.3656 (36.56%)
+  4. Climate Sensitivity (2016 anomalous hot year, un-tuned): Peak electrical demand reaches **125.55 kW** (+1.11 kW, +0.89% increase driven by peak El Niño heat at 2016-04-19T13:00:00+08:00), while annual consumption totals 398,251.21 kWh (EUI: 159.30 kWh/m²·yr; -273.79 kWh, -0.07% delta due to 2016 calendar having 260 weekdays vs 261 in 2019).
+  5. The placeholder model is explicitly isolated in `src/ccis_sim/integration/baseline.py` and will be formally superseded by the bottom-up academic diversity schedules in `DEM-001` and transient psychrometric cooling response in `DEM-002`.
+- **Reasoning:** Demonstrates end-to-end continuous 8,760-hour execution and verification harness closure for Phase 1 without pre-empting the detailed physics or empirical regressions reserved for Phase 2 demand sub-models.
+- **Affects:** `CORE-005`, `DEM-001`, `DEM-002`, `INT-001`.
+
 
 
