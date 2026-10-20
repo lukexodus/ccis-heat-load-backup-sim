@@ -44,12 +44,12 @@ Status: **open**
 | CORE-001.3   | Build CSV/dict serialization protocols for simulation output                     | `done` | to_dict / from_dict serialization                                                |
 | CORE-001.4   | Write unit test suite for domain models and data invariants                      | `done` | 29 pytest tests passing (100% green)                                             |
 | CORE-001.5   | Reconcile uncredited assumptions in Battery & Building ([D-17], [D-18])          | `done` | [CORE-001.5-gemini-decision-gap-fixup.md](../reports/CORE-001.5-gemini-decision-gap-fixup.md) |
-| **CORE-002** | **NASA POWER Weather Ingestion & Offline CSV Fixture Cache**                     | `open` | Outline §4            |
-| CORE-002.1   | Implement NASA POWER API client for Batac (18.06°N, 120.56°E)                    | `open` | REST client           |
-| CORE-002.2   | Build hourly/daily weather parser (T2M, RH2M, ALLSKY_SFC_SW_DWN)                 | `open` | Met parsing           |
-| CORE-002.3   | Add missing value sentinel `-999` filter & UTC→PST alignment                     | `open` | Sanitization          |
-| CORE-002.4   | Commit cached offline CSV fixtures (baseline, hot-year 2016/2019)                | `open` | Committed fixtures    |
-| CORE-002.5   | Write unit tests for weather ingest and psychrometric sanity                     | `open` | Verification          |
+| **CORE-002** | **NASA POWER Weather Ingestion & Offline CSV Fixture Cache**                     | `done` | [CORE-002-gemini-weather-ingestion.md](../reports/CORE-002-gemini-weather-ingestion.md) |
+| CORE-002.1   | Implement NASA POWER API client for Batac (18.06°N, 120.56°E)                    | `done` | REST client (hourly & daily endpoints, raw cache)                               |
+| CORE-002.2   | Build hourly/daily weather parser (T2M, RH2M, ALLSKY_SFC_SW_DWN)                 | `done` | Native hourly parser + auxiliary disaggregator [D-20]                           |
+| CORE-002.3   | Add missing value sentinel `-999` filter & UTC→PST alignment                     | `done` | -999 filter, interpolation, LST/UTC→PST (+08:00)                                |
+| CORE-002.4   | Commit cached offline CSV fixtures (baseline, hot-year 2016/2019)                | `done` | Committed 2019 baseline & 2016 hot year fixtures                                |
+| CORE-002.5   | Write unit tests for weather ingest and psychrometric sanity                     | `done` | 22 pytest tests passing (100% green)                                            |
 | **CORE-003** | **Equipment Audit Model & Synthetic Mock Bill Generator**                        | `done` | [CORE-003-gemini-equipment-mock-bills.md](../reports/CORE-003-gemini-equipment-mock-bills.md) |
 | CORE-003.1   | Define equipment audit CSV schema (`item, count, kW, hours, tier`)               | `done` | `equipment-audit-schema.csv` committed |
 | CORE-003.2   | Create CCIS archetype fixture (~2,500 m², 18 rooms, ACs, labs)                   | `done` | `equipment-audit-ccis.csv` (147.81 kW) |

@@ -110,3 +110,16 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** In `CORE-003`, equipment line counts and ratings were upgraded during final calibration (including student PCs from 228 to 240 units to reflect 40 PCs/lab, and dual 3.0 HP lab AC units to 2.8 kW for Batac heat conditions). The synthetic bill fixture was correctly computed from the final CSV, but the prose in [D-16] and the initial report retained pre-final draft totals (140.0 kW).  
 - **Affects:** `CORE-003`, `CORE-003.5`, `CORE-005`, `DEM-001`, `DEM-002`, `OUT-002`.
 
+**[D-20]** NASA POWER native hourly ingestion, timezone alignment, offline fixture selection, and 8,760-hour standardization locked.  
+- **Date / Session:** 2026-10-20  
+- **Decision:**
+  1. Offline weather fixtures are ingested directly from NASA POWER's native hourly product (`temporal/hourly/point`, 2001–present, `community=RE`) for Batac, Ilocos Norte (`18.06°N, 120.56°E`), with parameters `T2M` (dry-bulb temperature), `RH2M` (relative humidity), and `ALLSKY_SFC_SW_DWN` (all-sky surface shortwave downward irradiance). Native hourly empirical data was confirmed to completely cover Batac with zero missing values across target years, rendering synthetic daily-to-hourly disaggregation unnecessary for canonical fixtures.
+  2. Baseline representative year is locked to **2019** (non-leap year, 8,760 hours, annual mean temperature 26.44°C, annual solar insolation 1,900.6 kWh/m²·yr).
+  3. Anomalous hot year is locked to **2016** (confirmed 2015–2016 super El Niño event in Northern Luzon: peak temperature 36.64°C, 25 days with $T_{\max} \ge 34^\circ\text{C}$, 11 days $\ge 35^\circ\text{C}$, April–May mean 29.18°C).
+  4. Leap-year standardization: 2016 leap year (8,784 hours) is standardized to exactly 8,760 hours by omitting February 29 per ASHRAE/TMY3 convention to preserve the continuous 8,760-hour contract of [D-05].
+  5. Timezone alignment: NASA POWER native hourly data is requested in Local Solar Time (LST), which for Batac (`120.56°E`, within 2.2 minutes of the 120°E UTC+8 central meridian) is localized directly to Philippine Standard Time (PST = UTC+8), preserving true diurnal solar noon at hour 12 (12:00 PST). UTC ingestion with a +8h conversion is also supported and verified.
+  6. Implemented an auxiliary physical `DailyDisaggregator` (half-sine solar geometry irradiance with strict energy conservation, diurnal sinusoidal temperature, and Tetens vapor pressure psychrometrics) as a fallback for daily scenario inputs.
+  7. Implemented dedicated `src/ccis_sim/weather/` subpackage (with re-exports in `src/ccis_sim/core/weather.py`) for modular weather ingestion and caching.
+- **Reasoning:** Confirms empirical data availability directly from NASA POWER MERRA-2/CERES hourly product for Batac, avoiding synthetic disaggregation approximations for canonical simulation baselines. Preserves strict energy and state vector contracts across 8,760 annual hours [D-05].
+- **Affects:** `CORE-002`, `CORE-005`, `DEM-002`, `SOL-001`, `INT-001`.
+
