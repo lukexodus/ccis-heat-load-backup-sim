@@ -58,6 +58,7 @@
 │   │   ├── CORE-006-PROMPT.md
 │   │   ├── DEM-001-PROMPT.md
 │   │   ├── DEM-002-PROMPT.md
+│   │   ├── INT-001-PROMPT.md
 │   │   ├── OUT-001-PROMPT.md
 │   │   ├── OUT-002-PROMPT.md
 │   │   ├── PHASE2-DISPATCH-PLAN.md
@@ -80,23 +81,14 @@
 │   │   ├── CORE-004-gemini-conservation-harness.md
 │   │   ├── CORE-005-gemini-baseline-smoke-test.md
 │   │   ├── CORE-006-gemini-phase2-contracts.md
+│   │   ├── OUT-002-gemini-load-shedding.md
+│   │   ├── SOL-002-gemini-solar-array.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
 │       └── status.md
 ├── patch
-│   ├── ARCH-001-gemini-lock-conceptual-model.patch
-│   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
-│   ├── ARCH-002.5-gemini-windows-interop.patch
-│   ├── ARCH-002-gemini-repo-scaffolding.patch
-│   ├── CORE-001.5-gemini-decision-gap-fixup.patch
-│   ├── CORE-001-gemini-domain-models.patch
-│   ├── CORE-002-gemini-weather-ingestion.patch
-│   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
-│   ├── CORE-003-gemini-equipment-mock-bills.patch
-│   ├── CORE-004-gemini-conservation-harness.patch
-│   ├── CORE-005-gemini-baseline-smoke-test.patch
-│   └── CORE-006-gemini-phase2-contracts.patch
+│   └── SOL-002-gemini-solar-array.patch
 ├── scripts
 │   ├── apc-bundle.bat
 │   ├── apc-bundle.ps1
@@ -131,8 +123,10 @@
 │       │   ├── baseline.py
 │       │   └── __init__.py
 │       ├── outage
-│       │   └── __init__.py
+│       │   ├── __init__.py
+│       │   └── shedding.py
 │       ├── solar
+│       │   ├── array.py
 │       │   └── __init__.py
 │       ├── weather
 │       │   ├── client.py
@@ -151,8 +145,10 @@
 │   ├── test_core_models.py
 │   ├── test_equipment_audit.py
 │   ├── test_interfaces.py
+│   ├── test_load_shedding.py
 │   ├── test_mock_bills.py
 │   ├── test_smoke.py
+│   ├── test_solar_array.py
 │   └── test_weather_ingest.py
 ├── AGENTS.md
 ├── pyproject.toml
