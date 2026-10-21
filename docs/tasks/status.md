@@ -91,11 +91,11 @@ Status: **open**
 | DEM-002.2   | Implement latent cooling psychrometric multiplier (+20% humidity)                                    | `open` | Latent load        |
 | DEM-002.3   | Model split AC compressor duty cycle / inverter modulation                                           | `open` | Inverter response  |
 | DEM-002.4   | Validate combined hourly demand profile against mock monthly bills                                   | `open` | Calibration check  |
-| **SOL-001** | **Solar Irradiance Geometry & NOCT Thermal Derating Model**                                          | `open` |                    |
-| SOL-001.1   | Implement Batac tilted plane irradiance model (15° South tilt)                                       | `open` | Irradiance model   |
-| SOL-001.2   | Model cell operating temperature with +10°C rooftop thermal penalty                                  | `open` | NOCT model         |
-| SOL-001.3   | Apply module temperature power derating ($\gamma = -0.40\%/^\circ\text{C}$)                          | `open` | Thermal derate     |
-| SOL-001.4   | Write unit tests verifying yield drop during high-temperature hours                                  | `open` | Thermal tests      |
+| **SOL-001** | **Solar Irradiance Geometry & NOCT Thermal Derating Model**                                          | `done` | [SOL-001-gemini-solar-irradiance.md](../reports/SOL-001-gemini-solar-irradiance.md) [D-29]               |
+| SOL-001.1   | Implement Batac tilted plane irradiance model (15° South tilt)                                       | `done` | Spencer solar position, Erbs GHI->DHI/DNI, Liu-Jordan 15° transposition [D-29]                            |
+| SOL-001.2   | Model cell operating temperature with +10°C rooftop thermal penalty                                  | `done` | NOCT 45°C + 10°C penalty: T_cell = T_amb + (35/800)*G_poa [D-29]                                          |
+| SOL-001.3   | Apply module temperature power derating ($\gamma = -0.40\%/^\circ\text{C}$)                          | `done` | compute_dc_power_per_kwp, 1,695.05 kWh/kWp specific DC yield (2019)                                       |
+| SOL-001.4   | Write unit tests verifying yield drop during high-temperature hours                                  | `done` | 11 pytest unit/integration tests passing (100% green)                                                     |
 | **SOL-002** | **Array Sizing, Inverter Clipping & Balance-of-System Losses**                                       | `open` |                    |
 | SOL-002.1   | Implement DC capacity scaling (0, 50, 100, 200 kWp)                                                  | `open` | Capacity scaling   |
 | SOL-002.2   | Model inverter peak efficiency (98%) and DC/AC clipping limits                                       | `open` | Inverter clipping  |
