@@ -208,12 +208,16 @@ To inspect the clean unified diff of the whole task:
 ### Step 7: Relay to the APC AI & Merge
 1. **Paste the Report & Diff to the APC AI:**
    Provide the APC AI with your executive summary and the `git diff`. The APC AI will review the output against the acceptance criteria.
-2. **Merge the Branch:**
-   Once verified, merge `task/CORE-001` into `main` and commit.
-3. **Clean Up the Worktree:**
+2. **One-Command Merge & Cleanup:**
+   Once verified, merge the task and clean up in one command from the main checkout:
    ```bash
-   ./scripts/task-worktree.sh remove CORE-001
+   # Linux / macOS / Git Bash:
+   ./scripts/task-worktree.sh merge CORE-001
+
+   # Windows (CMD / PowerShell):
+   .\scripts\task-worktree.bat merge CORE-001
    ```
+   This automatically runs the handoff audit, merges `task/CORE-001` into the active branch, removes the task worktree directory, and cleans up the task branch.
 
 ---
 
@@ -268,7 +272,8 @@ When an external AI chat session nears its token limit or credit ceiling:
 ./scripts/task-worktree.sh status <TASK-ID>   # Check uncommitted status in worktree
 ./scripts/task-worktree.sh diff <TASK-ID>     # Print clean git diff
 ./scripts/task-worktree.sh handoff <TASK-ID>  # Run pre-merge validation & report check
-./scripts/task-worktree.sh remove <TASK-ID>   # Clean up worktree after merge
+./scripts/task-worktree.sh merge <TASK-ID>    # Safely audit, merge worktree to branch & cleanup
+./scripts/task-worktree.sh remove <TASK-ID>   # Clean up worktree after merge (manual)
 
 # --- Quality & Validation ---
 ./scripts/validate-report.py                  # Validate most recent task report
@@ -299,6 +304,7 @@ On Windows, use `.bat` from Command Prompt or `.ps1` from PowerShell with identi
 .\scripts\task-worktree.bat status <TASK-ID>
 .\scripts\task-worktree.bat diff <TASK-ID>
 .\scripts\task-worktree.bat handoff <TASK-ID>
+.\scripts\task-worktree.bat merge <TASK-ID>
 .\scripts\task-worktree.bat remove <TASK-ID>
 
 :: --- Quality & Validation (CMD) ---

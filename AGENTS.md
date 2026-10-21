@@ -100,7 +100,8 @@ When multiple tasks run concurrently:
    worktree that made the change, and must include index lines. Never retype diffs.
 6. **Handoff upon completion:** When the task is finished: do not merge, rebase, or
    delete the worktree yourself. Leave the branch and worktree for lukexodus,
-   and state the branch name and worktree path in your report.
+   and state the branch name and worktree path in your report. (The operator audits,
+   merges, and cleans up via `./scripts/task-worktree.sh merge <TASK-ID>` from the main checkout).
 7. **Protected operations:** Never run `git worktree remove`, `git clean -fd`,
    `git reset --hard`, `git checkout --` or `git stash` in a worktree you did not create
    in this session, or in the main checkout without explicit instructions.

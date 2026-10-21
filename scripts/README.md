@@ -64,6 +64,7 @@ Enforces worktree isolation when running multiple local agents or tasks in paral
 ./scripts/task-worktree.sh status CORE-001
 ./scripts/task-worktree.sh diff CORE-001
 ./scripts/task-worktree.sh handoff CORE-001
+./scripts/task-worktree.sh merge CORE-001
 ./scripts/task-worktree.sh remove CORE-001
 
 # Windows CMD:
@@ -72,6 +73,7 @@ Enforces worktree isolation when running multiple local agents or tasks in paral
 .\scripts\task-worktree.bat status CORE-001
 .\scripts\task-worktree.bat diff CORE-001
 .\scripts\task-worktree.bat handoff CORE-001
+.\scripts\task-worktree.bat merge CORE-001
 .\scripts\task-worktree.bat remove CORE-001
 
 # Windows PowerShell:
@@ -80,6 +82,7 @@ Enforces worktree isolation when running multiple local agents or tasks in paral
 .\scripts\task-worktree.ps1 status CORE-001
 .\scripts\task-worktree.ps1 diff CORE-001
 .\scripts\task-worktree.ps1 handoff CORE-001
+.\scripts\task-worktree.ps1 merge CORE-001
 .\scripts\task-worktree.ps1 remove CORE-001
 ```
 

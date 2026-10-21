@@ -30,6 +30,7 @@ Commands:
   status <TASK-ID>  Check git status inside the specified task worktree
   diff <TASK-ID>    Output clean unified diff from the worktree with index lines
   handoff <TASK-ID> Validate the worktree state for operator review/commit (does not delete)
+  merge <TASK-ID>   Safely audit, merge task/<TASK-ID> into current branch, and clean up worktree
   remove <TASK-ID>  Safely remove a worktree (only after operator has merged/committed)
 "@
 }
@@ -184,6 +185,83 @@ switch ($Command.ToLowerInvariant()) {
             Write-Host "  [WARNING] No report file found in docs/reports/ matching $TaskId"
         }
         Write-Host "=========================================="
+        exit 0
+    }
+
+    "merge" {
+        if (-not $TaskId) {
+            Write-Error "ERROR: Missing TASK_ID. Example: .\scripts\task-worktree.bat merge CORE-001"
+            exit 1
+        }
+        $targetDir = Join-Path (Split-Path $repoRoot -Parent) "${repoName}-${TaskId}"
+        $branchName = "task/${TaskId}"
+
+        # 1. Verify executed from main checkout
+        $dotGit = Join-Path $repoRoot ".git"
+        if (-not (Test-Path -Path $dotGit -PathType Container)) {
+            Write-Error "ERROR: Run merge command from the main repository checkout, not from inside a worktree."
+            exit 1
+        }
+
+        # 2. Check if main checkout has uncommitted tracked changes
+        & git diff --quiet
+        $diffExit = $LASTEXITCODE
+        & git diff --cached --quiet
+        $cachedDiffExit = $LASTEXITCODE
+        if ($diffExit -ne 0 -or $cachedDiffExit -ne 0) {
+            Write-Error "ERROR: Main working tree has uncommitted tracked changes. Please commit or stash changes before merging."
+            exit 1
+        }
+
+        $currentBranch = (& git rev-parse --abbrev-ref HEAD).Trim()
+
+        # 3. Check if target branch exists
+        & git rev-parse --verify "$branchName" 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "ERROR: Branch '$branchName' does not exist."
+            exit 1
+        }
+
+        # 4. Check if worktree directory exists and is clean
+        if (Test-Path $targetDir) {
+            $wtStatus = & git -C "$targetDir" status --porcelain
+            if ($wtStatus) {
+                Write-Error "ERROR: Worktree '$targetDir' has uncommitted changes. All changes must be committed before merging."
+                exit 1
+            }
+        }
+
+        # 5. Run handoff audit check
+        Write-Host "Running pre-merge audit..."
+        & "$PSCommandPath" handoff $TaskId
+
+        Write-Host ""
+        Write-Host "Merging '$branchName' into '$currentBranch'..."
+        & git merge --no-edit "$branchName"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "ERROR: Merge conflict encountered. Resolve conflicts in main checkout or run 'git merge --abort'."
+            exit 1
+        }
+
+        Write-Host "Merge completed successfully."
+
+        # 6. Clean up worktree if it exists
+        if (Test-Path $targetDir) {
+            Write-Host "Cleaning up worktree at $targetDir..."
+            & git worktree remove "$targetDir"
+            Write-Host "Worktree removed."
+        }
+
+        # 7. Delete task branch
+        & git branch -d "$branchName" 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "Branch '$branchName' deleted."
+        } else {
+            Write-Host "Note: Branch '$branchName' retained."
+        }
+
+        Write-Host ""
+        Write-Host "Task $TaskId successfully merged into $currentBranch and worktree cleaned up."
         exit 0
     }
 
