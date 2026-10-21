@@ -243,3 +243,24 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
      - In accordance with the prompt specification, this discrepancy from D-10's nominal 2/18/80 split is explicitly exposed via `compute_tier_audit_shares` and reported as an audit reality rather than forced to match nominal assumptions.
 - **Reasoning:** Formalizes exact deterministic load-shedding dispatch rules and energy accounting, guaranteeing conservation and clean policy decoupling ahead of full system integration.
 - **Affects:** `OUT-002`, `INT-001`, `INT-002`, `DEC-002`.
+
+**[D-31]** Battery Dispatch Dynamics, AC-Flow Conversion Accounting, and C-Rate & Headroom/Floor Limiting.  
+- **Date / Session:** 2026-10-21  
+- **Decision:**  
+  1. **Canonical Time-Step Battery Dispatch (`step_battery`):** Implemented in `src/ccis_sim/battery/dynamics.py` conforming strictly to the contract in `docs/context/phase2-interface-contract.md`.
+  2. **AC-Side Energy Flow & Conversion Conventions:**
+     - Charge request ($P_{\text{chg, req}}$) and discharge request ($P_{\text{dis, req}}$) are AC-side quantities at the microgrid bus.
+     - Symmetrical conversion efficiency $\eta_{\text{chg}} = \eta_{\text{dis}} = \sqrt{\eta_{\text{rt}}} = \sqrt{0.92}$ per [D-25].
+     - Energy stored during charge: $\Delta \text{SoC} = \eta_{\text{chg}} \cdot P_{\text{chg, ac}} \Delta t$.
+     - Energy extracted during discharge: $\Delta \text{SoC} = (P_{\text{dis, ac}} / \eta_{\text{dis}}) \Delta t$.
+  3. **C-Rate and Energy Headroom / Floor Constraints:**
+     - Maximum AC charge is constrained by $\min(P_{\text{max, chg}} \Delta t, (C_{\text{bat}} - \text{SoC}_{t-1}) / \eta_{\text{chg}})$.
+     - Maximum AC discharge is constrained by $\min(P_{\text{max, dis}} \Delta t, \max(0, \text{SoC}_{t-1} - \text{SoC}_{\text{floor}}) \cdot \eta_{\text{dis}})$, defaulting $\text{SoC}_{\text{floor}} = \text{battery.min\_soc\_kwh}$.
+     - When `cur_soc <= effective_floor`, discharge is zero and State-of-Charge remains unchanged without artificial inflation.
+  4. **Mutual Exclusivity & Zero-Capacity Edge Cases:**
+     - Simultaneous requests exceeding $10^{-6}\text{ kWh}$ each trigger `ValueError` at the source.
+     - For zero-capacity battery ($C_{\text{bat}} = 0$), all flows are 0, SoC is 0, and requests are reported as 100% curtailed or unmet.
+  5. **Idle Loss Separation:** Idle self-discharge and standby tare losses are explicitly excluded from this module per [D-26] and deferred to BAT-002.
+- **Reasoning:** Enforces exact first-law thermodynamic conservation and verification harness compliance for battery dispatch without leaky abstractions.
+- **Affects:** `BAT-001`, `BAT-002`, `INT-001`, `INT-002`.
+
