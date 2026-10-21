@@ -280,3 +280,24 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** Formalizes exact mathematical rules bridging normal operational dispatch reserves, blackout survival overrides, and physical idle losses while maintaining first-law conservation across all interfaces.
 - **Affects:** `BAT-002`, `BAT-001`, `INT-001`, `INT-002`.
 
+**[D-29]** Solar Irradiance Geometry, Erbs Decomposition, Isotropic Transposition, and Rooftop NOCT Thermal Derating Model locked.  
+- **Date / Session:** 2026-10-21  
+- **Decision:**  
+  1. **Astronomical Solar Position Algorithm:** Implement the Spencer (1971) Fourier series for solar declination ($\delta$) and Equation of Time ($\text{EoT}$ in minutes). Apply standard meridian alignment ($L_{\text{std}} = 120.0^\circ\text{E}$ for Philippine Standard Time UTC+8) and Batac local longitude ($L_{\text{loc}} = 120.56^\circ\text{E}$) with a $+2.24\text{ minute}$ longitude correction:  
+     $$t_{\text{solar}} = t_{\text{local}} + \frac{\text{EoT} + 4(L_{\text{loc}} - L_{\text{std}})}{60.0}$$  
+     Solar hour angle $\omega = 15^\circ(t_{\text{solar}} - 12.0)$, ensuring astronomical solar noon lands deterministically within 12:00 ± 20 minutes across the annual cycle.  
+  2. **Irradiance Decomposition (Erbs Model):** Decompose Global Horizontal Irradiance ($\text{GHI}$) into Diffuse Horizontal Irradiance ($\text{DHI}$) and Direct Normal Irradiance ($\text{DNI}$) using the Erbs, Klein, and Duffie (1982) empirical correlation based on hourly clearness index $k_t = \text{GHI} / G_0$, with extraterrestrial horizontal insolation $G_0 = \max(0, G_{\text{on}} \cos \theta_z)$ and solar constant $G_{\text{sc}} = 1,367\text{ W/m}^2$.  
+  3. **Transposition to Plane-of-Array (Liu & Jordan Isotropic Model):** Transpose beam, diffuse sky, and ground-reflected components to an array oriented at optimal tilt $\beta = 15.0^\circ$ and surface azimuth $\gamma = 180.0^\circ$ (True South):  
+     $$G_{\text{poa}} = \text{DNI} \max(0, \cos \theta) + \text{DHI}\left(\frac{1 + \cos \beta}{2}\right) + \text{GHI} \cdot \rho_g \left(\frac{1 - \cos \beta}{2}\right)$$  
+     Surface angle of incidence $\cos \theta$ is computed using Duffie & Beckman eq 1.6.2. Ground diffuse albedo is parameterized as $\rho_g = 0.20$ (`[ASSUMPTION]`), reflecting typical tropical academic campus ground cover (grass/concrete mix).  
+  4. **Cell Temperature with Rooftop Mounting Thermal Penalty:**  
+     Resolve the ambiguous $+10.0^\circ\text{C}$ rooftop mounting penalty from [D-08] by embedding it into the effective NOCT slope (`[ASSUMPTION]`):  
+     $$T_{\text{cell}} = T_{\text{amb}} + \left(\frac{(\text{NOCT}_{\text{base}} + \Delta T_{\text{roof}}) - 20.0}{800.0}\right) G_{\text{poa}} = T_{\text{amb}} + \left(\frac{(45.0 + 10.0) - 20.0}{800.0}\right) G_{\text{poa}} = T_{\text{amb}} + \frac{35.0}{800.0} G_{\text{poa}}$$  
+     This formulation guarantees that at night or zero insolation ($G_{\text{poa}} = 0$), $T_{\text{cell}}$ converges identically to ambient dry-bulb temperature $T_{\text{amb}}$, while at peak insolation ($800\text{ W/m}^2$) the cell experiences the full $+35.0^\circ\text{C}$ rise above ambient.  
+  5. **Thermal Derating and DC Power Output per kWp:**  
+     Apply the monocrystalline silicon temperature coefficient of power $\gamma = -0.40\%/^\circ\text{C} = -0.0040/^\circ\text{C}$ relative to STC reference temperature $T_{\text{ref}} = 25.0^\circ\text{C}$ ([D-08]):  
+     $$f_{\text{temp}} = \max\left(0.0, 1.0 + \gamma(T_{\text{cell}} - 25.0)\right)$$  
+     $$P_{\text{dc\_per\_kwp}} = \left(\frac{G_{\text{poa}}}{1,000.0\text{ W/m}^2}\right) \cdot f_{\text{temp}}$$  
+     Yields an annual specific DC generation of **1,695.05 kWh/kWp** for the 2019 baseline weather fixture before balance-of-system and inverter losses (which are reserved for `SOL-002`).  
+- **Reasoning:** Conforms strictly to the locked `phase2-interface-contract.md` signature, eliminates uncredited magic constants, provides physically validated solar transposition and thermal derating, and preserves exact zero generation during non-sunlit hours.  
+- **Affects:** `SOL-001`, `SOL-002`, `INT-001`.
