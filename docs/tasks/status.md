@@ -131,10 +131,10 @@ Status: **open**
 | INT-002.1   | Monte Carlo driver (N = 100 seeds per scenario)                     | `done` | MC engine: 2,460 runs across main, sensitivity, and +2°C grids    |
 | INT-002.2   | Stochastic convergence test (sample size sufficiency)               | `done` | Convergence evaluated at N=10, 20, 30 (SE halves, D-36)           |
 | INT-002.3   | Record distributions: unserved kWh, outage hours survived           | `done` | 100 cells serialized to results/mc_summary.csv                    |
-| **INT-003** | **Verification, Validation & Headline KPI Reporting**               | `open` |                                                                   |
-| INT-003.1   | Final energy balance audit (residual < 10⁻⁵ kWh everywhere)         | `open` | Balance audit                                                     |
-| INT-003.2   | Compare uncalibrated simulation vs synthetic bills (NMBE, CV(RMSE)) | `open` | Billing validation                                                |
-| INT-003.3   | Generate publication-quality headline KPI summary tables             | `open` | KPI tables                                                        |
+| **INT-003** | **Verification, Validation & Headline KPI Reporting**               | `done` | [Report](docs/reports/INT-003-gemini-validation.md) [D-37] Audits, plausibility, sensitivities |
+| INT-003.1   | Final energy balance audit (residual < 10⁻⁵ kWh everywhere)         | `done` | Invariant audit across 12 configs (residual < 3e-14 kWh) [D-37]    |
+| INT-003.2   | Compare uncalibrated simulation vs synthetic bills (NMBE, CV(RMSE)) | `done` | ASHRAE NMBE -57.3%, CV(RMSE) 55.3%, plausibility reconciliation    |
+| INT-003.3   | Generate publication-quality headline KPI summary tables             | `done` | [kpi_tables.md](../../results/kpi_tables.md) reference cases      |
 
 ---
 

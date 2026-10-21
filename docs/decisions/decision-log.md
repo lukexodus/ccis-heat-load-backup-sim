@@ -461,3 +461,37 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
      Implemented parallel batch execution in `src/ccis_sim/integration/scenarios.py` using worker-level fixture caching, completing all 2,460 simulations in 9.75 minutes with 0 harness errors (`verify=True`). Serialized flat results to `results/scenario_grid.csv` and grouped cell distributions to `results/mc_summary.csv`.  
 - **Reasoning:** Conforms strictly to Phase 3 design goals, resolves the demand calibration question with transparent dual reporting, applies classical CRN variance reduction, and documents formal convergence properties for microgrid sizing.  
 - **Affects:** `ccis_sim.integration.scenarios`, `INT-002`, `INT-003`, `DEC-001`, `DEC-002`.
+
+
+**[D-37]** Verification Invariants, Plausibility Screening, Epistemological Framing, and KPI Tables (INT-003).  
+- **Date / Session:** 2026-10-21  
+- **Decision:**  
+  1. **Epistemological Framing and Validation Status:**  
+     Formally declare that simulation evaluation against synthetic mock utility bills represents **computational verification, physical conservation auditing, and plausibility screening, NOT empirical validation**. Because synthetic mock bills (CORE-003) were generated using the same equipment audit inventory as the bottom-up model, billing comparisons are not independent. The bottom-up demand profile (189,356 kWh/yr, EUI 75.74 kWh/m²·yr) is retained in its uncalibrated state (scale = 1.0) as the primary engineering model.  
+  2. **Energy Conservation and Physical Invariant Audit Matrix:**  
+     Establish `ccis_sim.validation.audit.audit_run` executing 8 primary (+4 extended) simulation configurations across solar (0, 100, 200 kWp), battery (0, 100, 200 kWh), and weather/outage regimes (2019 normal, 2019 typhoon, 2016 normal). All 12 configurations strictly pass all invariants:  
+     - Maximum hourly energy balance residual: $\le 2.84 \times 10^{-14}\text{ kWh} \ll 10^{-5}\text{ kWh}$.  
+     - Cumulative net drift: $\le 6.63 \times 10^{-13}\text{ kWh} \ll 10^{-3}\text{ kWh}$.  
+     - Non-finite numeric count: 0 across all 8,760 hours.  
+     - Battery SoC bounds: strictly within $[10\%\text{ min\_soc}, 100\%\text{ capacity}]$.  
+     - Tier demand conservation: $P_{\text{served}, t} + P_{\text{unserved}, t} = P_{\text{gross}, t}$ for all $t \in [1, 8760]$.  
+  3. **Seed Determinism and Reproducibility Protocol:**  
+     Verify bit-identical determinism: identical seeds yield identical SHA-256 hourly CSV hashes; differing seeds produce distinct stochastic outage schedules ($N > 0$ diverging grid availability hours) and distinct hashes.  
+  4. **Negative Control Verification:**  
+     Verify that `assert_simulation_valid` reliably catches three deliberate breaks:  
+     - Perturbed hourly residual ($+10^{-3}\text{ kWh}$): trips `ViolationType.HOURLY_ENERGY_BALANCE`.  
+     - Stored SoC below minimum floor ($< 10\%\text{ min\_soc}$): trips `ViolationType.MIN_SOC_VIOLATION`.  
+     - Non-finite field (`NaN`): trips `ViolationType.NON_FINITE_VALUE`.  
+  5. **Plausibility and Benchmark Reconciliation:**  
+     - ASHRAE Guideline 14 comparison against synthetic bills yields monthly $\text{NMBE} = -57.26\%$ and $\text{CV(RMSE)} = 55.26\%$ (failing monthly thresholds of $\pm 5\%$ and $15\%$, as expected for uncalibrated bottom-up demand reflecting unoccupied hours vs continuous baseline assumptions).  
+     - Day-type daily consumption: regular academic weekdays ($845.76\text{ kWh/day}$), weekends ($268.57\text{ kWh/day}$), academic vacations/holidays ($204.46\text{ kWh/day}$).  
+     - Solar specific yield: $1,508.74\text{ kWh/kWp}\cdot\text{yr}$ matches theoretical $\text{POA} \times \text{PR}$ ($1,945.98 \times 0.77 \approx 1,498.40\text{ kWh/kWp}$) within $+0.69\%$. The $+16.24\%$ gap over the Luzon multi-system average ($1,298\text{ kWh/kWp}$) is identified as a resource-data difference in Batac insolation, not model tuning.  
+  6. **One-at-a-Time Parameter Sensitivity:**  
+     Evaluate sensitivity relative to the 100 kWp / 100 kWh baseline (grid import: 79,064.38 kWh, unserved T1+2: 0.00 kWh):  
+     - Emergency reserve (0.10 / 0.20 / 0.50): grid import shifts by $-1,710.62\text{ kWh}$ to $+5,274.36\text{ kWh}$; unserved T1+2 increases to $11.58\text{ kWh}$ at 0.10 reserve.  
+     - Tier-2 shed threshold (0.10 / 0.20 / 0.30): unserved T1+2 increases to $11.58\text{ kWh}$ at 0.30 threshold (shedding triggered earlier).  
+     - Cooling slope (3% / 4% / 5% /°C): grid import shifts by $\mp 6,500\text{ kWh}$ ($\pm 8.2\%$).  
+     - PR-driving BOS factor ($\pm 5\%$): grid import shifts by $\mp 3,700\text{ kWh}$ ($\mp 4.7\%$).  
+     - Battery RTE (0.88 / 0.92 / 0.96): grid import shifts by $+371.61\text{ kWh}$ / $-364.68\text{ kWh}$ ($\pm 0.47\%$).  
+- **Reasoning:** Closes verification and plausibility audit milestones for Phase 3, guarantees strict mathematical and physical validity of simulation output data, documents sensitivity bounds, and provides authoritative headline KPI tables for downstream multi-criteria decision analysis.  
+- **Affects:** `ccis_sim.validation`, `results/kpi_tables.md`, `INT-003`, `DEC-001`, `DEC-002`, `DEC-003`.
