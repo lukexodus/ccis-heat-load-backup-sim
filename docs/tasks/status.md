@@ -81,11 +81,11 @@ Status: **open**
 
 | ID          | Task                                                                                                 | Status | Notes / Report     |
 | :---------- | :--------------------------------------------------------------------------------------------------- | :----- | :----------------- |
-| **DEM-001** | **Equipment Load & Occupancy Schedule Model**                                                        | `open` |                    |
-| DEM-001.1   | Implement academic schedule engine (classes, breaks, holidays)                                       | `open` | Schedule calendar  |
-| DEM-001.2   | Compute diurnal non-cooling base demand (lighting, IT, plug loads)                                   | `open` | Bottom-up load     |
-| DEM-001.3   | Model unoccupied nighttime baseload (10% of daytime peak)                                            | `open` | Baseload rule      |
-| DEM-001.4   | Write unit tests for equipment aggregation across schedule states                                    | `open` | Test suite         |
+| **DEM-001** | **Equipment Load & Occupancy Schedule Model**                                                        | `done` | [Report](docs/reports/DEM-001-gemini-demand-schedule.md) |
+| DEM-001.1   | Implement academic schedule engine (classes, breaks, holidays)                                       | `done` | Schedule calendar  |
+| DEM-001.2   | Compute diurnal non-cooling base demand (lighting, IT, plug loads)                                   | `done` | Bottom-up load     |
+| DEM-001.3   | Model unoccupied nighttime baseload (10% of daytime peak)                                            | `done` | Baseload rule      |
+| DEM-001.4   | Write unit tests for equipment aggregation across schedule states                                    | `done` | Test suite         |
 | **DEM-002** | **Temperature & Humidity Cooling Response Model**                                                    | `open` |                    |
 | DEM-002.1   | Implement CDD model ($T_{\text{base}} = 24.0^\circ\text{C}$, 4%/°C sensitivity)                      | `open` | Sensible cooling   |
 | DEM-002.2   | Implement latent cooling psychrometric multiplier (+20% humidity)                                    | `open` | Latent load        |
