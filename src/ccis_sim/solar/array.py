@@ -34,8 +34,13 @@ DEFAULT_MISMATCH_FACTOR: float = 0.980      # 2.0% module mismatch and manufactu
 DEFAULT_AVAILABILITY_FACTOR: float = 0.990  # 1.0% operational availability and maintenance downtime
 
 # [ASSUMPTION] Assumed annual mean thermal factor representing cell temperature losses
-# Derived from physical NOCT thermal modeling in Batac tropical climate (~13.49% mean thermal loss)
+# Derived from physical NOCT thermal modeling in Batac tropical climate (~13.49% mean thermal loss) per [D-30]
 ASSUMED_MEAN_THERMAL_FACTOR: float = 0.8650888630630106
+
+# [ASSUMPTION] Implied annual energy-weighted cell thermal derating factor evaluated upstream
+# by SOL-001 under the 2019 Batac weather fixture (SOL-002.4 / [D-35]).
+# (Derated DC yield 1,695.05 kWh/kWp / Un-derated POA insolation 1,945.98 kWh/m2 ≈ 0.871056; ~12.89% thermal loss).
+IMPLIED_ANNUAL_THERMAL_FACTOR_2019: float = 0.8710563456728557
 
 
 def get_non_thermal_bos_factor(

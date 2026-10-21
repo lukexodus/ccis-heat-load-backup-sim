@@ -82,17 +82,17 @@ Status: **open**
 | DEM-002.1   | Implement CDD model ($T_{\text{base}} = 24.0^\circ\text{C}$, 4%/°C sensitivity)                      | `done` | Sensible cooling                                                                                                  |
 | DEM-002.2   | Implement latent cooling psychrometric multiplier (+20% humidity)                                    | `done` | Latent load                                                                                                       |
 | DEM-002.3   | Model split AC compressor duty cycle / inverter modulation                                           | `done` | Inverter response                                                                                                 |
-| DEM-002.4   | Validate combined hourly demand profile against mock monthly bills                                   | `open` | Deferred until DEM-001 and DEM-002 merged to master                                                               |
+| DEM-002.4   | Validate combined hourly demand profile against mock monthly bills                                   | `done` | [Report](docs/reports/INT-001-gemini-engine.md) [D-35] Combined demand: 189,356 kWh/yr, EUI 75.74 vs baseline -41.6% |
 | **SOL-001** | **Solar Irradiance Geometry & NOCT Thermal Derating Model**                                          | `done` | [SOL-001-gemini-solar-irradiance.md](../reports/SOL-001-gemini-solar-irradiance.md) [D-29]                         |
 | SOL-001.1   | Implement Batac tilted plane irradiance model (15° South tilt)                                       | `done` | Spencer solar position, Erbs GHI->DHI/DNI, Liu-Jordan 15° transposition [D-29]                                      |
 | SOL-001.2   | Model cell operating temperature with +10°C rooftop thermal penalty                                  | `done` | NOCT 45°C + 10°C penalty: T_cell = T_amb + (35/800)*G_poa [D-29]                                                    |
 | SOL-001.3   | Apply module temperature power derating ($\gamma = -0.40\%/^\circ\text{C}$)                          | `done` | compute_dc_power_per_kwp, 1,695.05 kWh/kWp specific DC yield (2019)                                                 |
 | SOL-001.4   | Write unit tests verifying yield drop during high-temperature hours                                  | `done` | 11 pytest unit/integration tests passing (100% green)                                                               |
-| **SOL-002** | **Array Sizing, Inverter Clipping & Balance-of-System Losses**                                       | `done` | [SOL-002-gemini-solar-array.md](../reports/SOL-002-gemini-solar-array.md) [D-30] (SOL-002.4 deferred)               |
+| **SOL-002** | **Array Sizing, Inverter Clipping & Balance-of-System Losses**                                       | `done` | [SOL-002-gemini-solar-array.md](../reports/SOL-002-gemini-solar-array.md) [D-30] (SOL-002.4 complete in INT-001)   |
 | SOL-002.1   | Implement DC capacity scaling (0, 50, 100, 200 kWp)                                                  | `done` | compute_ac_generation scenario matrix scaling [D-30]                                                                |
 | SOL-002.2   | Model inverter peak efficiency (98%) and DC/AC clipping limits                                       | `done` | 98% peak efficiency, 1.20 DC/AC ratio clipping limit [D-30]                                                         |
 | SOL-002.3   | Incorporate balance-of-system derates (PR = 0.77, soiling, wiring)                                   | `done` | Named non-thermal BOS factors decomposed to match 0.77 PR [D-30]                                                     |
-| SOL-002.4   | Validate annual specific yield against Luzon benchmark (1,298 kWh/kWp)                               | `open` | Deferred until SOL-001 and SOL-002 are merged into integration runner                                                |
+| SOL-002.4   | Validate annual specific yield against Luzon benchmark (1,298 kWh/kWp)                               | `done` | [Report](docs/reports/INT-001-gemini-engine.md) [D-35] Specific yield: 1,508.74 kWh/kWp vs 1,298 target (+16.2%)  |
 | **BAT-001** | **Battery Dispatch Dynamics, SoC Tracking & Losses**                                                 | `done` | [BAT-001-gemini-battery-dynamics.md](../reports/BAT-001-gemini-battery-dynamics.md)                                 |
 | BAT-001.1   | Implement time-stepped State-of-Charge tracking logic                                                | `done` | SoC recursion                                                                                                       |
 | BAT-001.2   | Apply LFP round-trip efficiency (92% RTE, $\sqrt{\eta}$ charge/discharge)                            | `done` | Efficiency losses                                                                                                   |
@@ -120,21 +120,21 @@ Status: **open**
 
 Status: **open**
 
-| ID          | Task                                                                | Status | Notes / Report                                                     |
-| :---------- | :------------------------------------------------------------------ | :----- | :----------------------------------------------------------------- |
-| **INT-001** | **Simulation Engine Integration & Full Dispatch Loop**              | `open` | [PROMPT](docs/prompts/INT-001-PROMPT.md) Engine, CLI, verification |
-| INT-001.1   | Integrate all sub-models into hourly time loop                      | `open` | Full dispatch engine                                               |
-| INT-001.2   | Implement priority bus energy routing (Solar -> Load -> Battery)    | `open` | Bus routing                                                        |
-| INT-001.3   | Run full annual simulation for all combinations                     | `open` | Matrix runner                                                      |
-| INT-001.4   | Verify energy conservation across all 8,760 hours                   | `open` | Conservation check                                                 |
-| **INT-002** | **Monte Carlo Outage Simulation Engine**                            | `open` |                                                                    |
-| INT-002.1   | Monte Carlo driver (N = 100 seeds per scenario)                     | `open` | MC engine                                                          |
-| INT-002.2   | Stochastic convergence test (sample size sufficiency)               | `open` | Convergence                                                        |
-| INT-002.3   | Record distributions: unserved kWh, outage hours survived           | `open` | Distributions                                                      |
-| **INT-003** | **Verification, Validation & Headline KPI Reporting**               | `open` |                                                                    |
-| INT-003.1   | Final energy balance audit (residual < 10⁻⁵ kWh everywhere)         | `open` | Balance audit                                                      |
-| INT-003.2   | Compare uncalibrated simulation vs synthetic bills (NMBE, CV(RMSE)) | `open` | Billing validation                                                 |
-| INT-003.3   | Generate publication-quality headline KPI summary tables            | `open` | KPI tables                                                         |
+| ID          | Task                                                                | Status | Notes / Report                                                    |
+| :---------- | :------------------------------------------------------------------ | :----- | :---------------------------------------------------------------- |
+| **INT-001** | **Simulation Engine Integration & Full Dispatch Loop**              | `done` | [INT-001-gemini-engine.md](../reports/INT-001-gemini-engine.md) [D-35] Engine, CLI, verification |
+| INT-001.1   | Integrate all sub-models into hourly time loop                      | `done` | simulate() 8-step dispatch loop                                   |
+| INT-001.2   | Implement priority bus energy routing (Solar -> Load -> Battery)    | `done` | Bus routing & tiered shedding                                     |
+| INT-001.3   | Run full annual simulation for all combinations                     | `done` | Matrix runner & CLI driver ccis-sim run                           |
+| INT-001.4   | Verify energy conservation across all 8,760 hours                   | `done` | Conservation residual < 1e-9 kWh across all 8,760h                |
+| **INT-002** | **Monte Carlo Outage Simulation Engine**                            | `open` |                                                                   |
+| INT-002.1   | Monte Carlo driver (N = 100 seeds per scenario)                     | `open` | MC engine                                                         |
+| INT-002.2   | Stochastic convergence test (sample size sufficiency)               | `open` | Convergence                                                       |
+| INT-002.3   | Record distributions: unserved kWh, outage hours survived           | `open` | Distributions                                                     |
+| **INT-003** | **Verification, Validation & Headline KPI Reporting**               | `open` |                                                                   |
+| INT-003.1   | Final energy balance audit (residual < 10⁻⁵ kWh everywhere)         | `open` | Balance audit                                                     |
+| INT-003.2   | Compare uncalibrated simulation vs synthetic bills (NMBE, CV(RMSE)) | `open` | Billing validation                                                |
+| INT-003.3   | Generate publication-quality headline KPI summary tables             | `open` | KPI tables                                                        |
 
 ---
 

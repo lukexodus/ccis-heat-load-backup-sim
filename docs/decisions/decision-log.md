@@ -399,3 +399,37 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
      Evaluates pre-discretization continuous durations against target Lognormal via two-sided Kolmogorov-Smirnov test at significance level $\alpha = 0.01$, and verifies annual arrival counts against Poisson($\lambda$) via large-sample standard error normal approximation.  
 - **Reasoning:** Conforms strictly to Phase 2 interface contracts (`phase2-interface-contract.md`), eliminates arbitrary constants, provides empirical calibration to Philippine rural cooperative and cyclone data [D-11], and guarantees mathematical consistency between discrete `OutageEvent` records and boolean `grid_available` arrays.  
 - **Affects:** `ccis_sim.outage.sampler`, `ccis_sim.outage`, `INT-001`, `INT-002`, `DEC-002`.
+
+
+**[D-35]** Integrated Simulation Engine Architecture, Dispatch Sequence, Exporters, and Combined Demand/Solar Verification (DEM-002.4 + SOL-002.4).  
+- **Date / Session:** 2026-10-21  
+- **Decision:**  
+  1. **Engine Dispatch Sequence and Pure Function Interface (`simulate`):**  
+     Implement the integrated simulation engine as a pure functional call `simulate(config, weather_df, seed) -> SimulationResult` without global state or input mutation. The hourly dispatch loop strictly executes the 8-step sequence specified in `phase2-interface-contract.md`:  
+     - Step 1: Query effective battery reserve floor $R_{\text{floor}}(t)$ via `get_reserve_floor` (accounting for scheduled baseline reserve or storm-mode pre-charge).  
+     - Step 2: Compute gross balance $B_{\text{gross}}(t) = P_{\text{pv}}(t) - L_{\text{total}}(t)$.  
+     - Step 3: Dispatch battery via `step_battery_dispatch` (charging up to surplus/headroom/C-rate or discharging up to deficit/floor/C-rate).  
+     - Step 4: Compute net electrical balance $B_{\text{net}}(t) = B_{\text{gross}}(t) + P_{\text{batt}}(t)$ (where $P_{\text{batt}} > 0$ denotes discharge).  
+     - Step 5: Check grid availability $G(t) \in \{\text{True}, \text{False}\}$. If grid is online, balance deficits via grid import and export surplus; unserved deficit is 0. If grid is offline (outage), grid exchange is 0 and deficit $D_{\text{unserved}} = \max(0, -B_{\text{net}})$.  
+     - Step 6: Execute tiered load shedding via `apply_shedding(tier_loads, soc(t+1), deficit)`.  
+     - Step 7: Record hourly unserved metrics into `UnservedTracker.record_hour`.  
+     - Step 8: Consolidate hourly metrics and append to history vectors.  
+  2. **Configuration Surface and Scenario Preset Matrix (`SimulationConfig`):**  
+     Encapsulate all simulation parameters into an immutable dataclass `SimulationConfig`. Provide a factory method `SimulationConfig.for_scenario(name)` mapping the 4 core comparative scenario presets:  
+     - `grid_only`: 0 kWp PV, 0 kWh battery, grid available (reference baseline).  
+     - `pv_only`: 100 kWp PV, 0 kWh battery.  
+     - `pv_battery_std`: 100 kWp PV, 200 kWh battery, baseline reserve floor (10% min SoC).  
+     - `pv_battery_resilient`: 100 kWp PV, 200 kWh battery, resilient reserve floor (50% emergency reserve floor with 24h pre-charge window).  
+  3. **Decoupled Priority Load Shedding and Battery Reserve Coordination:**  
+     Confirm adherence to [D-34]: the 20% SoC load shedding trigger threshold (`SHED_THRESHOLD_SOC = 0.20`) is strictly decoupled from the battery operational minimum SoC (`min_soc = 0.10`) and outage emergency reserve floor (`reserve_soc = 0.50`). Load shedding is an electrical demand-side triage policy, whereas battery reserve is an electrochemical dispatch boundary.  
+  4. **DEM-002.4 Combined Demand Verification & Uncalibrated Baseline Comparison:**  
+     Bottom-up integration yields annual demand of 189,355.61 kWh/yr, EUI of 75.74 kWh/m²·yr, and peak demand of 95.71 kW (occurring at hour 2340). Comparison against benchmarks:  
+     - vs Phase 1 uncalibrated placeholder (324,380 kWh/yr, EUI 129.75, peak 101.29 kW): -41.63% annual energy, -41.62% EUI, -5.51% peak.  
+     - vs synthetic mock utility bills (398,537 kWh/yr, EUI 159.41, peak 139.24 kW): -52.49% annual energy.  
+     *Physical Rationale:* The Phase 1 uncalibrated model assumed a continuous 30 kW 24/7 baseload and continuous 64.9 kW cooling day and night. In contrast, the bottom-up model strictly reflects CCIS operational reality: classes operate 07:00–19:00, buildings close on weekends, and cooling shuts down when spaces are unoccupied, with true standby baseload of 6.07 kW and 24/7 server room cooling of 3.8 kW. In accordance with rigorous modeling integrity and explicit prompt directives, the bottom-up demand is NOT arbitrarily scaled or calibrated to match synthetic utility bills.  
+  5. **SOL-002.4 Combined Solar Verification & Luzon Target Reconciliation:**  
+     Transposed annual POA insolation in Batac is 1,945.98 kWh/m². SOL-001 temperature-derated DC yield is 1,695.05 kWh/kWp, yielding an implied annual energy-weighted thermal factor $\text{TF}_{\text{implied}} = \frac{1695.05}{1945.98} \approx 0.871056$ (~12.89% thermal loss). This closely matches the SOL-002 assumed derate $\text{TF}_{\text{assumed}} \approx 0.865089$ within 0.69%. End-to-end AC specific yield is 1,508.74 kWh/kWp (301,747.88 kWh/yr for 200 kWp), comfortably inside the tropical Philippines expected band [1,200, 1,600] kWh/kWp. The +16.24% higher specific yield relative to the 1,298 kWh/kWp multi-system Luzon average cited in literature is physically justified by Batac's exceptional high solar resource (1,901 kWh/m² GHI, 1,946 kWh/m² POA) compared to cloudier southern/urban Luzon sites.  
+  6. **Multi-Format Exporters and CLI Driver Architecture:**  
+     Provide pure functional exporters in `src/ccis_sim/integration/exporters.py` generating hourly timeseries CSV, daily aggregated timeseries CSV, and an annual summary JSON adhering to Phase 2 schemas. Provide the CLI command `ccis-sim run` (`src/ccis_sim/cli.py`) with rich tabular console summaries and artifact file output.  
+- **Reasoning:** Establishes the authoritative Phase 2 integrated simulation engine, satisfies all interface contracts, decouples triage policies from physical battery states, and establishes rigorous, physically-grounded cross-verification for demand and solar sub-models.  
+- **Affects:** `ccis_sim.integration`, `ccis_sim.cli`, `INT-001`, `DEM-002.4`, `SOL-002.4`, `DEC-002`.
