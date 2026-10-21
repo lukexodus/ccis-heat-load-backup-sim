@@ -2,6 +2,7 @@
 
 *.tar.gz
 patch/*.patch
+results/*.csv
 
 # Python artifacts
 __pycache__/

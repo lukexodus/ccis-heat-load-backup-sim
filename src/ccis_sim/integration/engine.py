@@ -72,7 +72,12 @@ class SimulationConfig:
     allow_emergency_drawdown: bool = False
     """Permit catastrophic emergency drawdown below 10% min_soc during blackouts per [D-25]."""
 
+    demand_scale: float = 1.0
+    """Scalar multiplier applied to building electrical demand arrays (default 1.0). Must be > 0.0."""
+
     def __post_init__(self) -> None:
+        if self.demand_scale <= 0.0:
+            raise ValueError(f"demand_scale must be > 0.0, got {self.demand_scale}")
         if self.solar_kwp < 0.0 or self.solar_kwp > 200.0:
             raise ValueError(f"solar_kwp must be in [0.0, 200.0], got {self.solar_kwp}")
         if self.battery_kwh < 0.0 or self.battery_kwh > 200.0:
@@ -282,10 +287,10 @@ def simulate(
         bldg,
     )
 
-    # Linear tier summation per Phase 2 contract §4.1
-    t1_demand_arr = non_cooling_demand.tier1_kwh + cooling_demand.tier1_kwh
-    t2_demand_arr = non_cooling_demand.tier2_kwh + cooling_demand.tier2_kwh
-    t3_demand_arr = non_cooling_demand.tier3_kwh + cooling_demand.tier3_kwh
+    # Linear tier summation per Phase 2 contract §4.1, scaled by demand_scale
+    t1_demand_arr = (non_cooling_demand.tier1_kwh + cooling_demand.tier1_kwh) * config.demand_scale
+    t2_demand_arr = (non_cooling_demand.tier2_kwh + cooling_demand.tier2_kwh) * config.demand_scale
+    t3_demand_arr = (non_cooling_demand.tier3_kwh + cooling_demand.tier3_kwh) * config.demand_scale
 
     # 4. Solar Sub-Models (SOL-001 + SOL-002)
     # Apply typhoon solar GHI depression window if active per [D-11] and [D-33]

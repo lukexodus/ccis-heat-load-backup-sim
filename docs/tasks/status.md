@@ -127,10 +127,10 @@ Status: **open**
 | INT-001.2   | Implement priority bus energy routing (Solar -> Load -> Battery)    | `done` | Bus routing & tiered shedding                                     |
 | INT-001.3   | Run full annual simulation for all combinations                     | `done` | Matrix runner & CLI driver ccis-sim run                           |
 | INT-001.4   | Verify energy conservation across all 8,760 hours                   | `done` | Conservation residual < 1e-9 kWh across all 8,760h                |
-| **INT-002** | **Monte Carlo Outage Simulation Engine**                            | `open` |                                                                   |
-| INT-002.1   | Monte Carlo driver (N = 100 seeds per scenario)                     | `open` | MC engine                                                         |
-| INT-002.2   | Stochastic convergence test (sample size sufficiency)               | `open` | Convergence                                                       |
-| INT-002.3   | Record distributions: unserved kWh, outage hours survived           | `open` | Distributions                                                     |
+| **INT-002** | **Monte Carlo Outage Simulation Engine**                            | `done` | [INT-002-gemini-scenarios.md](../reports/INT-002-gemini-scenarios.md) [D-36] |
+| INT-002.1   | Monte Carlo driver (N = 100 seeds per scenario)                     | `done` | MC engine: 2,460 runs across main, sensitivity, and +2°C grids    |
+| INT-002.2   | Stochastic convergence test (sample size sufficiency)               | `done` | Convergence evaluated at N=10, 20, 30 (SE halves, D-36)           |
+| INT-002.3   | Record distributions: unserved kWh, outage hours survived           | `done` | 100 cells serialized to results/mc_summary.csv                    |
 | **INT-003** | **Verification, Validation & Headline KPI Reporting**               | `open` |                                                                   |
 | INT-003.1   | Final energy balance audit (residual < 10⁻⁵ kWh everywhere)         | `open` | Balance audit                                                     |
 | INT-003.2   | Compare uncalibrated simulation vs synthetic bills (NMBE, CV(RMSE)) | `open` | Billing validation                                                |

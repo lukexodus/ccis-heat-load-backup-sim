@@ -20,6 +20,13 @@ from ccis_sim.integration.exporters import (
     export_hourly_csv,
     export_summary_json,
 )
+from ccis_sim.integration.scenarios import (
+    check_convergence,
+    compute_bill_calibrated_scale,
+    compute_mc_summary,
+    generate_scenario_configs,
+    run_grid,
+)
 
 __all__ = [
     # Engine (INT-001)
@@ -30,6 +37,12 @@ __all__ = [
     "export_hourly_csv",
     "export_daily_csv",
     "export_summary_json",
+    # Scenarios & Monte Carlo (INT-002)
+    "run_grid",
+    "generate_scenario_configs",
+    "compute_mc_summary",
+    "check_convergence",
+    "compute_bill_calibrated_scale",
     # Baseline (Phase 1 legacy & smoke)
     "CALIBRATION_FACTOR_2019",
     "DEFAULT_COOLING_DUTY_FACTOR",
