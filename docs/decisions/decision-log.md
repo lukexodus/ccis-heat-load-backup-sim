@@ -243,3 +243,20 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
      - In accordance with the prompt specification, this discrepancy from D-10's nominal 2/18/80 split is explicitly exposed via `compute_tier_audit_shares` and reported as an audit reality rather than forced to match nominal assumptions.
 - **Reasoning:** Formalizes exact deterministic load-shedding dispatch rules and energy accounting, guaranteeing conservation and clean policy decoupling ahead of full system integration.
 - **Affects:** `OUT-002`, `INT-001`, `INT-002`, `DEC-002`.
+
+**[D-32]** Battery Outage Reserve Scheduling Floor, Emergency Drawdown Constraints, and Chemical Idle Loss Accounting.  
+- **Date / Session:** 2026-10-21  
+- **Decision:**  
+  1. **Dynamic SoC Protection Floor (`soc_floor_kwh`):** Implemented in `src/ccis_sim/battery/reserve.py` conforming strictly to `docs/context/phase2-interface-contract.md`.
+  2. **Operational vs. Hardware Protection Floor Semantics:**
+     - When utility grid is energized (`grid_available = True`), the operational dispatch floor is $\text{min\_soc\_kwh} + \text{emergency\_reserve\_kwh}$ ($0.10 \times C_{\text{bat}} + 0.20 \times C_{\text{bat}} = 0.30 \times C_{\text{bat}}$), locking the 20% emergency buffer away from routine daily cycling per [D-17].
+     - When utility grid fails (`grid_available = False`), the emergency reserve is released and the floor collapses to the physical cell-protection floor $\text{min\_soc\_kwh}$ ($0.10 \times C_{\text{bat}}$ per [D-09]).
+     - When utility grid fails with `allow_emergency_drawdown = True` and Tier 1 critical or Tier 2 essential load is active (`active_load_tier in (1, 2)`), the floor drops to $0.0\text{ kWh}$ per [D-25], enabling catastrophic emergency drawdown. For Tier 3 sheddable load, the floor remains strictly at $\text{min\_soc\_kwh}$.
+     - For zero-capacity batteries, the floor evaluates to $0.0\text{ kWh}$.
+  3. **Chemical-Side Idle Loss Formulation (`apply_idle_losses`):**
+     - Standby tare loss ($P_{\text{tare}}$) and ambient self-discharge ($r_{\text{self}} = 2.0\%/\text{month}$) are applied strictly to stored chemical State-of-Charge per [D-26], using standard $730.0\text{ h/month}$ ($8,760\text{ h} / 12$).
+     - Idle losses are clamped at $\text{battery.min\_soc\_kwh}$ ($0.10 \times C_{\text{bat}}$) and $0.0\text{ kWh}$, guaranteeing that standby dissipation never self-starves the battery below physical limits or induces negative SoC.
+     - The hourly loss is bounded by $\Delta E_{\text{idle, max}}$, guaranteeing exact compliance with verification harness continuity checks without tripping `SOC_CONTINUITY` or `SOC_CUMULATIVE_DRIFT`.
+- **Reasoning:** Formalizes exact mathematical rules bridging normal operational dispatch reserves, blackout survival overrides, and physical idle losses while maintaining first-law conservation across all interfaces.
+- **Affects:** `BAT-002`, `BAT-001`, `INT-001`, `INT-002`.
+

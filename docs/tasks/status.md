@@ -106,11 +106,11 @@ Status: **open**
 | BAT-001.2   | Apply LFP round-trip efficiency (92% RTE, $\sqrt{\eta}$ charge/discharge)                            | `open` | Efficiency losses  |
 | BAT-001.3   | Enforce charge/discharge power limits (0.5C charge, 1.0C discharge)                                  | `open` | C-rate constraints |
 | BAT-001.4   | Write unit tests for simultaneous charge/discharge prevention                                        | `open` | Boundary tests     |
-| **BAT-002** | **Battery Outage Reserve & State-of-Charge Constraints**                                             | `open` |                    |
-| BAT-002.1   | Enforce 10% minimum SoC reserve floor (90% usable DoD)                                               | `open` | Reserve floor      |
-| BAT-002.2   | Implement configurable emergency outage reserve %                                                    | `open` | Outage cushion     |
-| BAT-002.3   | Incorporate ambient self-discharge (2%/month) and tare loss                                          | `open` | Idle losses        |
-| BAT-002.4   | Write unit tests for deep-discharge protection during long outages                                   | `open` | Protection tests   |
+| **BAT-002** | **Battery Outage Reserve & State-of-Charge Constraints**                                             | `done` | [BAT-002-gemini-battery-reserve.md](../reports/BAT-002-gemini-battery-reserve.md)                        |
+| BAT-002.1   | Enforce 10% minimum SoC reserve floor (90% usable DoD)                                               | `done` | Reserve floor      |
+| BAT-002.2   | Implement configurable emergency outage reserve %                                                    | `done` | Outage cushion     |
+| BAT-002.3   | Incorporate ambient self-discharge (2%/month) and tare loss                                          | `done` | Idle losses        |
+| BAT-002.4   | Write unit tests for deep-discharge protection during long outages                                   | `done` | Protection tests   |
 | **OUT-001** | **Stochastic Outage Arrival & Duration Sampler**                                                     | `open` |                    |
 | OUT-001.1   | Implement Poisson arrival process ($\lambda = 3$ normal, $\lambda = 8$ typhoon)                      | `open` | Poisson arrivals   |
 | OUT-001.2   | Implement Lognormal duration sampler (Normal: $\mu=1.2, \sigma=0.8$; Typhoon: $\mu=2.3, \sigma=1.0$) | `open` | Duration sampler   |
