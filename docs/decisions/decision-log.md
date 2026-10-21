@@ -301,3 +301,28 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
      Yields an annual specific DC generation of **1,695.05 kWh/kWp** for the 2019 baseline weather fixture before balance-of-system and inverter losses (which are reserved for `SOL-002`).  
 - **Reasoning:** Conforms strictly to the locked `phase2-interface-contract.md` signature, eliminates uncredited magic constants, provides physically validated solar transposition and thermal derating, and preserves exact zero generation during non-sunlit hours.  
 - **Affects:** `SOL-001`, `SOL-002`, `INT-001`.
+
+**[D-30]** Solar PV Array Sizing, Inverter Clipping, and Balance-of-System PR Decomposition locked.  
+- **Date / Session:** 2026-10-21  
+- **Decision:**  
+  1. **Array Sizing & Capacity Matrix Scaling (`compute_ac_generation`):**  
+     Implement hourly AC generation modeling across the four scenario DC capacities defined in [D-18]: 0 kWp (negative control, returns strictly 0.0 kWh/h), 50 kWp, 100 kWp, and 200 kWp. Conforms strictly to the locked `phase2-interface-contract.md` signature.  
+  2. **Inverter Efficiency & Continuous AC Clipping Limit:**  
+     Model peak inverter conversion efficiency at 98.0% (`DEFAULT_INVERTER_EFFICIENCY = 0.980`) per [D-08]. Continuous inverter AC power rating is governed by an explicit commercial DC/AC sizing ratio (`DEFAULT_DC_AC_RATIO = 1.20`, `[ASSUMPTION]`):  
+     $$P_{\text{ac\_rated}} = \frac{P_{\text{dc\_kWp}}}{\text{DC/AC ratio}}$$  
+     Gross AC power before clipping ($P_{\text{ac\_gross}} = P_{\text{dc\_at\_inverter}} \cdot \eta_{\text{inv}}$) is strictly clipped at $P_{\text{ac\_rated}}$, guaranteeing that AC power output delivered to the microgrid bus never exceeds continuous inverter nameplate rating ($P_{\text{ac}} \le P_{\text{ac\_rated}}$).  
+  3. **Non-Thermal Balance-of-System (BOS) Derate Decomposition:**  
+     To prevent double-counting of temperature losses already explicitly computed upstream in `SOL-001` (`compute_dc_power_per_kwp`), decompose the nominal $PR = 0.77$ ([D-08]) into named physical derating factors (`[ASSUMPTION]`):  
+     - Soiling factor: $f_{\text{soiling}} = 0.960$ (4.0% seasonal dust/dry spell soiling loss in Batac).  
+     - DC wiring factor: $f_{\text{dc\_wiring}} = 0.985$ (1.5% DC ohmic cabling loss).  
+     - AC wiring factor: $f_{\text{ac\_wiring}} = 0.990$ (1.0% AC collection and transformer loss).  
+     - Module mismatch factor: $f_{\text{mismatch}} = 0.980$ (2.0% module mismatch and manufacturer nameplate tolerance).  
+     - Availability factor: $f_{\text{availability}} = 0.990$ (1.0% operational downtime / maintenance).  
+     The product of non-thermal BOS factors is:  
+     $$f_{\text{bos\_non\_thermal}} = 0.960 \times 0.985 \times 0.990 \times 0.980 \times 0.990 \approx 0.908247$$  
+  4. **Assumed Mean Thermal Factor & Reconciliation to Baseline PR = 0.77:**  
+     Define the assumed annual mean thermal factor as $\text{ASSUMED\_MEAN\_THERMAL\_FACTOR} \approx 0.865089$ (`[ASSUMPTION]`, representing ~13.49% average thermal derating under tropical Batac weather conditions). The budget reconciles exactly to the baseline $PR = 0.77$:  
+     $$\text{PR} = \eta_{\text{inv}} \cdot f_{\text{bos\_non\_thermal}} \cdot \text{ASSUMED\_MEAN\_THERMAL\_FACTOR} = 0.980 \cdot 0.908247 \cdot 0.865089 = 0.770000$$  
+     In `compute_ac_generation`, only the non-thermal BOS derates and inverter efficiency/clipping are applied to the input `dc_kw_per_kwp`. Full system annual yield validation against the 1,298 kWh/kWp Luzon benchmark is deferred to `SOL-002.4` following integration with `SOL-001`.  
+- **Reasoning:** Conforms strictly to Phase 2 interface contracts, eliminates double-counting of cell thermal losses, provides physical and auditable BOS loss accounting, and bounds maximum AC power delivery under inverter clipping.  
+- **Affects:** `SOL-002`, `INT-001`, `DEC-002`.
