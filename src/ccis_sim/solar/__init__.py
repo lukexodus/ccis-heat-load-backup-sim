@@ -11,6 +11,7 @@ from ccis_sim.solar.array import (
     DEFAULT_INVERTER_EFFICIENCY,
     DEFAULT_MISMATCH_FACTOR,
     DEFAULT_SOILING_FACTOR,
+    IMPLIED_ANNUAL_THERMAL_FACTOR_2019,
     compute_ac_generation,
     get_inverter_ac_rating,
     get_non_thermal_bos_factor,
@@ -26,6 +27,7 @@ from ccis_sim.solar.irradiance import (
 
 __all__ = [
     "ASSUMED_MEAN_THERMAL_FACTOR",
+    "IMPLIED_ANNUAL_THERMAL_FACTOR_2019",
     "DEFAULT_AC_WIRING_FACTOR",
     "DEFAULT_AVAILABILITY_FACTOR",
     "DEFAULT_DC_AC_RATIO",
