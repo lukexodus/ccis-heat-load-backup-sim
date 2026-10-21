@@ -221,8 +221,40 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
      $$0 - \epsilon \le \text{SoC}_{t, \text{ideal}} - \text{SoC}_t \le \Delta E_{\text{idle, max}} + \epsilon$$
      where $\Delta E_{\text{idle, max}} = \left(\frac{C_{\text{bat}} \cdot r_{\text{self}}}{730} + P_{\text{tare}}\right) \Delta t$, based on 730 hours per nominal month ($8,760\text{ h} / 12$). Stored chemical SoC may never exceed the lossless ideal recursion ($SoC_t \le SoC_{t, \text{ideal}} + \epsilon$). When idle loss parameters are zero, the formulation collapses identically to the bilateral tolerance of [D-25].
   5. **Cumulative Continuity Drift Invariant:** Accumulated step differences $\sum (\text{SoC}_{\text{ideal}} - \text{SoC})$ across $N$ evaluated hours must not exceed total allowed idle loss plus the statistical cumulative tolerance $\max(\epsilon, \sqrt{N}\epsilon)$ per [D-21]. Unaccounted cumulative leakage or upward drift trips `ViolationType.SOC_CUMULATIVE_DRIFT`.
-- **Reasoning:** Establishes unambiguous API contracts across all eight parallel Phase 2 sub-models to prevent divergence, while closing physical verification blind spots for standby battery self-discharge and cumulative SoC drift prior to BAT-001/002.
+- **Reasoning:** Establishes unambiguous API contracts across all eight parallel Phase 2 sub-models to prevent divergence, while closing physical verification blind spots for standby battery self-discharge and cumulative SoC drift prior to BAT-001/002.  
 - **Affects:** `CORE-006`, `DEM-001`, `DEM-002`, `SOL-001`, `SOL-002`, `BAT-001`, `BAT-002`, `OUT-001`, `OUT-002`, `INT-001`, `INT-003`.
+
+**[D-27]** Academic Calendar Conventions, Bottom-Up Non-Cooling Demand Aggregation, and Baseload Double-Counting Prevention.  
+- **Date / Session:** 2026-10-21  
+- **Decision:**  
+  1. **Academic Calendar Baseline Model (`AcademicCalendar`):**
+     - Adopted academic calendar boundaries patterned on Mariano Marcos State University (MMSU) Batac campus operations:
+       - First Semester: August 15 to December 15 (18 weeks).
+       - Winter / Semestral Break: December 16 to January 14.
+       - Second Semester: January 15 to May 25 (18 weeks).
+       - Summer / Midyear Break: May 26 to August 14.
+     - Codified Philippine regular and special non-working statutory holidays for weather fixture years 2019 (Proclamation No. 555) and 2016 (Proclamation No. 1105 / 1107), including movable feasts (Holy Week, Eid'l Fitr, Eid'l Adha) and National Heroes Day.
+  2. **Hourly Occupancy Profiles (`build_occupancy_schedule`):**
+     - Class Weekdays (Mon-Fri): 07:00 (0.20 early prep), 08:00–12:00 (1.00 lecture/lab peak), 12:00–13:00 (0.60 lunch dip), 13:00–18:00 (0.95 afternoon classes), 18:00–20:00 (0.30 evening graduate/extension), 20:00–07:00 (0.00 closed).
+     - Class Saturdays: 08:00–12:00 (0.50 morning NSTP/labs), 12:00–13:00 (0.20 lunch dip), 13:00–17:00 (0.30 afternoon labs), 17:00–08:00 (0.00 closed).
+     - Sundays and Gazetted Holidays: 0.00 all 24 hours (facility closed).
+     - Term Break Weekdays: 08:00–12:00 and 13:00–17:00 (0.15 skeleton faculty/admin presence), 12:00–13:00 (0.05 lunch), 17:00–08:00 (0.00 closed).
+  3. **Bottom-Up Non-Cooling Aggregation (`compute_non_cooling_demand`):**
+     - Isolated non-cooling electrical equipment (`item.is_cooling == False`) from `EquipmentAudit`.
+     - Classified equipment into continuous 24/7 loads (`hours_per_day >= 24.0`) and occupancy-driven diurnal loads (`hours_per_day < 24.0`).
+     - Connected non-cooling effective peak is 60.6590 kW (continuous: 3.4410 kW; occupancy peak: 57.2180 kW).
+  4. **Baseload Double-Counting Prevention Rule:**
+     - Target unoccupied non-cooling baseload is 10% of daytime peak ($0.10 \times 60.6590\text{ kW} = 6.0659\text{ kW}$).
+     - Continuous 24/7 equipment already draws 3.4410 kW (Tier 1 life-safety: 1.2150 kW; Tier 2 IT infrastructure: 2.2260 kW).
+     - To prevent double counting continuous loads with the 10% baseload rule, the residual standby margin is defined as $P_{\text{standby}} = \max(0.0, 0.10 \times P_{\text{peak}} - P_{\text{cont, total}}) = 2.6249\text{ kW}$.
+     - This residual represents parasitic standby plug loads (sleep-mode PCs, monitors, troffers, and appliances) and is allocated to Tier 3 (sheddable load).
+     - As occupancy fraction $f$ increases, standby load transitions into active operational load via $(1.0 - f) \times P_{\text{standby}}$.
+     - Resulting gross demand is exactly 6.0659 kW (10% of peak) during all unoccupied hours (nights, Sundays, holidays) and 60.6590 kW at full occupancy, with energy conservation strictly preserved per hour ($\sum \text{Tier}_i = \text{Gross}$).
+  5. **Decoupling from Cooling and Calibration:**
+     - Cooling load calculations are strictly excluded and deferred to DEM-002.
+     - Calibration scaling factors and billing reconciliations are deferred to DEM-002.4 and INT-001.
+- **Reasoning:** Establishes an auditable, physically grounded bottom-up schedule and non-cooling load model without double-counting 24/7 continuous loads, enabling clean integration with OUT-002 tiered shedding and DEM-002 cooling response.  
+- **Affects:** `DEM-001`, `DEM-002`, `OUT-002`, `INT-001`, `INT-002`, `INT-003`.
 
 **[D-34]** Priority-Based Tiered Load Shedding Policy, Low-SoC Threshold Decoupling, and Unserved Energy Tracking Conventions.  
 - **Date / Session:** 2026-10-20  

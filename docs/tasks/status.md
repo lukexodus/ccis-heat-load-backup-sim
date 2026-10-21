@@ -1,77 +1,69 @@
-# Task Status
+# Task Status & Progress Log
 
-Live tracker — what is actually done right now, not the long-term plan (the plan lives in `docs/tasks/high-level-tasks.md`). This file changes every time a task's status changes. A new APC instance or local agent should be able to read this file alone and know the exact state of the project without having to reconstruct it from scattered chat logs or report files.
+All work must be traceable to a task defined here or in `docs/context/high-level-tasks.md`.
+Local agents update this file to reflect actual status (`open`, `in-progress`, `done`, `blocked`, `needs-review`).
 
-**Status values:**
-- `open` — Not yet started.
-- `in-progress` — Actively being worked on (note the agent / branch).
-- `blocked` — Cannot proceed (state the specific blocking dependency).
-- `needs-review` — Implemented by a local agent; waiting for APC / lukexodus review.
-- `done` — Completed, verified, and accepted (must link the completed report file).
+Last updated: 2026-10-21 (Phase 2 Integration)
 
 ---
 
-## Phase 0 — Inception, Scope Lock & Repository Foundation
+## Phase 0 — Architecture & Governance Setup
 
 Status: **done**
 
-| ID           | Task                                                         | Status | Notes / Report                                                                                            |
-| :----------- | :----------------------------------------------------------- | :----- | :-------------------------------------------------------------------------------------------------------- |
-| **ARCH-001** | **Lock Scope, Conceptual Model & Interface Contracts**       | `done` | [ARCH-001-gemini-lock-conceptual-model.md](../reports/ARCH-001-gemini-lock-conceptual-model.md)           |
-| ARCH-001.1   | Formalize system boundary, entities, and environment         | `done` | Building (18 rooms), PV, BESS, grid                                                                       |
-| ARCH-001.2   | Define state variables, discrete events, and transitions     | `done` | Hourly, continuous & discrete states                                                                      |
-| ARCH-001.3   | Specify performance measures and decision variables          | `done` | SSR, SCR, Autonomy, EUE, kWp, kWh                                                                         |
-| ARCH-001.4   | Review and record decisions `[D-05]` through `[D-11]`        | `done` | Logged in decision-log.md                                                                                 |
-| ARCH-001.5   | Lock `HourlyRecord` schema and function signatures           | `done` | Canonical contract                                                                                        |
-| ARCH-001.6   | Generate conceptual model Mermaid flowcharts                 | `done` | Architecture & dispatch diagrams                                                                          |
-| **ARCH-002** | **Scaffold Repository, Toolchain, Linting & Research Index** | `done` | [ARCH-002-gemini-repo-scaffolding.md](../reports/ARCH-002-gemini-repo-scaffolding.md)                     |
-| ARCH-002.1   | Set up Python env, `pyproject.toml`, and `requirements.txt`  | `done` | pandas, numpy, scipy, matplotlib, pytest                                                                  |
-| ARCH-002.2   | Create package directory layout (`src/ccis_sim/`, `tests/`)  | `done` | Scaffolding (subpackages, tests, data)                                                                    |
-| ARCH-002.3   | Configure linting, formatting, and pytest test harness       | `done` | Verification gate (pytest 10/10 passing)                                                                  |
-| ARCH-002.4   | Create and commit `docs/context/research-synthesis.md`       | `done` | [ARCH-002.4-gemini-research-synthesis-fixup.md](../reports/ARCH-002.4-gemini-research-synthesis-fixup.md) |
-| ARCH-002.5   | Windows interoperability & cross-platform script parity      | `done` | [ARCH-002.5-gemini-windows-interop.md](../reports/ARCH-002.5-gemini-windows-interop.md)                   |
-
+| ID         | Task                                                        | Status | Notes / Report                                                    |
+| :--------- | :---------------------------------------------------------- | :----- | :---------------------------------------------------------------- |
+| **ARCH-001** | **Lock Conceptual Architecture & Operational Assumptions**    | `done` | [Report](docs/reports/ARCH-001-gemini-lock-conceptual-model.md)   |
+| ARCH-001.1 | Project conceptual model definition                         | `done` | Model locked                                                      |
+| ARCH-001.2 | Mathematical formulation & solver specifications            | `done` | Specs locked                                                      |
+| ARCH-001.3 | Institutional constraints & public data governance lock     | `done` | Governance locked                                                 |
+| **ARCH-002** | **Repository Structure, Tooling & Verification Pipeline**   | `done` | [Report](docs/reports/ARCH-002-gemini-repo-scaffolding.md)        |
+| ARCH-002.1 | Directory tree and package scaffolding                      | `done` | Repo scaffolded                                                   |
+| ARCH-002.2 | Virtual environment, dependencies & packaging               | `done` | Poetry / pyproject.toml                                           |
+| ARCH-002.3 | Test framework & baseline smoke tests                       | `done` | Pytest configured                                                 |
+| ARCH-002.4 | Fixup research synthesis references in context docs         | `done` | [Report](docs/reports/ARCH-002.4-gemini-research-synthesis-fixup.md) |
+| ARCH-002.5 | Cross-platform developer interoperability & batch scripts   | `done` | [Report](docs/reports/ARCH-002.5-gemini-windows-interop.md)       |
 
 ---
 
-## Phase 1 — Core Infrastructure & Data Pipelines
+## Phase 1 — Core Infrastructure & Physics Engine
 
 Status: **done**
 
-| ID           | Task                                                                             | Status | Notes / Report                                                                                                    |
-| :----------- | :------------------------------------------------------------------------------- | :----- | :---------------------------------------------------------------------------------------------------------------- |
-| **CORE-001** | **Implement Canonical Domain Models & Interface Contracts**                      | `done` | [CORE-001-gemini-domain-models.md](../reports/CORE-001-gemini-domain-models.md)                                   |
-| CORE-001.1   | Implement `Building`, `SolarArray`, and `Battery` dataclasses                    | `done` | Building (18 rooms), SolarArray, Battery                                                                          |
-| CORE-001.2   | Implement `OutageEvent` and `HourlyRecord` time-step models                      | `done` | OutageEvent & HourlyRecord (18 fields)                                                                            |
-| CORE-001.3   | Build CSV/dict serialization protocols for simulation output                     | `done` | to_dict / from_dict serialization                                                                                 |
-| CORE-001.4   | Write unit test suite for domain models and data invariants                      | `done` | 29 pytest tests passing (100% green)                                                                              |
-| CORE-001.5   | Reconcile uncredited assumptions in Battery & Building ([D-17], [D-18])          | `done` | [CORE-001.5-gemini-decision-gap-fixup.md](../reports/CORE-001.5-gemini-decision-gap-fixup.md)                     |
-| CORE-001.6   | Process & reporting fixup for provenance files and patch cleanup                 | `done` | [CORE-001.6-gemini-process-fixup.md](../reports/CORE-001.6-gemini-process-fixup.md)                               |
-| **CORE-002** | **NASA POWER Weather Ingestion & Offline CSV Fixture Cache**                     | `done` | [CORE-002-gemini-weather-ingestion.md](../reports/CORE-002-gemini-weather-ingestion.md)                           |
-| CORE-002.1   | Implement NASA POWER API client for Batac (18.06°N, 120.56°E)                    | `done` | REST client (hourly & daily endpoints, raw cache)                                                                 |
-| CORE-002.2   | Build hourly/daily weather parser (T2M, RH2M, ALLSKY_SFC_SW_DWN)                 | `done` | Native hourly parser + auxiliary disaggregator [D-20]                                                             |
-| CORE-002.3   | Add missing value sentinel `-999` filter & UTC→PST alignment                     | `done` | -999 filter, interpolation, LST/UTC→PST (+08:00)                                                                  |
-| CORE-002.4   | Commit cached offline CSV fixtures (baseline, hot-year 2016/2019)                | `done` | Committed 2019 baseline & 2016 hot year fixtures                                                                  |
-| CORE-002.5   | Write unit tests for weather ingest and psychrometric sanity                     | `done` | 22 pytest tests passing (100% green)                                                                              |
-| **CORE-003** | **Equipment Audit Model & Synthetic Mock Bill Generator**                        | `done` | [CORE-003-gemini-equipment-mock-bills.md](../reports/CORE-003-gemini-equipment-mock-bills.md)                     |
-| CORE-003.1   | Define equipment audit CSV schema (`item, count, kW, hours, tier`)               | `done` | `equipment-audit-schema.csv` committed                                                                            |
-| CORE-003.2   | Create CCIS archetype fixture (~2,500 m², 18 rooms, ACs, labs)                   | `done` | `equipment-audit-ccis.csv` (147.81 kW)                                                                            |
-| CORE-003.3   | Implement synthetic monthly electricity bill generator                           | `done` | `SyntheticBillGenerator` + noise                                                                                  |
-| CORE-003.4   | Validate synthetic bills against regional EUI (150–300 kWh/m²·yr)                | `done` | EUI = 159.41 kWh/m²·yr (pass)                                                                                     |
-| CORE-003.5   | Reconcile equipment audit connected load & tier split summary                    | `done` | [CORE-003.5-gemini-equipment-totals-fixup.md](../reports/CORE-003.5-gemini-equipment-totals-fixup.md) (147.81 kW) |
-| **CORE-004** | **Shared Test Harness & Energy Balance Invariant Checker**                       | `done` | [CORE-004-gemini-conservation-harness.md](../reports/CORE-004-gemini-conservation-harness.md)                     |
-| CORE-004.1   | Implement strict energy conservation checker ($\le 10^{-5}\text{ kWh}$)          | `done` | Hourly residual + cumulative drift tolerance [D-21]                                                               |
-| CORE-004.2   | Implement battery boundary validator ($0 \le \text{SoC} \le \text{Cap}$, C-rate) | `done` | Physical bounds, min SoC floor, C-rate limits, mutual exclusivity                                                 |
-| CORE-004.3   | Build shared golden fixture runner for sub-model validation                      | `done` | 48h reference fixture `create_golden_scenario()` + self-test                                                      |
-| CORE-004.5   | Phase 1 closeout fixup (repo hygiene, harness gaps, D-24 disclosures)            | `done` | [CORE-004.5-gemini-phase1-closeout.md](../reports/CORE-004.5-gemini-phase1-closeout.md) [D-24], [D-25]           |
-| **CORE-005** | **Baseline Engine Smoke Test (Phase 1 Exit Gate)**                               | `done` | [CORE-005-gemini-baseline-smoke-test.md](../reports/CORE-005-gemini-baseline-smoke-test.md) |
-| CORE-005.1   | Implement grid-only, zero-solar, zero-battery simulation                         | `done` | 8,760h continuous simulation `simulate_baseline` [D-23]                                                           |
-| CORE-005.2   | Run 8,760-hour baseline through energy-balance test harness                      | `done` | Zero residual, zero drift, negative control verified                                                              |
-| CORE-005.3   | Generate baseline summary metrics (annual kWh, peak kW, base EUI)                | `done` | 398,525 kWh/yr, 159.41 EUI, 124.44 kW peak, 2016 sensitivity                                                      |
-| **CORE-006** | **Phase 2 Interface Contracts & Harness Idle-Loss Allowance**                    | `done` | [CORE-006-gemini-phase2-contracts.md](../reports/CORE-006-gemini-phase2-contracts.md) [D-26]                      |
-| CORE-006.1   | Define shared interface types in `interfaces.py`                                 | `done` | TieredDemand, OccupancySchedule, OutageSchedule, BatteryStepResult, ShedResult                                    |
-| CORE-006.2   | Author Phase 2 interface contract document                                       | `done` | [phase2-interface-contract.md](../context/phase2-interface-contract.md) locked signatures & dispatch loop          |
-| CORE-006.3   | Harness idle-loss allowance and cumulative SoC continuity drift                  | `done` | One-sided continuity, idle allowance, and SOC_CUMULATIVE_DRIFT [D-26]                                              |
+| ID         | Task                                                                | Status | Notes / Report                                                       |
+| :--------- | :------------------------------------------------------------------ | :----- | :------------------------------------------------------------------- |
+| **CORE-001** | **Core Domain Models & System Configuration Dataclasses**            | `done` | [Report](docs/reports/CORE-001-gemini-domain-models.md)              |
+| CORE-001.1 | Building archetype & envelope dataclasses                           | `done` | CCIS 2,500 m² archetype                                              |
+| CORE-001.2 | Solar PV array & inverter configuration dataclasses                 | `done` | Capacity matrix & derate                                             |
+| CORE-001.3 | Battery storage system & dispatch limit dataclasses                 | `done` | 0–200 kWh capacities, LFP                                            |
+| CORE-001.4 | Outage scenario parameters & grid status dataclasses                | `done` | Reliability baseline                                                 |
+| CORE-001.5 | Fix decision log gaps (D-04, D-05, D-08, D-09, D-11)                 | `done` | [Report](docs/reports/CORE-001.5-gemini-decision-gap-fixup.md)        |
+| CORE-001.6 | Process fixup: Decision log sync & status alignment                | `done` | [Report](docs/reports/CORE-001.6-gemini-process-fixup.md)             |
+| **CORE-002** | **Weather Data Ingestion & Sanitization Engine**                    | `done` | [Report](docs/reports/CORE-002-gemini-weather-ingestion.md)          |
+| CORE-002.1 | NASA POWER API hourly weather client                                | `done` | Client implemented                                                   |
+| CORE-002.2 | Weather parser, sanitization, missing-data interpolation            | `done` | Sanitizer implemented                                                |
+| CORE-002.3 | Batac (18.06°N, 120.56°E) offline fixture dataset commit            | `done` | 2016 & 2019 fixtures                                                 |
+| **CORE-003** | **Demand Profiling & Synthetic Billing Validator**                  | `done` | [Report](docs/reports/CORE-003-gemini-equipment-mock-bills.md)       |
+| CORE-003.1 | Room-by-room equipment inventory audit model                        | `done` | Audit schema & loader                                                |
+| CORE-003.2 | Connected load calculation by room archetype & tier                 | `done` | 18 rooms loaded                                                      |
+| CORE-003.3 | Synthetic monthly electric bill generator                           | `done` | Synthetic generator                                                  |
+| CORE-003.4 | Monthly billing fixture generation and validation                   | `done` | 12 monthly bills                                                     |
+| CORE-003.5 | Equipment audit connected-load reconciliation ([D-19])               | `done` | [Report](docs/reports/CORE-003.5-gemini-equipment-totals-fixup.md)    |
+| **CORE-004** | **Simulation Harness, Energy Balance & Verification Module**        | `done` | [Report](docs/reports/CORE-004-gemini-conservation-harness.md)       |
+| CORE-004.1 | First-law energy conservation verification harness                  | `done` | Residual $\le 10^{-5}$ kWh                                           |
+| CORE-004.2 | Battery State-of-Charge boundary & rate-of-change checker           | `done` | SoC $\in [0, C]$, C-rate                                             |
+| CORE-004.3 | Simulation time-step dispatcher & event logger                      | `done` | Dispatch loop & records                                              |
+| CORE-004.4 | Golden test scenarios for energy conservation verification          | `done` | 48h test suite passing                                               |
+| CORE-004.5 | Phase 1 Closeout Verification Gap Closures ([D-25])                 | `done` | [Report](docs/reports/CORE-004.5-gemini-phase1-closeout.md)           |
+| **CORE-005** | **Baseline Grid-Only Smoke Simulation & Headline KPI Verification** | `done` | [Report](docs/reports/CORE-005-gemini-baseline-smoke-test.md)        |
+| CORE-005.1 | End-to-end baseline simulation with placeholder profile             | `done` | 8,760h baseline loop                                                 |
+| CORE-005.2 | Headline metrics computation (EUI, peak demand, LF)                 | `done` | 159.41 kWh/m²·yr EUI                                                 |
+| CORE-005.3 | Regression test suite on baseline KPIs                              | `done` | Invariants verified                                                  |
+| **CORE-006** | **Phase 2 Sub-Model Interface Contracts & Verification Upgrades**   | `done` | [Report](docs/reports/CORE-006-gemini-phase2-contracts.md)           |
+| CORE-006.1 | Implement Phase 2 canonical interface types                         | `done` | `ccis_sim.core.interfaces`                                           |
+| CORE-006.2 | Lock sub-model signatures & cross-track coupling contracts          | `done` | `docs/context/phase2-interface-contract.md`                          |
+| CORE-006.3 | Implement battery idle-loss physical model & harness upgrades        | `done` | Verification harness [D-26]                                          |
+| CORE-006.4 | Add unit & regression tests for interface types and idle physics   | `done` | Test suite green (120 passed)                                        |
 
 ---
 
@@ -79,6 +71,18 @@ Status: **done**
 
 Status: **open**
 
+| ID          | Task                                                                                                 | Status | Notes / Report                                                                                                    |
+| :---------- | :--------------------------------------------------------------------------------------------------- | :----- | :---------------------------------------------------------------------------------------------------------------- |
+| **DEM-001** | **Equipment Load & Occupancy Schedule Model**                                                        | `done` | [Report](docs/reports/DEM-001-gemini-demand-schedule.md) [D-27]                                                     |
+| DEM-001.1   | Implement academic schedule engine (classes, breaks, holidays)                                       | `done` | AcademicCalendar & build_occupancy_schedule [D-27]                                                                |
+| DEM-001.2   | Compute diurnal non-cooling base demand (lighting, IT, plug loads)                                   | `done` | Bottom-up non-cooling load [D-27]                                                                                 |
+| DEM-001.3   | Model unoccupied nighttime baseload (10% of daytime peak)                                            | `done` | Baseload 6.0659 kW without double-counting [D-27]                                                                 |
+| DEM-001.4   | Write unit tests for equipment aggregation across schedule states                                    | `done` | 23 pytest tests passing                                                                                           |
+| **DEM-002** | **Temperature & Humidity Cooling Response Model**                                                    | `open` |                                                                                                                   |
+| DEM-002.1   | Implement CDD model ($T_{\text{base}} = 24.0^\circ\text{C}$, 4%/°C sensitivity)                      | `open` | Sensible cooling                                                                                                  |
+| DEM-002.2   | Implement latent cooling psychrometric multiplier (+20% humidity)                                    | `open` | Latent load                                                                                                       |
+| DEM-002.3   | Model split AC compressor duty cycle / inverter modulation                                           | `open` | Inverter response                                                                                                 |
+| DEM-002.4   | Validate combined hourly demand profile against mock monthly bills                                   | `open` | Calibration check                                                                                                 |
 | **SOL-001** | **Solar Irradiance Geometry & NOCT Thermal Derating Model**                                          | `done` | [SOL-001-gemini-solar-irradiance.md](../reports/SOL-001-gemini-solar-irradiance.md) [D-29]                         |
 | SOL-001.1   | Implement Batac tilted plane irradiance model (15° South tilt)                                       | `done` | Spencer solar position, Erbs GHI->DHI/DNI, Liu-Jordan 15° transposition [D-29]                                      |
 | SOL-001.2   | Model cell operating temperature with +10°C rooftop thermal penalty                                  | `done` | NOCT 45°C + 10°C penalty: T_cell = T_amb + (35/800)*G_poa [D-29]                                                    |
@@ -99,82 +103,56 @@ Status: **open**
 | BAT-002.2   | Implement configurable emergency outage reserve %                                                    | `done` | Outage cushion                                                                                                      |
 | BAT-002.3   | Incorporate ambient self-discharge (2%/month) and tare loss                                          | `done` | Idle losses                                                                                                         |
 | BAT-002.4   | Write unit tests for deep-discharge protection during long outages                                   | `done` | Protection tests                                                                                                    |
-| **OUT-001** | **Stochastic Outage Arrival & Duration Sampler**                                                     | `open` |                                                                                                                     |
-| OUT-001.1   | Implement Poisson arrival process ($\lambda = 3$ normal, $\lambda = 8$ typhoon)                      | `open` | Poisson arrivals                                                                                                    |
-| OUT-001.2   | Implement Lognormal duration sampler (Normal: $\mu=1.2, \sigma=0.8$; Typhoon: $\mu=2.3, \sigma=1.0$) | `open` | Duration sampler                                                                                                    |
-| OUT-001.3   | Implement typhoon multi-day solar depression (20–30% GHI for 3–5 days)                               | `open` | Storm coupling                                                                                                      |
-| OUT-001.4   | Add Kolmogorov-Smirnov distribution goodness-of-fit validator                                        | `open` | Distribution fit                                                                                                    |
-| **OUT-002** | **Priority-Based Tiered Load Shedding Controller**                                                   | `done` | [Report](docs/reports/OUT-002-gemini-load-shedding.md) |
-| OUT-002.1   | Implement load categorization: Tier 1 (2%), Tier 2 (18%), Tier 3 (80%)                               | `done` | Tier mapping helper                                    |
-| OUT-002.2   | Build automated shedding logic on grid failure (instant Tier 3 drop)                                 | `done` | Shedding logic                                         |
-| OUT-002.3   | Implement battery low-SoC Tier 2 shedding rule (<20% SoC)                                            | `done` | Second-tier shed                                       |
-| OUT-002.4   | Track unserved energy (kWh) and outage hours covered per tier                                        | `done` | Unserved metrics                                       |
+| **OUT-001** | **Stochastic Outage Arrival & Duration Sampler**                                                     | `open` |                                                                                                                   |
+| OUT-001.1   | Implement Poisson arrival process ($\lambda = 3$ normal, $\lambda = 8$ typhoon)                      | `open` | Poisson arrivals                                                                                                  |
+| OUT-001.2   | Implement Lognormal duration sampler (Normal: $\mu=1.2, \sigma=0.8$; Typhoon: $\mu=2.3, \sigma=1.0$) | `open` | Duration sampler                                                                                                  |
+| OUT-001.3   | Implement typhoon multi-day solar depression (20–30% GHI for 3–5 days)                               | `open` | Storm coupling                                                                                                    |
+| OUT-001.4   | Add Kolmogorov-Smirnov distribution goodness-of-fit validator                                        | `open` | Distribution fit                                                                                                  |
+| **OUT-002** | **Priority-Based Tiered Load Shedding Controller**                                                   | `done` | [Report](docs/reports/OUT-002-gemini-load-shedding.md)                                                             |
+| OUT-002.1   | Implement load categorization: Tier 1 (2%), Tier 2 (18%), Tier 3 (80%)                               | `done` | Tier mapping helper                                                                                                |
+| OUT-002.2   | Build automated shedding logic on grid failure (instant Tier 3 drop)                                 | `done` | Shedding logic                                                                                                     |
+| OUT-002.3   | Implement battery low-SoC Tier 2 shedding rule (<20% SoC)                                            | `done` | Second-tier shed                                                                                                   |
+| OUT-002.4   | Track unserved energy (kWh) and outage hours covered per tier                                        | `done` | Unserved metrics                                                                                                   |
 
 ---
 
-## Phase 3 — Integration, Simulation Engine & Verification
+## Phase 3 — Integration, Simulation Engine & Experiment Matrix
 
 Status: **open**
 
-| ID | Task | Status | Notes / Report |
-| :--- | :--- | :--- | :--- |
-| **INT-001** | **Simulation Engine & CLI Application Driver** | `open` | |
-| INT-001.1 | Wire Demand, Solar, Battery, Outage, and Shedding into time loop | `open` | Main engine loop |
-| INT-001.2 | Implement CLI interface (`ccis-sim`) with scenario arguments | `open` | CLI driver |
-| INT-001.3 | Add tabular summary exporters (hourly time series, daily, annual) | `open` | Output export |
-| INT-001.4 | Write end-to-end integration test suite | `open` | Smoke test suite |
-| **INT-002** | **Monte Carlo Runner & Scenario Grid Sweeper** | `open` | Outline §4 & §7 |
-| INT-002.1 | Implement multi-replication runner with reproducible PRNG seeds | `open` | MC runner |
-| INT-002.2 | Build full scenario matrix (Weather × Solar × Battery × Outages) | `open` | Scenario grid |
-| INT-002.3 | Compute output distribution statistics (Mean, StdErr, P5, P50, P95) | `open` | Risk percentiles |
-| INT-002.4 | Implement sequential stopping rule ($z \cdot s / \sqrt{n} \le \delta$) | `open` | Convergence gate |
-| **INT-003** | **Verification, Validation & Plausibility Suite** | `open` | Outline §6 |
-| INT-003.1 | Audit energy conservation across all Monte Carlo replications | `open` | Conservation audit |
-| INT-003.2 | Check ASHRAE Guideline 14 metrics (NMBE $\le \pm 5\%$, CV(RMSE) $\le 25\%$) | `open` | ASHRAE checks |
-| INT-003.3 | Validate annual solar specific yield ($1,200\text{--}1,600\text{ kWh/kWp}\cdot\text{yr}$) | `open` | Yield benchmark |
-| INT-003.4 | Validate building EUI ($150\text{--}300\text{ kWh/m}^2\cdot\text{yr}$) | `open` | EUI benchmark |
-| INT-003.5 | Run One-At-A-Time (OAT) sensitivity sweeps on key parameters | `open` | Sensitivity suite |
+| ID          | Task                                                                | Status | Notes / Report                                                    |
+| :---------- | :------------------------------------------------------------------ | :----- | :---------------------------------------------------------------- |
+| **INT-001** | **Simulation Engine Integration & Full Dispatch Loop**              | `open` | [PROMPT](docs/prompts/INT-001-PROMPT.md) Engine, CLI, verification |
+| INT-001.1   | Integrate all sub-models into hourly time loop                      | `open` | Full dispatch engine                                              |
+| INT-001.2   | Implement priority bus energy routing (Solar -> Load -> Battery)    | `open` | Bus routing                                                       |
+| INT-001.3   | Run full annual simulation for all combinations                     | `open` | Matrix runner                                                     |
+| INT-001.4   | Verify energy conservation across all 8,760 hours                   | `open` | Conservation check                                                |
+| **INT-002** | **Monte Carlo Outage Simulation Engine**                            | `open` |                                                                   |
+| INT-002.1   | Monte Carlo driver (N = 100 seeds per scenario)                     | `open` | MC engine                                                         |
+| INT-002.2   | Stochastic convergence test (sample size sufficiency)               | `open` | Convergence                                                       |
+| INT-002.3   | Record distributions: unserved kWh, outage hours survived           | `open` | Distributions                                                     |
+| **INT-003** | **Verification, Validation & Headline KPI Reporting**               | `open` |                                                                   |
+| INT-003.1   | Final energy balance audit (residual < 10⁻⁵ kWh everywhere)         | `open` | Balance audit                                                     |
+| INT-003.2   | Compare uncalibrated simulation vs synthetic bills (NMBE, CV(RMSE)) | `open` | Billing validation                                                |
+| INT-003.3   | Generate publication-quality headline KPI summary tables             | `open` | KPI tables                                                        |
 
 ---
 
-## Phase 4 — Decision Analysis & System Sizing Optimization
+## Phase 4 — Decision Analysis, Visualization & Reporting
 
 Status: **open**
 
-| ID | Task | Status | Notes / Report |
-| :--- | :--- | :--- | :--- |
-| **DEC-001** | **Analytic Hierarchy Process (AHP) Weighting Engine** | `open` | Outline §7 |
-| DEC-001.1 | Implement Saaty 1–9 pairwise comparison matrix evaluator | `open` | Pairwise matrix |
-| DEC-001.2 | Implement principal eigenvector weight extraction algorithm | `open` | Weight vector |
-| DEC-001.3 | Implement Consistency Ratio calculation ($CR \le 0.10$) with $RI$ lookup | `open` | Consistency check |
-| DEC-001.4 | Encode default criteria hierarchy (Reliability, Cost, LCOE, Env, Risk) | `open` | Baseline weights |
-| DEC-001.5 | Implement criteria weight sensitivity analysis (Dirichlet/perturbation) | `open` | Weight sensitivity |
-| **DEC-002** | **Sizing Optimization & Trade-Off Recommendation Evaluator** | `open` | |
-| DEC-002.1 | Implement composite multi-criteria scoring across all sizing candidates | `open` | Scoring engine |
-| DEC-002.2 | Extract Pareto frontier (Reliability vs. System Cost trade-offs) | `open` | Pareto extraction |
-| DEC-002.3 | Formulate defensible recommendation (smallest system covering 12h outage) | `open` | Final recommendation |
-
----
-
-## Phase 5 — Documentation, Visualizations & Defense Preparation
-
-Status: **open**
-
-| ID          | Task                                                             | Status | Notes / Report     |
-| :---------- | :--------------------------------------------------------------- | :----- | :----------------- |
-| **DOC-001** | **Visualizations & Labelled Sample Output Generator**            | `open` | Outline §8         |
-| DOC-001.1   | Generate daily load vs. outdoor temperature regression curve     | `open` | Temp-load curve    |
-| DOC-001.2   | Plot 12-hour heatwave outage hourly dispatch profile             | `open` | Dispatch plot      |
-| DOC-001.3   | Plot Monte Carlo P5/P50/P95 histograms and risk boxplots         | `open` | Risk distributions |
-| DOC-001.4   | Plot Pareto sizing trade-off frontier (Cost vs. Outage Hours)    | `open` | Pareto frontier    |
-| DOC-001.5   | Plot AHP criteria sensitivity tornado diagram                    | `open` | AHP sensitivity    |
-| **DOC-002** | **Course Project Final Report Compilation**                      | `open` | Outline §1–10      |
-| DOC-002.1   | Draft §1 Overview, §2 Formulation & §3 Conceptual Model          | `open` | Sections 1–3       |
-| DOC-002.2   | Draft §4 Data Collection & Input Modeling & §5 Implementation    | `open` | Sections 4–5       |
-| DOC-002.3   | Draft §6 Verification & Validation & §7 Results & Analysis       | `open` | Sections 6–7       |
-| DOC-002.4   | Assemble §8 Labelled Sample Outputs & §9 IEEE References         | `open` | Sections 8–9       |
-| DOC-002.5   | Compile §10 Program Listing and format final report PDF/Markdown | `open` | Section 10         |
-| **DOC-003** | **Defense Presentation Deck & Group Handoff**                    | `open` |                    |
-| DOC-003.1   | Construct presentation slide deck structured for 4 group members | `open` | Slide deck         |
-| DOC-003.2   | Prepare speaking notes aligned with course syllabus topics       | `open` | Speaking notes     |
-| DOC-003.3   | Compile dry-run Q&A defense cheat sheet                          | `open` | Defense prep       |
+| ID          | Task                                                                | Status | Notes / Report                                                    |
+| :---------- | :------------------------------------------------------------------ | :----- | :---------------------------------------------------------------- |
+| **DEC-001** | **Multi-Criteria Decision Analysis (AHP) Implementation**           | `open` |                                                                   |
+| DEC-001.1   | Implement Analytic Hierarchy Process (AHP) weighting engine         | `open` | AHP matrix solver                                                 |
+| DEC-001.2   | Compute Consistency Ratio (CR ≤ 0.10 threshold)                     | `open` | Consistency check                                                 |
+| DEC-001.3   | Score all sizing combinations across 4 criteria                     | `open` | Scenario scoring                                                  |
+| **DEC-002** | **Pareto Frontier & Recommended System Sizing Analysis**             | `open` |                                                                   |
+| DEC-002.1   | Compute 2D/3D Pareto frontier (Reliability vs Cost vs Self-Suff)    | `open` | Pareto analysis                                                   |
+| DEC-002.2   | Identify recommended sizing configuration                           | `open` | Sizing selection                                                  |
+| DEC-002.3   | Sensitivity analysis across weights & weather years                 | `open` | Sensitivity check                                                 |
+| **DEC-003** | **Visualization Suite & Final Report Generation**                   | `open` |                                                                   |
+| DEC-003.1   | Generate energy balance dispatch stacked area charts                | `open` | Dispatch plots                                                    |
+| DEC-003.2   | Generate battery SoC duration curves & unserved load distributions  | `open` | Reliability plots                                                 |
+| DEC-003.3   | Compile comprehensive engineering report markdown                   | `open` | Final report                                                      |
