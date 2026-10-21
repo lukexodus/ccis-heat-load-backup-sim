@@ -101,11 +101,11 @@ Status: **open**
 | SOL-002.2   | Model inverter peak efficiency (98%) and DC/AC clipping limits                                       | `open` | Inverter clipping                                      |
 | SOL-002.3   | Incorporate balance-of-system derates (PR = 0.77, soiling, wiring)                                   | `open` | BOS losses                                             |
 | SOL-002.4   | Validate annual specific yield against Luzon benchmark (1,298 kWh/kWp)                               | `open` | Yield benchmark                                        |
-| **BAT-001** | **Battery Dispatch Dynamics, SoC Tracking & Losses**                                                 | `open` |                                                        |
-| BAT-001.1   | Implement time-stepped State-of-Charge tracking logic                                                | `open` | SoC recursion                                          |
-| BAT-001.2   | Apply LFP round-trip efficiency (92% RTE, $\sqrt{\eta}$ charge/discharge)                            | `open` | Efficiency losses                                      |
-| BAT-001.3   | Enforce charge/discharge power limits (0.5C charge, 1.0C discharge)                                  | `open` | C-rate constraints                                     |
-| BAT-001.4   | Write unit tests for simultaneous charge/discharge prevention                                        | `open` | Boundary tests                                         |
+| **BAT-001** | **Battery Dispatch Dynamics, SoC Tracking & Losses**                                                 | `done` | [BAT-001-gemini-battery-dynamics.md](../reports/BAT-001-gemini-battery-dynamics.md) |
+| BAT-001.1   | Implement time-stepped State-of-Charge tracking logic                                                | `done` | SoC recursion                                          |
+| BAT-001.2   | Apply LFP round-trip efficiency (92% RTE, $\sqrt{\eta}$ charge/discharge)                            | `done` | Efficiency losses                                      |
+| BAT-001.3   | Enforce charge/discharge power limits (0.5C charge, 1.0C discharge)                                  | `done` | C-rate constraints                                     |
+| BAT-001.4   | Write unit tests for simultaneous charge/discharge prevention                                        | `done` | Boundary tests                                         |
 | **BAT-002** | **Battery Outage Reserve & State-of-Charge Constraints**                                             | `open` |                                                        |
 | BAT-002.1   | Enforce 10% minimum SoC reserve floor (90% usable DoD)                                               | `open` | Reserve floor                                          |
 | BAT-002.2   | Implement configurable emergency outage reserve %                                                    | `open` | Outage cushion                                         |
