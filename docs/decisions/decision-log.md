@@ -380,3 +380,22 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
      In `compute_ac_generation`, only the non-thermal BOS derates and inverter efficiency/clipping are applied to the input `dc_kw_per_kwp`. Full system annual yield validation against the 1,298 kWh/kWp Luzon benchmark is deferred to `SOL-002.4` following integration with `SOL-001`.  
 - **Reasoning:** Conforms strictly to Phase 2 interface contracts, eliminates double-counting of cell thermal losses, provides physical and auditable BOS loss accounting, and bounds maximum AC power delivery under inverter clipping.  
 - **Affects:** `SOL-002`, `INT-001`, `DEC-002`.
+
+
+**[D-33]** Stochastic Outage Process Calibration, Continuous-to-Discrete Discretization, and Typhoon Solar Depression Coupling locked.  
+- **Date / Session:** 2026-10-21  
+- **Decision:**  
+  1. **Arrival Process Calibration (`sample_outage_schedule`):**  
+     Implement a homogeneous Poisson arrival process with annual rates $\lambda = 3.0\text{ outages/yr}$ for normal / baseline weather years and $\lambda = 8.0\text{ outages/yr}$ for typhoon / extreme weather years per [D-11]. Arrival start hours are sampled uniformly over the annual timeline $[1, n_{\text{hours}}]$. Uniform start distribution is adopted as the rigorous baseline (`[ASSUMPTION]`), deferring seasonal typhoon clustering (June–November) to future sensitivity sweeps since empirical sub-annual hazard rate calibration data is unavailable.  
+  2. **Continuous Duration Sampling:**  
+     Continuous pre-discretization durations are sampled from the target Lognormal($\mu, \sigma$) distribution on $\ln(\text{hours})$, where Normal Year has $(\mu = 1.2, \sigma = 0.8)$ (median 3.32h, mean 4.56h) and Typhoon Year has $(\mu = 2.3, \sigma = 1.0)$ (median 9.97h, mean 16.44h) per [D-11].  
+  3. **Continuous-to-Discrete Hour Discretization & Bias:**  
+     Discretize continuous durations to integer hours via ceiling: $D_{\text{int}} = \max(1, \lceil D \rceil)$ (`[ASSUMPTION]`). Because the CCIS simulation step is $\Delta t = 1.0\text{ h}$, any non-zero outage duration interrupts building electrical service for that hour. This introduces a slight upward discretization bias of $\approx +0.5\text{ h}$ per event.  
+  4. **Interval Merging & Boundary Clipping:**  
+     Multiple outages that overlap or touch ($s_2 \le e_1$) are merged into a single continuous blackout event with $s_{\text{merged}} = s_1$ and $e_{\text{merged}} = \max(e_1, e_2)$ (`[ASSUMPTION]`). Merging avoids unphysical overlapping events and ensures `grid_available` strictly reflects discrete `OutageEvent` records, slightly reducing event count ($<0.01$ events/yr in normal, $\approx 0.10$ events/yr in typhoon) while preserving exact blackout hour unions. Events starting past the simulation horizon ($s > n_{\text{hours}}$) are excluded; events ending past hour $n_{\text{hours}}$ are clipped to end at hour $n_{\text{hours}} + 1$ (`[ASSUMPTION]`).  
+  5. **Typhoon Solar Depression Interpretation & Coupling (`apply_ghi_multiplier`):**  
+     Resolve the [D-11] ambiguity ("depressed solar irradiance (20–30% normal GHI)") as an **attenuation multiplier** $m \in [0.20, 0.30]$ (i.e. insolation reduced to 20%–30% of normal clear-sky insolation due to dense cyclone cloud cover, rather than a 20%–30% reduction). In typhoon years with outages, 1 to 2 storm episodes are coupled with the longest outage events (`[ASSUMPTION]`), lasting 3 to 5 consecutive days ($72 \dots 120\text{ h}$) starting at the outage event start hour. Outside storm episodes and in normal years, the multiplier is strictly $1.0$. `apply_ghi_multiplier` returns a deep copy of the input weather DataFrame, preserving input immutability.  
+  6. **Statistical Goodness-of-Fit Validator (`validate_duration_distribution`):**  
+     Evaluates pre-discretization continuous durations against target Lognormal via two-sided Kolmogorov-Smirnov test at significance level $\alpha = 0.01$, and verifies annual arrival counts against Poisson($\lambda$) via large-sample standard error normal approximation.  
+- **Reasoning:** Conforms strictly to Phase 2 interface contracts (`phase2-interface-contract.md`), eliminates arbitrary constants, provides empirical calibration to Philippine rural cooperative and cyclone data [D-11], and guarantees mathematical consistency between discrete `OutageEvent` records and boolean `grid_available` arrays.  
+- **Affects:** `ccis_sim.outage.sampler`, `ccis_sim.outage`, `INT-001`, `INT-002`, `DEC-002`.
