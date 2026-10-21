@@ -72,6 +72,7 @@
 │   │   ├── ARCH-002.5-gemini-windows-interop.md
 │   │   ├── ARCH-002-gemini-repo-scaffolding.md
 │   │   ├── BAT-001-gemini-battery-dynamics.md
+│   │   ├── BAT-002-gemini-battery-reserve.md
 │   │   ├── CORE-001.5-gemini-decision-gap-fixup.md
 │   │   ├── CORE-001.6-gemini-process-fixup.md
 │   │   ├── CORE-001-gemini-domain-models.md
@@ -88,7 +89,20 @@
 │       ├── high-level-tasks.md
 │       └── status.md
 ├── patch
-│   └── BAT-001-gemini-battery-dynamics.patch
+│   ├── ARCH-001-gemini-lock-conceptual-model.patch
+│   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
+│   ├── ARCH-002.5-gemini-windows-interop.patch
+│   ├── ARCH-002-gemini-repo-scaffolding.patch
+│   ├── CORE-001.5-gemini-decision-gap-fixup.patch
+│   ├── CORE-001-gemini-domain-models.patch
+│   ├── CORE-002-gemini-weather-ingestion.patch
+│   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
+│   ├── CORE-003-gemini-equipment-mock-bills.patch
+│   ├── CORE-004-gemini-conservation-harness.patch
+│   ├── CORE-005-gemini-baseline-smoke-test.patch
+│   ├── CORE-006-gemini-phase2-contracts.patch
+│   ├── DEM-001-gemini-demand-schedule.patch
+│   └── OUT-002-gemini-load-shedding.patch
 ├── scripts
 │   ├── apc-bundle.bat
 │   ├── apc-bundle.ps1
@@ -107,7 +121,8 @@
 │   └── ccis_sim
 │       ├── battery
 │       │   ├── dynamics.py
-│       │   └── __init__.py
+│       │   ├── __init__.py
+│       │   └── reserve.py
 │       ├── core
 │       │   ├── __init__.py
 │       │   ├── interfaces.py
@@ -142,6 +157,7 @@
 │   ├── __init__.py
 │   ├── test_baseline_smoke.py
 │   ├── test_battery_dynamics.py
+│   ├── test_battery_reserve.py
 │   ├── test_conservation_checker.py
 │   ├── test_core_models.py
 │   ├── test_equipment_audit.py
