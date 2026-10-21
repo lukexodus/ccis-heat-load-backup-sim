@@ -96,11 +96,11 @@ Status: **open**
 | SOL-001.2   | Model cell operating temperature with +10°C rooftop thermal penalty                                  | `open` | NOCT model         |
 | SOL-001.3   | Apply module temperature power derating ($\gamma = -0.40\%/^\circ\text{C}$)                          | `open` | Thermal derate     |
 | SOL-001.4   | Write unit tests verifying yield drop during high-temperature hours                                  | `open` | Thermal tests      |
-| **SOL-002** | **Array Sizing, Inverter Clipping & Balance-of-System Losses**                                       | `open` |                    |
-| SOL-002.1   | Implement DC capacity scaling (0, 50, 100, 200 kWp)                                                  | `open` | Capacity scaling   |
-| SOL-002.2   | Model inverter peak efficiency (98%) and DC/AC clipping limits                                       | `open` | Inverter clipping  |
-| SOL-002.3   | Incorporate balance-of-system derates (PR = 0.77, soiling, wiring)                                   | `open` | BOS losses         |
-| SOL-002.4   | Validate annual specific yield against Luzon benchmark (1,298 kWh/kWp)                               | `open` | Yield benchmark    |
+| **SOL-002** | **Array Sizing, Inverter Clipping & Balance-of-System Losses**                                       | `done` | [SOL-002-gemini-solar-array.md](../reports/SOL-002-gemini-solar-array.md) [D-30] (SOL-002.4 deferred)   |
+| SOL-002.1   | Implement DC capacity scaling (0, 50, 100, 200 kWp)                                                  | `done` | compute_ac_generation scenario matrix scaling [D-30]                                                      |
+| SOL-002.2   | Model inverter peak efficiency (98%) and DC/AC clipping limits                                       | `done` | 98% peak efficiency, 1.20 DC/AC ratio clipping limit [D-30]                                               |
+| SOL-002.3   | Incorporate balance-of-system derates (PR = 0.77, soiling, wiring)                                   | `done` | Named non-thermal BOS factors decomposed to match 0.77 PR [D-30]                                           |
+| SOL-002.4   | Validate annual specific yield against Luzon benchmark (1,298 kWh/kWp)                               | `open` | Deferred until SOL-001 and SOL-002 are merged into integration runner                                      |
 | **BAT-001** | **Battery Dispatch Dynamics, SoC Tracking & Losses**                                                 | `open` |                    |
 | BAT-001.1   | Implement time-stepped State-of-Charge tracking logic                                                | `open` | SoC recursion      |
 | BAT-001.2   | Apply LFP round-trip efficiency (92% RTE, $\sqrt{\eta}$ charge/discharge)                            | `open` | Efficiency losses  |
