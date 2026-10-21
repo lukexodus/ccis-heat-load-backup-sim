@@ -86,11 +86,11 @@ Status: **open**
 | DEM-001.2   | Compute diurnal non-cooling base demand (lighting, IT, plug loads)                                   | `open` | Bottom-up load                                         |
 | DEM-001.3   | Model unoccupied nighttime baseload (10% of daytime peak)                                            | `open` | Baseload rule                                          |
 | DEM-001.4   | Write unit tests for equipment aggregation across schedule states                                    | `open` | Test suite                                             |
-| **DEM-002** | **Temperature & Humidity Cooling Response Model**                                                    | `open` |                                                        |
-| DEM-002.1   | Implement CDD model ($T_{\text{base}} = 24.0^\circ\text{C}$, 4%/°C sensitivity)                      | `open` | Sensible cooling                                       |
-| DEM-002.2   | Implement latent cooling psychrometric multiplier (+20% humidity)                                    | `open` | Latent load                                            |
-| DEM-002.3   | Model split AC compressor duty cycle / inverter modulation                                           | `open` | Inverter response                                      |
-| DEM-002.4   | Validate combined hourly demand profile against mock monthly bills                                   | `open` | Calibration check                                      |
+| **DEM-002** | **Temperature & Humidity Cooling Response Model**                                                    | `done` | [Report](docs/reports/DEM-002-gemini-cooling-response.md) |
+| DEM-002.1   | Implement CDD model ($T_{\text{base}} = 24.0^\circ\text{C}$, 4%/°C sensitivity)                      | `done` | Sensible cooling                                       |
+| DEM-002.2   | Implement latent cooling psychrometric multiplier (+20% humidity)                                    | `done` | Latent load                                            |
+| DEM-002.3   | Model split AC compressor duty cycle / inverter modulation                                           | `done` | Inverter response                                      |
+| DEM-002.4   | Validate combined hourly demand profile against mock monthly bills                                   | `open` | Deferred until DEM-001 merged                          |
 | **SOL-001** | **Solar Irradiance Geometry & NOCT Thermal Derating Model**                                          | `open` |                                                        |
 | SOL-001.1   | Implement Batac tilted plane irradiance model (15° South tilt)                                       | `open` | Irradiance model                                       |
 | SOL-001.2   | Model cell operating temperature with +10°C rooftop thermal penalty                                  | `open` | NOCT model                                             |
