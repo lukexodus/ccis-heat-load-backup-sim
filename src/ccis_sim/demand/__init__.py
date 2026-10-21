@@ -1,5 +1,6 @@
 """Building electricity demand models: equipment inventory schedules and cooling load."""
 
+from ccis_sim.demand.cooling import compute_cooling_demand
 from ccis_sim.demand.equipment import EquipmentAudit, EquipmentItem
 from ccis_sim.demand.mock_bills import (
     DEFAULT_ACADEMIC_WEIGHTS,
@@ -27,6 +28,7 @@ __all__ = [
     "SyntheticBillGenerator",
     "SyntheticMonthlyBill",
     "build_occupancy_schedule",
+    "compute_cooling_demand",
     "compute_non_cooling_demand",
     "get_default_philippine_holidays",
 ]

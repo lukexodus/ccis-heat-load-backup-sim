@@ -256,6 +256,28 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** Establishes an auditable, physically grounded bottom-up schedule and non-cooling load model without double-counting 24/7 continuous loads, enabling clean integration with OUT-002 tiered shedding and DEM-002 cooling response.  
 - **Affects:** `DEM-001`, `DEM-002`, `OUT-002`, `INT-001`, `INT-002`, `INT-003`.
 
+**[D-28]** Cooling Response Model, Piecewise-Linear CDD, Tropical Latent Multiplier Ramp, and 24/7 Spot Cooling Conventions.  
+- **Date / Session:** 2026-10-21  
+- **Decision:**  
+  1. **Stated Reference Cooling Power & Sensible CDD Response:**
+     - Reference cooling power $P_{\text{ref}}$ is defined directly as the connected nameplate cooling capacity ($P_{\text{conn}}$) per tier ($P_{\text{conn, spot}} = 2.40\text{ kW}$ for Tier 2; $P_{\text{conn, comfort}} = 74.80\text{ kW}$ for Tier 3), rather than an arbitrary empirical duty factor.
+     - Sensible delta is evaluated above balance setpoint: $\Delta T = \max(0.0, T_{\text{amb}} - T_{\text{base}})$, where $T_{\text{base}} = 24.0^\circ\text{C}$ ([D-07]).
+     - Slope is exactly 4.0%/°C relative to connected capacity ($s_T = 0.04$). At or below $T_{\text{base}} = 24.0^\circ\text{C}$, sensible cooling is identically zero.
+  2. **Piecewise-Linear Tropical Latent Multiplier Ramp:**
+     - At relative humidity $RH \le 60.0\%$, latent dehumidification load is minimal: $M_{\text{latent}} = 1.00$.
+     - At high tropical humidity $RH \ge 80.0\%$, coil condensation enthalpy reaches peak: $M_{\text{latent}} = 1.20$ (+20% latent penalty per [D-07]).
+     - For $60\% < RH < 80\%$, $M_{\text{latent}}$ ramps linearly: $M_{\text{latent}}(RH) = 1.0 + 0.20 \times \frac{RH - 60.0}{20.0}$. This eliminates non-physical step jumps in electrical demand across weather hours.
+  3. **Continuous 24/7 Spot Cooling vs. Occupancy Comfort Cooling:**
+     - Tier 2 spot cooling (IDF closets, $P_{\text{conn}} = 2.40\text{ kW}$) runs 24 hours a day, 365 days a year, independent of human occupancy ($f_{\text{occ}}$), to remove continuous thermal dissipation from active PoE switches and routers.
+     - Tier 3 comfort cooling ($P_{\text{conn}} = 74.80\text{ kW}$) operates only when spaces are occupied, scaling linearly with building occupancy fraction $f_{\text{occ}}$. When $f_{\text{occ}} = 0$, comfort AC units are shut off, leaving only Tier 2 spot cooling active during unoccupied hours.
+     - Tier 1 cooling demand is identically zero (no life-safety cooling items in audit).
+  4. **Capacity Capping and Inverter Modulation:**
+     - Cooling demand per tier is hard-capped at connected capacity ($P_{\text{conn}}$). Inverter compressors modulate smoothly; cycling at minimum modulation over the 1-hour simulation time step converges to the average thermal power requirement.
+  5. **DEM-002.4 Deferral:**
+     - DEM-002.4 (validation against mock monthly bills) is deferred until DEM-001 is merged to master, as billing comparison requires combined non-cooling and cooling loads.
+- **Reasoning:** Establishes a transparent, continuous, and physical cooling model without arbitrary unverified multipliers, guaranteeing smooth temperature/humidity response and exact power conservation across priority tiers.  
+- **Affects:** `DEM-002`, `INT-001`, `INT-002`, `INT-003`, `DEC-002`.
+
 **[D-34]** Priority-Based Tiered Load Shedding Policy, Low-SoC Threshold Decoupling, and Unserved Energy Tracking Conventions.  
 - **Date / Session:** 2026-10-20  
 - **Decision:**  
