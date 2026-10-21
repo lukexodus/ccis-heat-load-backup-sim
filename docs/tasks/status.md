@@ -79,48 +79,48 @@ Status: **done**
 
 Status: **open**
 
-| ID          | Task                                                                                                 | Status | Notes / Report     |
-| :---------- | :--------------------------------------------------------------------------------------------------- | :----- | :----------------- |
-| **DEM-001** | **Equipment Load & Occupancy Schedule Model**                                                        | `open` |                    |
-| DEM-001.1   | Implement academic schedule engine (classes, breaks, holidays)                                       | `open` | Schedule calendar  |
-| DEM-001.2   | Compute diurnal non-cooling base demand (lighting, IT, plug loads)                                   | `open` | Bottom-up load     |
-| DEM-001.3   | Model unoccupied nighttime baseload (10% of daytime peak)                                            | `open` | Baseload rule      |
-| DEM-001.4   | Write unit tests for equipment aggregation across schedule states                                    | `open` | Test suite         |
-| **DEM-002** | **Temperature & Humidity Cooling Response Model**                                                    | `open` |                    |
-| DEM-002.1   | Implement CDD model ($T_{\text{base}} = 24.0^\circ\text{C}$, 4%/°C sensitivity)                      | `open` | Sensible cooling   |
-| DEM-002.2   | Implement latent cooling psychrometric multiplier (+20% humidity)                                    | `open` | Latent load        |
-| DEM-002.3   | Model split AC compressor duty cycle / inverter modulation                                           | `open` | Inverter response  |
-| DEM-002.4   | Validate combined hourly demand profile against mock monthly bills                                   | `open` | Calibration check  |
-| **SOL-001** | **Solar Irradiance Geometry & NOCT Thermal Derating Model**                                          | `open` |                    |
-| SOL-001.1   | Implement Batac tilted plane irradiance model (15° South tilt)                                       | `open` | Irradiance model   |
-| SOL-001.2   | Model cell operating temperature with +10°C rooftop thermal penalty                                  | `open` | NOCT model         |
-| SOL-001.3   | Apply module temperature power derating ($\gamma = -0.40\%/^\circ\text{C}$)                          | `open` | Thermal derate     |
-| SOL-001.4   | Write unit tests verifying yield drop during high-temperature hours                                  | `open` | Thermal tests      |
-| **SOL-002** | **Array Sizing, Inverter Clipping & Balance-of-System Losses**                                       | `open` |                    |
-| SOL-002.1   | Implement DC capacity scaling (0, 50, 100, 200 kWp)                                                  | `open` | Capacity scaling   |
-| SOL-002.2   | Model inverter peak efficiency (98%) and DC/AC clipping limits                                       | `open` | Inverter clipping  |
-| SOL-002.3   | Incorporate balance-of-system derates (PR = 0.77, soiling, wiring)                                   | `open` | BOS losses         |
-| SOL-002.4   | Validate annual specific yield against Luzon benchmark (1,298 kWh/kWp)                               | `open` | Yield benchmark    |
-| **BAT-001** | **Battery Dispatch Dynamics, SoC Tracking & Losses**                                                 | `open` |                    |
-| BAT-001.1   | Implement time-stepped State-of-Charge tracking logic                                                | `open` | SoC recursion      |
-| BAT-001.2   | Apply LFP round-trip efficiency (92% RTE, $\sqrt{\eta}$ charge/discharge)                            | `open` | Efficiency losses  |
-| BAT-001.3   | Enforce charge/discharge power limits (0.5C charge, 1.0C discharge)                                  | `open` | C-rate constraints |
-| BAT-001.4   | Write unit tests for simultaneous charge/discharge prevention                                        | `open` | Boundary tests     |
-| **BAT-002** | **Battery Outage Reserve & State-of-Charge Constraints**                                             | `open` |                    |
-| BAT-002.1   | Enforce 10% minimum SoC reserve floor (90% usable DoD)                                               | `open` | Reserve floor      |
-| BAT-002.2   | Implement configurable emergency outage reserve %                                                    | `open` | Outage cushion     |
-| BAT-002.3   | Incorporate ambient self-discharge (2%/month) and tare loss                                          | `open` | Idle losses        |
-| BAT-002.4   | Write unit tests for deep-discharge protection during long outages                                   | `open` | Protection tests   |
-| **OUT-001** | **Stochastic Outage Arrival & Duration Sampler**                                                     | `open` |                    |
-| OUT-001.1   | Implement Poisson arrival process ($\lambda = 3$ normal, $\lambda = 8$ typhoon)                      | `open` | Poisson arrivals   |
-| OUT-001.2   | Implement Lognormal duration sampler (Normal: $\mu=1.2, \sigma=0.8$; Typhoon: $\mu=2.3, \sigma=1.0$) | `open` | Duration sampler   |
-| OUT-001.3   | Implement typhoon multi-day solar depression (20–30% GHI for 3–5 days)                               | `open` | Storm coupling     |
-| OUT-001.4   | Add Kolmogorov-Smirnov distribution goodness-of-fit validator                                        | `open` | Distribution fit   |
+| ID          | Task                                                                                                 | Status | Notes / Report                                         |
+| :---------- | :--------------------------------------------------------------------------------------------------- | :----- | :----------------------------------------------------- |
+| **DEM-001** | **Equipment Load & Occupancy Schedule Model**                                                        | `open` |                                                        |
+| DEM-001.1   | Implement academic schedule engine (classes, breaks, holidays)                                       | `open` | Schedule calendar                                      |
+| DEM-001.2   | Compute diurnal non-cooling base demand (lighting, IT, plug loads)                                   | `open` | Bottom-up load                                         |
+| DEM-001.3   | Model unoccupied nighttime baseload (10% of daytime peak)                                            | `open` | Baseload rule                                          |
+| DEM-001.4   | Write unit tests for equipment aggregation across schedule states                                    | `open` | Test suite                                             |
+| **DEM-002** | **Temperature & Humidity Cooling Response Model**                                                    | `open` |                                                        |
+| DEM-002.1   | Implement CDD model ($T_{\text{base}} = 24.0^\circ\text{C}$, 4%/°C sensitivity)                      | `open` | Sensible cooling                                       |
+| DEM-002.2   | Implement latent cooling psychrometric multiplier (+20% humidity)                                    | `open` | Latent load                                            |
+| DEM-002.3   | Model split AC compressor duty cycle / inverter modulation                                           | `open` | Inverter response                                      |
+| DEM-002.4   | Validate combined hourly demand profile against mock monthly bills                                   | `open` | Calibration check                                      |
+| **SOL-001** | **Solar Irradiance Geometry & NOCT Thermal Derating Model**                                          | `open` |                                                        |
+| SOL-001.1   | Implement Batac tilted plane irradiance model (15° South tilt)                                       | `open` | Irradiance model                                       |
+| SOL-001.2   | Model cell operating temperature with +10°C rooftop thermal penalty                                  | `open` | NOCT model                                             |
+| SOL-001.3   | Apply module temperature power derating ($\gamma = -0.40\%/^\circ\text{C}$)                          | `open` | Thermal derate                                         |
+| SOL-001.4   | Write unit tests verifying yield drop during high-temperature hours                                  | `open` | Thermal tests                                          |
+| **SOL-002** | **Array Sizing, Inverter Clipping & Balance-of-System Losses**                                       | `open` |                                                        |
+| SOL-002.1   | Implement DC capacity scaling (0, 50, 100, 200 kWp)                                                  | `open` | Capacity scaling                                       |
+| SOL-002.2   | Model inverter peak efficiency (98%) and DC/AC clipping limits                                       | `open` | Inverter clipping                                      |
+| SOL-002.3   | Incorporate balance-of-system derates (PR = 0.77, soiling, wiring)                                   | `open` | BOS losses                                             |
+| SOL-002.4   | Validate annual specific yield against Luzon benchmark (1,298 kWh/kWp)                               | `open` | Yield benchmark                                        |
+| **BAT-001** | **Battery Dispatch Dynamics, SoC Tracking & Losses**                                                 | `open` |                                                        |
+| BAT-001.1   | Implement time-stepped State-of-Charge tracking logic                                                | `open` | SoC recursion                                          |
+| BAT-001.2   | Apply LFP round-trip efficiency (92% RTE, $\sqrt{\eta}$ charge/discharge)                            | `open` | Efficiency losses                                      |
+| BAT-001.3   | Enforce charge/discharge power limits (0.5C charge, 1.0C discharge)                                  | `open` | C-rate constraints                                     |
+| BAT-001.4   | Write unit tests for simultaneous charge/discharge prevention                                        | `open` | Boundary tests                                         |
+| **BAT-002** | **Battery Outage Reserve & State-of-Charge Constraints**                                             | `open` |                                                        |
+| BAT-002.1   | Enforce 10% minimum SoC reserve floor (90% usable DoD)                                               | `open` | Reserve floor                                          |
+| BAT-002.2   | Implement configurable emergency outage reserve %                                                    | `open` | Outage cushion                                         |
+| BAT-002.3   | Incorporate ambient self-discharge (2%/month) and tare loss                                          | `open` | Idle losses                                            |
+| BAT-002.4   | Write unit tests for deep-discharge protection during long outages                                   | `open` | Protection tests                                       |
+| **OUT-001** | **Stochastic Outage Arrival & Duration Sampler**                                                     | `open` |                                                        |
+| OUT-001.1   | Implement Poisson arrival process ($\lambda = 3$ normal, $\lambda = 8$ typhoon)                      | `open` | Poisson arrivals                                       |
+| OUT-001.2   | Implement Lognormal duration sampler (Normal: $\mu=1.2, \sigma=0.8$; Typhoon: $\mu=2.3, \sigma=1.0$) | `open` | Duration sampler                                       |
+| OUT-001.3   | Implement typhoon multi-day solar depression (20–30% GHI for 3–5 days)                               | `open` | Storm coupling                                         |
+| OUT-001.4   | Add Kolmogorov-Smirnov distribution goodness-of-fit validator                                        | `open` | Distribution fit                                       |
 | **OUT-002** | **Priority-Based Tiered Load Shedding Controller**                                                   | `done` | [Report](docs/reports/OUT-002-gemini-load-shedding.md) |
-| OUT-002.1   | Implement load categorization: Tier 1 (2%), Tier 2 (18%), Tier 3 (80%)                               | `done` | Tier mapping helper |
-| OUT-002.2   | Build automated shedding logic on grid failure (instant Tier 3 drop)                                 | `done` | Shedding logic     |
-| OUT-002.3   | Implement battery low-SoC Tier 2 shedding rule (<20% SoC)                                            | `done` | Second-tier shed   |
-| OUT-002.4   | Track unserved energy (kWh) and outage hours covered per tier                                        | `done` | Unserved metrics   |
+| OUT-002.1   | Implement load categorization: Tier 1 (2%), Tier 2 (18%), Tier 3 (80%)                               | `done` | Tier mapping helper                                    |
+| OUT-002.2   | Build automated shedding logic on grid failure (instant Tier 3 drop)                                 | `done` | Shedding logic                                         |
+| OUT-002.3   | Implement battery low-SoC Tier 2 shedding rule (<20% SoC)                                            | `done` | Second-tier shed                                       |
+| OUT-002.4   | Track unserved energy (kWh) and outage hours covered per tier                                        | `done` | Unserved metrics                                       |
 
 ---
 
