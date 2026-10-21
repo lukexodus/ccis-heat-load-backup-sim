@@ -94,7 +94,22 @@
 │       ├── high-level-tasks.md
 │       └── status.md
 ├── patch
-│   └── OUT-001-gemini-outage-sampler.patch
+│   ├── ARCH-001-gemini-lock-conceptual-model.patch
+│   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
+│   ├── ARCH-002.5-gemini-windows-interop.patch
+│   ├── ARCH-002-gemini-repo-scaffolding.patch
+│   ├── CORE-001.5-gemini-decision-gap-fixup.patch
+│   ├── CORE-001-gemini-domain-models.patch
+│   ├── CORE-002-gemini-weather-ingestion.patch
+│   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
+│   ├── CORE-003-gemini-equipment-mock-bills.patch
+│   ├── CORE-004-gemini-conservation-harness.patch
+│   ├── CORE-005-gemini-baseline-smoke-test.patch
+│   ├── CORE-006-gemini-phase2-contracts.patch
+│   ├── DEM-001-gemini-demand-schedule.patch
+│   ├── DEM-002-gemini-cooling-response.patch
+│   ├── OUT-002-gemini-load-shedding.patch
+│   └── SOL-002-gemini-solar-array.patch
 ├── scripts
 │   ├── apc-bundle.bat
 │   ├── apc-bundle.ps1
