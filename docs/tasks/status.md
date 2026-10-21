@@ -120,21 +120,21 @@ Status: **open**
 
 Status: **open**
 
-| ID          | Task                                                                | Status | Notes / Report                                                    |
-| :---------- | :------------------------------------------------------------------ | :----- | :---------------------------------------------------------------- |
+| ID          | Task                                                                | Status | Notes / Report                                                     |
+| :---------- | :------------------------------------------------------------------ | :----- | :----------------------------------------------------------------- |
 | **INT-001** | **Simulation Engine Integration & Full Dispatch Loop**              | `open` | [PROMPT](docs/prompts/INT-001-PROMPT.md) Engine, CLI, verification |
-| INT-001.1   | Integrate all sub-models into hourly time loop                      | `open` | Full dispatch engine                                              |
-| INT-001.2   | Implement priority bus energy routing (Solar -> Load -> Battery)    | `open` | Bus routing                                                       |
-| INT-001.3   | Run full annual simulation for all combinations                     | `open` | Matrix runner                                                     |
-| INT-001.4   | Verify energy conservation across all 8,760 hours                   | `open` | Conservation check                                                |
-| **INT-002** | **Monte Carlo Outage Simulation Engine**                            | `open` |                                                                   |
-| INT-002.1   | Monte Carlo driver (N = 100 seeds per scenario)                     | `open` | MC engine                                                         |
-| INT-002.2   | Stochastic convergence test (sample size sufficiency)               | `open` | Convergence                                                       |
-| INT-002.3   | Record distributions: unserved kWh, outage hours survived           | `open` | Distributions                                                     |
-| **INT-003** | **Verification, Validation & Headline KPI Reporting**               | `open` |                                                                   |
-| INT-003.1   | Final energy balance audit (residual < 10⁻⁵ kWh everywhere)         | `open` | Balance audit                                                     |
-| INT-003.2   | Compare uncalibrated simulation vs synthetic bills (NMBE, CV(RMSE)) | `open` | Billing validation                                                |
-| INT-003.3   | Generate publication-quality headline KPI summary tables             | `open` | KPI tables                                                        |
+| INT-001.1   | Integrate all sub-models into hourly time loop                      | `open` | Full dispatch engine                                               |
+| INT-001.2   | Implement priority bus energy routing (Solar -> Load -> Battery)    | `open` | Bus routing                                                        |
+| INT-001.3   | Run full annual simulation for all combinations                     | `open` | Matrix runner                                                      |
+| INT-001.4   | Verify energy conservation across all 8,760 hours                   | `open` | Conservation check                                                 |
+| **INT-002** | **Monte Carlo Outage Simulation Engine**                            | `open` |                                                                    |
+| INT-002.1   | Monte Carlo driver (N = 100 seeds per scenario)                     | `open` | MC engine                                                          |
+| INT-002.2   | Stochastic convergence test (sample size sufficiency)               | `open` | Convergence                                                        |
+| INT-002.3   | Record distributions: unserved kWh, outage hours survived           | `open` | Distributions                                                      |
+| **INT-003** | **Verification, Validation & Headline KPI Reporting**               | `open` |                                                                    |
+| INT-003.1   | Final energy balance audit (residual < 10⁻⁵ kWh everywhere)         | `open` | Balance audit                                                      |
+| INT-003.2   | Compare uncalibrated simulation vs synthetic bills (NMBE, CV(RMSE)) | `open` | Billing validation                                                 |
+| INT-003.3   | Generate publication-quality headline KPI summary tables            | `open` | KPI tables                                                         |
 
 ---
 
