@@ -98,17 +98,12 @@ When multiple tasks run concurrently:
    and report the conflict; do not renumber unilaterally.
 5. **Verbatim diffs:** Diffs pasted into a report must come from `git diff` run in the
    worktree that made the change, and must include index lines. Never retype diffs.
-6. **Automatic integration upon completion:** When the task is finished, tested,
-   committed, and its report validated, the agent automatically merges the task
-   branch into `master` (using `--no-ff` from the main checkout), verifies `pytest`
-   on `master`, and safely cleans up the task worktree and local branch via
-   `./scripts/task-worktree.sh remove <TASK-ID>` and `git branch -d task/<TASK-ID>`.
-   If merge conflicts occur in shared tracking files, resolve them cleanly, keep
-   all entries in ID/numerical order, run tests, and finish the merge.
-7. **Protected operations:** Never run `git clean -fd`, `git reset --hard`,
-   `git checkout --`, or `git stash` in the main checkout or in another task's
-   worktree without explicit instructions. Worktree removal is permitted only for
-   your own task worktree after its changes have been verified and merged into `master`.
+6. **Handoff upon completion:** When the task is finished: do not merge, rebase, or
+   delete the worktree yourself. Leave the branch and worktree for lukexodus,
+   and state the branch name and worktree path in your report.
+7. **Protected operations:** Never run `git worktree remove`, `git clean -fd`,
+   `git reset --hard`, `git checkout --` or `git stash` in a worktree you did not create
+   in this session, or in the main checkout without explicit instructions.
 8. **Shared `.git` safety:** Worktrees share the `.git` directory. Never commit a file
    that exists only in a worktree's untracked state without listing it in the report.
 9. **Clean live runs:** Before executing tests or benchmarks, confirm that the run uses
@@ -125,11 +120,11 @@ When multiple tasks run concurrently:
   around it. Note the discrepancy clearly in your report.
 - Run tests regularly using `pytest`.
 
-## After finishing any task (The 5 Unit-of-Work Deliverables)
+## After finishing any task (The 4 Unit-of-Work Deliverables)
 
-For every completed unit of work, you must execute five concrete deliverables:
+For every completed unit of work, you must produce four concrete deliverables:
 
-1. **Commit your changes in the worktree:**
+1. **Commit your changes:**
    - Stage and commit all task changes on your task branch/worktree with a concise, conventional message:
      ```bash
      git add <modified/new files>
@@ -143,9 +138,9 @@ For every completed unit of work, you must execute five concrete deliverables:
      mkdir -p patch
      git diff HEAD~1 > patch/<task-id>-<agent-name>-<short-slug>.patch
      ```
-   - Also copy this patch to the main repository's `patch/` directory so it persists when the task worktree is pruned.
+   - This provides an inspectable, portable patch file stored directly in the repository.
 
-3. **Write and validate the report file (`docs/reports/`):**
+3. **Write the report file (`docs/reports/`):**
    - Location: `docs/reports/<task-id>-<agent-name>-<short-slug>.md`
      - `<task-id>` matches the ID in `docs/tasks/status.md` (e.g., `CORE-001`)
      - `<agent-name>` is whichever agent you are (e.g. `claude-code`, `gemini`, `opencode`)
@@ -155,30 +150,9 @@ For every completed unit of work, you must execute five concrete deliverables:
    - **What to include:** Executive summary, implementation details, test outputs/verification, unified git diff, patch file reference, and items flagged for APC AI attention.
    - **Update `docs/tasks/status.md`** to reflect your task's new status (`done`, `blocked`, or `needs-review`) with a link to your report file.
    - **Record decisions in `docs/decisions/decision-log.md`** under the reserved ID.
-   - **Validate your report:** Run `./scripts/validate-report.py` to ensure your report file passes structure checks, diff checks, and status alignment before merge.
-   - Stage and commit the report, decision, and status updates on your task branch.
+   - **Validate your report:** Run `./scripts/validate-report.py` to ensure your report file passes structure checks, diff checks, and status alignment before handoff.
 
-4. **Automatically merge to `master` & prune worktree:**
-   - Switch to the main checkout:
-     ```bash
-     cd /home/lukexodus/projects/ccis-heat-load-backup-sim
-     ```
-   - Merge the task branch into `master` using `--no-ff`:
-     ```bash
-     git merge task/<task-id> --no-ff -m "merge: integrate task/<task-id> (<concise description>)"
-     ```
-   - Run the full test suite on `master` to confirm clean integration:
-     ```bash
-     pytest
-     ```
-   - Safely remove the completed task worktree and branch:
-     ```bash
-     ./scripts/task-worktree.sh remove <task-id>
-     git branch -d task/<task-id>
-     ```
-   - If merge conflicts occur (e.g. concurrent appends in `status.md` or `decision-log.md`), resolve them by keeping all entries in numerical ID order, re-run tests, and complete the merge.
-
-5. **Build a fresh bundle if needed:**
+4. **Build a fresh bundle if needed:**
    - If this task modified shared contracts, context documents, multiple files, or if requested by the APC AI, package an updated snapshot:
      ```bash
      ./scripts/apc-bundle.sh [profile]
