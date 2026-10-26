@@ -39,6 +39,8 @@
 │   │   ├── deep-research-report.md
 │   │   ├── M&S Project Ideas.md
 │   │   └── README.md
+│   ├── paper
+│   │   └── CCIS-engineering-report.md
 │   ├── prompts
 │   │   ├── ARCH-001-PROMPT.md
 │   │   ├── ARCH-002.4-FIXUP-PROMPT.md
@@ -60,6 +62,7 @@
 │   │   ├── DEC-001-002-PROMPT.md
 │   │   ├── DEM-001-PROMPT.md
 │   │   ├── DEM-002-PROMPT.md
+│   │   ├── DOC-FIX-001-PROMPT.md
 │   │   ├── INT-001-PROMPT.md
 │   │   ├── INT-002-PROMPT.md
 │   │   ├── INT-003-PROMPT.md
@@ -87,8 +90,11 @@
 │   │   ├── CORE-004-gemini-conservation-harness.md
 │   │   ├── CORE-005-gemini-baseline-smoke-test.md
 │   │   ├── CORE-006-gemini-phase2-contracts.md
+│   │   ├── DEC-001-gemini-decision.md
+│   │   ├── DEC-003.3-claude-code-engineering-report.md
 │   │   ├── DEM-001-gemini-demand-schedule.md
 │   │   ├── DEM-002-gemini-cooling-response.md
+│   │   ├── DOC-FIX-001-claude-code-closeout.md
 │   │   ├── INT-001-gemini-engine.md
 │   │   ├── INT-002-gemini-scenarios.md
 │   │   ├── INT-003-gemini-validation.md
@@ -101,25 +107,8 @@
 │       ├── high-level-tasks.md
 │       └── status.md
 ├── patch
-│   ├── ARCH-001-gemini-lock-conceptual-model.patch
-│   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
-│   ├── ARCH-002.5-gemini-windows-interop.patch
-│   ├── ARCH-002-gemini-repo-scaffolding.patch
-│   ├── CORE-001.5-gemini-decision-gap-fixup.patch
-│   ├── CORE-001-gemini-domain-models.patch
-│   ├── CORE-002-gemini-weather-ingestion.patch
-│   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
-│   ├── CORE-003-gemini-equipment-mock-bills.patch
-│   ├── CORE-004-gemini-conservation-harness.patch
-│   ├── CORE-005-gemini-baseline-smoke-test.patch
-│   ├── CORE-006-gemini-phase2-contracts.patch
 │   ├── DEC-001-gemini-decision.patch
-│   ├── DEM-001-gemini-demand-schedule.patch
-│   ├── DEM-002-gemini-cooling-response.patch
-│   ├── INT-001-gemini-engine.patch
-│   ├── INT-002-gemini-scenarios.patch
-│   ├── OUT-002-gemini-load-shedding.patch
-│   └── SOL-002-gemini-solar-array.patch
+│   └── DEC-003.3-claude-code-engineering-report.patch
 ├── results
 │   ├── figures
 │   │   ├── fig1_dispatch_7day.png
@@ -127,7 +116,11 @@
 │   │   ├── fig3_unserved_distribution.png
 │   │   ├── fig4_pareto_scatter.png
 │   │   └── fig5_monthly_demand_comparison.png
+│   ├── dec_candidates.csv
+│   ├── heat_effect.md
+│   ├── hypothesis_tests.md
 │   ├── kpi_tables.md
+│   ├── program_listing_index.md
 │   └── recommendation.md
 ├── scripts
 │   ├── apc-bundle.bat
@@ -138,6 +131,7 @@
 │   ├── manage-decisions.py
 │   ├── README.md
 │   ├── run_decision_pipeline.py
+│   ├── run_heat_effect.py
 │   ├── task-worktree.bat
 │   ├── task-worktree.ps1
 │   ├── task-worktree.sh
@@ -184,6 +178,7 @@
 │       │   └── irradiance.py
 │       ├── validation
 │       │   ├── audit.py
+│       │   ├── hypothesis.py
 │       │   ├── __init__.py
 │       │   ├── plausibility.py
 │       │   └── sensitivity.py
@@ -210,6 +205,7 @@
 │   ├── test_demand_schedule.py
 │   ├── test_engine.py
 │   ├── test_equipment_audit.py
+│   ├── test_hypothesis.py
 │   ├── test_interfaces.py
 │   ├── test_load_shedding.py
 │   ├── test_mock_bills.py
