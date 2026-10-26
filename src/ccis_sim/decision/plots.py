@@ -176,9 +176,9 @@ def plot_unserved_distribution(
 
     rec_sol, rec_bat = recommended_pair
     triplet = [
-        (100.0, 50.0, "Moderate System (100 kWp / 50 kWh)"),
-        (rec_sol, rec_bat, f"Recommended ({rec_sol:.0f} kWp / {rec_bat:.0f} kWh)"),
-        (200.0, 200.0, "Maximum Grid Cap (200 kWp / 200 kWh)"),
+        (100.0, 50.0, "100 kWp / 50 kWh\n(moderate system)"),
+        (rec_sol, rec_bat, f"{rec_sol:.0f} kWp / {rec_bat:.0f} kWh\n(recommended)"),
+        (200.0, 200.0, "200 kWp / 200 kWh\n(max grid cap)"),
     ]
 
     data_to_plot = []
@@ -192,7 +192,7 @@ def plot_unserved_distribution(
             data_to_plot.append(np.array([0.0]))
             labels.append(name)
 
-    fig, ax = plt.subplots(figsize=(8.5, 5), dpi=150)
+    fig, ax = plt.subplots(figsize=(9.0, 5.2), dpi=150)
     box = ax.boxplot(
         data_to_plot,
         tick_labels=labels,
@@ -200,7 +200,7 @@ def plot_unserved_distribution(
         showmeans=True,
         meanline=True,
     )
-
+    ax.tick_params(axis="x", labelsize=9)
     colors = ["#3498db", "#2ecc71", "#9b59b6"]
     for patch, color in zip(box["boxes"], colors):
         patch.set_facecolor(color)
