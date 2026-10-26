@@ -144,15 +144,15 @@ Status: **open**
 
 | ID          | Task                                                                | Status | Notes / Report                                                    |
 | :---------- | :------------------------------------------------------------------ | :----- | :---------------------------------------------------------------- |
-| **DEC-001** | **Multi-Criteria Decision Analysis (AHP) Implementation**           | `open` |                                                                   |
-| DEC-001.1   | Implement Analytic Hierarchy Process (AHP) weighting engine         | `open` | AHP matrix solver                                                 |
-| DEC-001.2   | Compute Consistency Ratio (CR ≤ 0.10 threshold)                     | `open` | Consistency check                                                 |
-| DEC-001.3   | Score all sizing combinations across 4 criteria                     | `open` | Scenario scoring                                                  |
-| **DEC-002** | **Pareto Frontier & Recommended System Sizing Analysis**             | `open` |                                                                   |
-| DEC-002.1   | Compute 2D/3D Pareto frontier (Reliability vs Cost vs Self-Suff)    | `open` | Pareto analysis                                                   |
-| DEC-002.2   | Identify recommended sizing configuration                           | `open` | Sizing selection                                                  |
-| DEC-002.3   | Sensitivity analysis across weights & weather years                 | `open` | Sensitivity check                                                 |
-| **DEC-003** | **Visualization Suite & Final Report Generation**                   | `open` |                                                                   |
-| DEC-003.1   | Generate energy balance dispatch stacked area charts                | `open` | Dispatch plots                                                    |
-| DEC-003.2   | Generate battery SoC duration curves & unserved load distributions  | `open` | Reliability plots                                                 |
-| DEC-003.3   | Compile comprehensive engineering report markdown                   | `open` | Final report                                                      |
+| **DEC-001** | **Multi-Criteria Decision Analysis (AHP) Implementation**           | `done` | [DEC-001-gemini-decision.md](../reports/DEC-001-gemini-decision.md) [D-38] AHP engine, CR=0.0071, weights [0.587, 0.218, 0.123, 0.072] |
+| DEC-001.1   | Implement Analytic Hierarchy Process (AHP) weighting engine         | `done` | `src/ccis_sim/decision/ahp.py` — Saaty eigenvector solver, CR ≤ 0.10 |
+| DEC-001.2   | Compute Consistency Ratio (CR ≤ 0.10 threshold)                     | `done` | CR=0.0071, λ_max=4.0192                                           |
+| DEC-001.3   | Score all sizing combinations across 4 criteria                     | `done` | `score_candidates()` — min-max normalized, 3 weight profiles      |
+| **DEC-002** | **Pareto Frontier & Recommended System Sizing Analysis**             | `done` | [DEC-001-gemini-decision.md](../reports/DEC-001-gemini-decision.md) [D-38] N=50 CRN seeds, 5,000 runs |
+| DEC-002.1   | Compute 2D/3D Pareto frontier (Reliability vs Cost vs Self-Suff)    | `done` | `identify_pareto_frontier()` — both demand cases, r∈{0.3,0.6,1.0} |
+| DEC-002.2   | Identify recommended sizing configuration                           | `done` | Pre-registered rule: ≥90% BU / ≥80% BC typhoon outage served     |
+| DEC-002.3   | Sensitivity analysis across weights & weather years                 | `done` | 2016 robustness re-run on top-5 sizings (N=50 seeds)              |
+| **DEC-003** | **Visualization Suite & Final Report Generation**                   | `done` | [DEC-001-gemini-decision.md](../reports/DEC-001-gemini-decision.md) |
+| DEC-003.1   | Generate energy balance dispatch stacked area charts                | `done` | `results/figures/fig1_dispatch_7day.png`, `fig4_pareto_scatter.png` |
+| DEC-003.2   | Generate battery SoC duration curves & unserved load distributions  | `done` | `results/figures/fig2_soc_duration_curve.png`, `fig3_unserved_distribution.png`, `fig5_monthly_demand_comparison.png` |
+| DEC-003.3   | Compile comprehensive engineering report markdown                   | `open` | Final report (APC writes this per DEC-001-002-PROMPT.md)          |
