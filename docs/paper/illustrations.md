@@ -9,6 +9,13 @@ Sources: `docs/context/conceptual-model.md` and `docs/context/phase2-interface-c
 for the system and hourly logic; the implementation (`src/ccis_sim/`) for anything the two
 documents describe loosely; `docs/decisions/decision-log.md` for the decision pipeline.
 
+**Revision note (2026-10-26).** D1–D4 were parsed and rendered with `mmdc` at review, which
+also checked the syntax that could not be checked when the file was first written. D1 and D3
+are unchanged. D2 and D4 were corrected: D4 now shows the [D-38] fallback branch, because no
+sizing reaches 80% under bill-calibrated demand; D2 gains the battery floors of [D-32] and the
+reverse-priority shortfall allocation of [D-34]. D2's SoC test is at the start of the hour, as
+the engine's own docstring states (`src/ccis_sim/outage/shedding.py`, `shed_for_hour`).
+
 ---
 
 ## D1 — Overall simulation flow
@@ -40,22 +47,24 @@ load-shedding rules and the settle order.
 
 ```mermaid
 flowchart TD
-    S(["Hour t"]) --> D1["1. Compute tiered demand T1, T2, T3"]
-    D1 --> D2["2. Read grid status from outage schedule"]
-    D2 --> D3{"3. Grid available?"}
-    D3 -->|"No (outage)"| SH["Shed Tier 3 at once"]
-    SH --> SOC{"SoC at hour start below 20% of capacity?"}
-    SOC -->|"Yes"| T1ONLY["Serve Tier 1 only"]
-    SOC -->|"No"| T12["Serve Tier 1 + Tier 2"]
-    D3 -->|"Yes"| ALL["Serve all tiers"]
-    T1ONLY --> PV["4. PV output for the hour, typhoon multiplier applied"]
+    S(["Hour t"]) --> H1["1. Compute tiered demand: Tier 1, Tier 2, Tier 3"]
+    H1 --> H2["2. Read grid status from outage schedule"]
+    H2 --> G{"3. Grid available?"}
+    G -->|"Yes"| ALL["Serve all tiers. Battery floor = 30% of capacity (10% cell floor + 20% emergency reserve held back)"]
+    G -->|"No: outage"| SH["Shed Tier 3 at once. Emergency reserve released: battery floor = 10% of capacity"]
+    SH --> Q{"Battery SoC at the start of the hour below 20% of capacity?"}
+    Q -->|"Yes"| T1["Serve Tier 1 only (Tier 2 shed)"]
+    Q -->|"No"| T12["Serve Tier 1 + Tier 2"]
+    ALL --> PV["4. PV output for the hour, typhoon irradiance multiplier applied"]
+    T1 --> PV
     T12 --> PV
-    ALL --> PV
-    PV --> BUS["5. Settle the bus in order: PV, then battery, then grid"]
-    BUS --> CHG["Battery charges from surplus PV only; no grid charging"]
-    CHG --> LOSS["6. Apply self-discharge and standby idle losses"]
-    LOSS --> REC["7. Record import, curtailment, unserved energy per tier"]
-    REC --> E(["Hour t+1"])
+    PV --> BUS["5. Settle the bus: PV first, then battery, then grid. Battery charges from surplus PV only"]
+    BUS --> SF{"Battery cannot deliver the served demand during an outage?"}
+    SF -->|"Yes"| RP["Shortfall is unserved, taken in reverse priority: Tier 3, then Tier 2, then Tier 1"]
+    SF -->|"No"| LOSS
+    RP --> LOSS["6. Apply self-discharge and standby idle losses"]
+    LOSS --> REC["7. Record grid import, curtailment, unserved energy per tier"]
+    REC --> N(["Hour t+1"])
 ```
 
 ---
@@ -88,16 +97,17 @@ AHP scoring, Pareto frontier, and the pre-registered selection rule.
 
 ```mermaid
 flowchart TD
-    G["Candidate grid: 4 PV sizes x 6 battery sizes + 0/0"] --> MC["Monte Carlo: 50 seeds, 2019 typhoon, both demand cases, common random numbers"]
-    MC --> AGG["Aggregate per candidate: reliability, unserved energy, self-sufficiency, cost index"]
-    AGG --> AHP["AHP scoring: weights from pairwise matrix, CR = 0.007"]
-    AGG --> PAR["Pareto frontier over reliability, cost, self-sufficiency"]
-    PAR --> RULE{"Pre-registered rule D-38: non-dominated, cheapest with Tier 1+2 >= 90% bottom-up and >= 80% bill-calibrated"}
-    AHP --> COMP["Composite ranking, reported alongside the rule"]
-    RULE --> REC["Recommendation: 200 kWp / 150 kWh"]
-    COMP --> REC
-    MC --> R16["2016 robustness re-run: top five sizings, 1,000 runs"]
-    R16 --> REC
+    G["Candidate grid: PV 50, 100, 150, 200 kWp x battery 0, 25, 50, 100, 150, 200 kWh, plus 0/0 reference"] --> MC["Monte Carlo: 50 seeds, 2019 typhoon, both demand cases, common random numbers"]
+    MC --> AGG["Aggregate per sizing: reliability, unserved energy, self-sufficiency, curtailment, cost index"]
+    AGG --> AHP["AHP composite score: 4 criteria, consistency ratio 0.007"]
+    AGG --> PAR["Pareto frontier over reliability, cost, self-sufficiency (per demand case)"]
+    PAR --> RULE{"Pre-registered rule D-38: cheapest non-dominated sizing with Tier 1+2 hours served at least 90% (bottom-up) AND at least 80% (bill-calibrated)?"}
+    RULE -->|"Some sizing qualifies"| REC1["Recommend it"]
+    RULE -->|"None qualifies (actual outcome)"| FB["Report the best achievable sizing under each demand case, with the trade-off"]
+    FB --> R1["Bottom-up: cheapest sizing at 90% or more = 200 kWp / 150 kWh (recommended)"]
+    FB --> R2["Bill-calibrated: best achievable = 200 kWp / 200 kWh at 73.8%"]
+    AHP --> CMP["AHP ranking reported alongside, not used to select"]
+    MC --> R16["2016 weather robustness re-run of the top-5 AHP sizings"]
 ```
 
 ---
