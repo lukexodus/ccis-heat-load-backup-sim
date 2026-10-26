@@ -41,7 +41,10 @@
 │   │   ├── M&S Project Ideas.md
 │   │   └── README.md
 │   ├── paper
-│   │   └── CCIS-engineering-report.md
+│   │   ├── CCIS-engineering-report.md
+│   │   ├── illustrations.md
+│   │   ├── program-listing-core.md
+│   │   └── program-listing.md
 │   ├── prompts
 │   │   ├── ARCH-001-PROMPT.md
 │   │   ├── ARCH-002.4-FIXUP-PROMPT.md
@@ -95,6 +98,8 @@
 │   │   ├── DEC-003.3-claude-code-engineering-report.md
 │   │   ├── DEM-001-gemini-demand-schedule.md
 │   │   ├── DEM-002-gemini-cooling-response.md
+│   │   ├── DOC-003-claude-code-report-completion.md
+│   │   ├── DOC-004-claude-code-report-followups.md
 │   │   ├── DOC-FIX-001-claude-code-closeout.md
 │   │   ├── INT-001-gemini-engine.md
 │   │   ├── INT-002-gemini-scenarios.md
@@ -108,8 +113,29 @@
 │       ├── high-level-tasks.md
 │       └── status.md
 ├── patch
+│   ├── ARCH-001-gemini-lock-conceptual-model.patch
+│   ├── ARCH-002.4-gemini-research-synthesis-fixup.patch
+│   ├── ARCH-002.5-gemini-windows-interop.patch
+│   ├── ARCH-002-gemini-repo-scaffolding.patch
+│   ├── CORE-001.5-gemini-decision-gap-fixup.patch
+│   ├── CORE-001-gemini-domain-models.patch
+│   ├── CORE-002-gemini-weather-ingestion.patch
+│   ├── CORE-003.5-gemini-equipment-totals-fixup.patch
+│   ├── CORE-003-gemini-equipment-mock-bills.patch
+│   ├── CORE-004-gemini-conservation-harness.patch
+│   ├── CORE-005-gemini-baseline-smoke-test.patch
+│   ├── CORE-006-gemini-phase2-contracts.patch
 │   ├── DEC-001-gemini-decision.patch
-│   └── DEC-003.3-claude-code-engineering-report.patch
+│   ├── DEC-003.3-claude-code-engineering-report.patch
+│   ├── DEM-001-gemini-demand-schedule.patch
+│   ├── DEM-002-gemini-cooling-response.patch
+│   ├── DOC-003-claude-code-report-completion.patch
+│   ├── DOC-004-claude-code-report-followups.patch
+│   ├── DOC-FIX-001-claude-code-closeout.patch
+│   ├── INT-001-gemini-engine.patch
+│   ├── INT-002-gemini-scenarios.patch
+│   ├── OUT-002-gemini-load-shedding.patch
+│   └── SOL-002-gemini-solar-array.patch
 ├── results
 │   ├── figures
 │   │   ├── fig1_dispatch_7day.png
@@ -117,7 +143,6 @@
 │   │   ├── fig3_unserved_distribution.png
 │   │   ├── fig4_pareto_scatter.png
 │   │   └── fig5_monthly_demand_comparison.png
-│   ├── dec_candidates.csv
 │   ├── heat_effect.md
 │   ├── hypothesis_tests.md
 │   ├── kpi_tables.md
@@ -127,6 +152,7 @@
 │   ├── apc-bundle.bat
 │   ├── apc-bundle.ps1
 │   ├── apc-bundle.sh
+│   ├── build_program_listing.py
 │   ├── manage-decisions.bat
 │   ├── manage-decisions.ps1
 │   ├── manage-decisions.py
