@@ -141,7 +141,8 @@ def build_full(files: list[str], tests: list[str], index, counts) -> str:
             "script after any source change.",
             "",
             f"Source files: **{len(files)}** ({src_lines:,} lines). "
-            f"Test files are listed by index only: **{len(tests)}** ({test_lines:,} lines).",
+            f"Test modules are listed by index only: **{len(tests)}** "
+            f"(plus `tests/__init__.py`), {test_lines:,} lines.",
         ],
     )
     lines.extend(render_index_table(files, index, counts, "Contents"))
@@ -168,7 +169,8 @@ def build_core(files: list[str], tests: list[str], index, counts) -> str:
             "the integration engine, and the AHP/Pareto sizing pipeline.",
             "",
             f"Reproduced here: **{len(core)}** files ({core_lines:,} lines). "
-            f"Indexed only: **{len(rest_src)}** remaining source files and **{len(tests)}** test files.",
+            f"Indexed only: **{len(rest_src)}** remaining source files and **{len(tests)}** "
+            f"test modules (plus `tests/__init__.py`).",
         ],
     )
     lines.extend(render_index_table(core, index, counts, "Core modules included"))
