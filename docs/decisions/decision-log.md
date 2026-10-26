@@ -495,3 +495,35 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
      - Battery RTE (0.88 / 0.92 / 0.96): grid import shifts by $+371.61\text{ kWh}$ / $-364.68\text{ kWh}$ ($\pm 0.47\%$).  
 - **Reasoning:** Closes verification and plausibility audit milestones for Phase 3, guarantees strict mathematical and physical validity of simulation output data, documents sensitivity bounds, and provides authoritative headline KPI tables for downstream multi-criteria decision analysis.  
 - **Affects:** `ccis_sim.validation`, `results/kpi_tables.md`, `INT-003`, `DEC-001`, `DEC-002`, `DEC-003`.
+
+
+**[D-38]** Multi-Criteria Decision Framework (AHP), Unit Cost Proxy Assumptions, Pareto Frontier Formulation, and Formal Sizing Recommendation Rule (DEC-001 + DEC-002).  
+- **Date / Session:** 2026-10-21  
+- **Decision:**  
+  1. **Analytic Hierarchy Process (AHP) Multi-Criteria Weighting Formulation:**  
+     Establish an AHP weighting engine in `src/ccis_sim/decision/ahp.py` using Saaty's principal eigenvector method:  
+     - Four criteria: (1) **Reliability** (mean fraction of outage hours with Tier 1+2 fully served during typhoon regime, with mean unserved T1+2 kWh as tie-breaker); (2) **Cost Index** (relative proxy of capital expenditure, minimized); (3) **Self-Sufficiency** (solar fraction of total consumption, maximized); (4) **Curtailment** (annual curtailed generation in kWh, minimized).  
+     - Base Case Pairwise Comparison Matrix (Saaty 1–9 scale):  
+       $$\mathbf{A} = \begin{pmatrix} 1 & 3 & 5 & 7 \\ 1/3 & 1 & 2 & 3 \\ 1/5 & 1/2 & 1 & 2 \\ 1/7 & 1/3 & 1/2 & 1 \end{pmatrix}$$  
+     - Consistency Verification: Principal eigenvalue $\lambda_{\max} = 4.0192$, Consistency Index $CI = 0.0064$, Saaty Random Index $RI_4 = 0.90$, Consistency Ratio $CR = \frac{CI}{RI} = 0.0071 \le 0.10$. Asserted programmatically via `ahp_weights`.  
+     - Derived Priority Weights: Reliability: `0.5872` (58.7%), Cost: `0.2179` (21.8%), Self-Sufficiency: `0.1228` (12.3%), Curtailment: `0.0722` (7.2%).  
+     - Sensitivity Weight Profiles: (a) Equal weights: $[0.25, 0.25, 0.25, 0.25]$; (b) Reliability-heavy: $[0.60, 0.20, 0.10, 0.10]$.  
+  2. **Relative Unit Cost Index Assumptions:**  
+     Define the dimensionless cost proxy:  
+     $$\text{Cost Index} = \text{solar\_kwp} \times 1.0 + \text{battery\_kwh} \times r$$  
+     where $r$ is the relative unit capacity cost assumption of storage vs solar PV. The model intentionally reports energy and physical metrics, not pesos. Base case adopts $r = 0.60$, with sensitivity checks across $r \in \{0.30, 1.00\}$.  
+  3. **Solar = 0 Candidate Exclusion:**  
+     The microgrid dispatch engine topology ([D-35]) charges the battery strictly from PV surplus and never from the utility grid. With 0 kWp solar PV, any installed battery discharges once during the first blackout and remains permanently depleted at the 10% min SoC protection floor (~0.8 cycles/year). Consequently, battery-only cases ($0\text{ kWp}$ solar with $>0\text{ kWh}$ battery) are physically non-viable and excluded from the candidate trade-off competition. Sizing $(0, 0)$ is retained strictly as the reference baseline.  
+  4. **Multi-Objective Pareto Frontier Formulation:**  
+     A candidate sizing configuration $A$ strictly dominates candidate $B$ across the trade-off space $(\text{Reliability} \uparrow, \text{Cost Index} \downarrow, \text{Self-Sufficiency} \uparrow)$ iff $A$ is no worse than $B$ in all three objectives and strictly superior in at least one. The Pareto frontier is computed independently under both demand regimes.  
+  5. **Formal Sizing Recommendation Rule (Pre-Registered):**  
+     Select the cheapest non-dominated Pareto sizing whose mean Tier 1+2 outage-hours-served fraction is $\ge 0.90$ (90%) in the typhoon regime under bottom-up demand (`demand_scale = 1.0`) AND $\ge 0.80$ (80%) under bill-calibrated demand (`demand_scale \approx 2.1047`). If no sizing qualifies under both, select the best achievable sizing under each demand case and report the trade-off.  
+- **Reasoning:** Formalizes multi-criteria decision criteria before evaluating model outputs, enforces Saaty consistency standards ($CR \le 0.10$), eliminates physically non-viable battery-only dispatch artifacts, and establishes an objective, pre-registered selection threshold robust across demand uncertainty.  
+- **Affects:** `ccis_sim.decision.ahp`, `ccis_sim.decision.sizing`, `DEC-001`, `DEC-002`, `DEC-003`.
+
+
+**[D-39]** Reserved, unused.  
+- **Date / Session:** 2026-10-21  
+- **Decision:** Reserved for late changes or figure annotations; confirmed unused.  
+- **Reasoning:** Maintained to prevent ID reservation collisions per repository governance rules.  
+- **Affects:** None.
