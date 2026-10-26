@@ -100,7 +100,9 @@ Figure 6 is a text capture, not an image: real stdout from `python3 -m ccis_sim.
 
 ### 3.4 Mermaid diagrams
 
-`mmdc` is not installed. Only `npx` is available, and pulling the Mermaid CLI would have required a network install, so the diagrams were **not rendered**. They were checked by hand for balanced blocks, quoted node labels, and a single consistent `flowchart TD` syntax; each block has a title, an ID (D1–D4), a suggested caption and a target section. Rendering remains an operator check before the Google Docs assembly.
+`mmdc` is not installed. Only `npx` is available, and pulling the Mermaid CLI would have required a network install, so the diagrams were **not rendered** during this task. They were checked by hand for balanced blocks, quoted node labels, and a single consistent `flowchart TD` syntax; each block has a title, an ID (D1–D4), a suggested caption and a target section.
+
+**Addendum.** The operator rendered all four with `mmdc` and supplied corrected D2 and D4, applied in commit `758bb74`: D4 now shows the [D-38] fallback branch (no sizing reaches 80% under bill-calibrated demand), and D2 gains the [D-32] battery floors and the [D-34] reverse-priority shortfall allocation. D2's SoC test stays at the start of the hour, which `shed_for_hour` documents and §5.3 of the report states.
 
 ### 3.5 Image paths, placeholders, validator
 
