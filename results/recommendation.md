@@ -11,7 +11,7 @@
 
 | Demand Evaluation Case | Solar (kWp) | Battery (kWh) | Cost Index | T1+2 Outage Served Mean (%) | 95% CI Half-Width | P5 (%) | P50 (%) | P95 (%) | Unserved T1+2 Mean (kWh) | Unserved Std (kWh) | Unserved 95% CI | Unserved P5 / P95 (kWh) | Self-Sufficiency (%) | Annual Grid Import (MWh) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **Bottom-Up (Primary, 1.0×)** | 200 | 150 | 290.0 | **90.5%** | ±2.61% | 72.1% | 92.2% | 100.0% | 34.3 | 41.3 | ±11.7 | 0.0 / 116.2 | 84.9% | 28.5 |
+| **Bottom-Up (Primary, 1.0×)** | 200 | 150 | 290.0 | **90.3%** | ±2.61% | 72.1% | 92.2% | 100.0% | 34.3 | 41.3 | ±11.7 | 0.0 / 116.2 | 84.9% | 28.5 |
 | **Bill-Calibrated (Sensitivity, ~2.1×)** | 200 | 150 | 290.0 | **68.4%** | ±3.76% | 48.4% | 67.7% | 91.2% | 321.9 | 204.3 | ±58.1 | 56.3 / 678.7 | 54.5% | 181.3 |
 
 ---
