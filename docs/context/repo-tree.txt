@@ -16,6 +16,7 @@
 │   │   ├── apc-bundle-quickref.md
 │   │   ├── apc-handoff-2026-10-19.md
 │   │   ├── apc-handoff-2026-10-20.md
+│   │   ├── apc-handoff-2026-10-26.md
 │   │   ├── apc-handoff-template.md
 │   │   ├── complete-context.md
 │   │   ├── conceptual-model.md
