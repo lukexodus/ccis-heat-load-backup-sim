@@ -157,3 +157,4 @@ Status: **in-progress**
 | DEC-003.2   | Generate battery SoC duration curves & unserved load distributions  | `done` | `results/figures/fig2_soc_duration_curve.png`, `fig3_unserved_distribution.png`, `fig5_monthly_demand_comparison.png` |
 | DEC-003.3   | Compile comprehensive engineering report markdown                   | `done` | [CCIS-engineering-report.md](../paper/CCIS-engineering-report.md) [report](../reports/DEC-003.3-claude-code-engineering-report.md) |
 | **DOC-FIX-001** | **Report Gap Closure, Hygiene, Hypothesis Tests & Heat-Effect Numbers** | `done` | [DOC-FIX-001-claude-code-closeout.md](../reports/DOC-FIX-001-claude-code-closeout.md) [D-40] |
+| **DOC-003** | **Complete engineering report against course Project Outline** | `done` | [DOC-003-claude-code-report-completion.md](../reports/DOC-003-claude-code-report-completion.md) [D-41] Title block, §3.4 diagrams, §4.3–4.4 data handling, §6.6 SME status, §7.5 figures 1–6, §10 listings, Appendix E |

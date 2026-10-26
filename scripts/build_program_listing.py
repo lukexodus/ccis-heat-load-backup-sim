@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+"""Build the program listing files for the CCIS engineering report (DOC-003).
+
+Writes two deterministic Markdown listings:
+
+- ``docs/paper/program-listing.md``      full source listing (all of ``src/ccis_sim``
+  plus the decision pipeline script)
+- ``docs/paper/program-listing-core.md`` core modules only, with an index of the rest
+
+File order is sorted and no timestamp or commit is embedded, so re-running on an
+unchanged tree produces byte-identical output. Line counts and one-line purposes are
+taken from ``results/program_listing_index.md`` where that index has a row.
+"""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+INDEX_PATH = REPO_ROOT / "results" / "program_listing_index.md"
+OUT_FULL = REPO_ROOT / "docs" / "paper" / "program-listing.md"
+OUT_CORE = REPO_ROOT / "docs" / "paper" / "program-listing-core.md"
+
+# Source directories, relative to the repository root.
+SOURCE_DIRS = ("src/ccis_sim",)
+# Scripts that drive a reported result and are therefore part of the listing.
+EXTRA_SOURCE_FILES = ("scripts/run_decision_pipeline.py",)
+
+# Core modules: the engine, the dispatch and shedding logic, the stochastic drivers,
+# the solar and demand models, and the decision pipeline. Chosen so that the simulation
+# loop and every input to the recommendation can be read end to end.
+CORE_FILES = (
+    "src/ccis_sim/core/models.py",
+    "src/ccis_sim/demand/equipment.py",
+    "src/ccis_sim/demand/schedule.py",
+    "src/ccis_sim/demand/non_cooling.py",
+    "src/ccis_sim/demand/cooling.py",
+    "src/ccis_sim/solar/irradiance.py",
+    "src/ccis_sim/solar/array.py",
+    "src/ccis_sim/battery/dynamics.py",
+    "src/ccis_sim/battery/reserve.py",
+    "src/ccis_sim/outage/sampler.py",
+    "src/ccis_sim/outage/shedding.py",
+    "src/ccis_sim/integration/engine.py",
+    "src/ccis_sim/decision/ahp.py",
+    "src/ccis_sim/decision/sizing.py",
+    "scripts/run_decision_pipeline.py",
+)
+
+
+def read_index() -> dict[str, tuple[int, str]]:
+    """Parse the program listing index into {path: (indexed_lines, purpose)}."""
+    rows: dict[str, tuple[int, str]] = {}
+    pattern = re.compile(r"^\| `([^`]+)` \| (\d+) \| (.+?) \|\s*$")
+    for line in INDEX_PATH.read_text(encoding="utf-8").splitlines():
+        match = pattern.match(line)
+        if match:
+            rows[match.group(1)] = (int(match.group(2)), match.group(3).strip())
+    return rows
+
+
+def line_count(path: Path) -> int:
+    return len(path.read_text(encoding="utf-8").splitlines())
+
+
+def module_purpose(path: Path) -> str:
+    """First non-empty line of the module docstring, for files absent from the index."""
+    text = path.read_text(encoding="utf-8")
+    # Skip a shebang and encoding line before looking for the module docstring.
+    text = re.sub(r"\A(?:#[^\n]*\n)+", "", text)
+    match = re.match(r'\s*(?:"""|\'\'\')(.*?)(?:"""|\'\'\')', text, re.DOTALL)
+    if not match:
+        return "(no module docstring)"
+    for line in match.group(1).splitlines():
+        stripped = line.strip()
+        if stripped:
+            return stripped.rstrip(".")
+    return "(no module docstring)"
+
+
+def collect_files() -> list[str]:
+    files: list[str] = []
+    for directory in SOURCE_DIRS:
+        files.extend(
+            p.relative_to(REPO_ROOT).as_posix()
+            for p in sorted((REPO_ROOT / directory).rglob("*.py"))
+            if "__pycache__" not in p.parts
+        )
+    files.extend(EXTRA_SOURCE_FILES)
+    return sorted(set(files))
+
+
+def test_files() -> list[str]:
+    return sorted(
+        p.relative_to(REPO_ROOT).as_posix()
+        for p in (REPO_ROOT / "tests").glob("test_*.py")
+    )
+
+
+def render_header(title: str, intro: list[str]) -> list[str]:
+    lines = [f"# {title}", ""]
+    lines.extend(intro)
+    lines.append("")
+    return lines
+
+
+def render_index_table(
+    files: list[str], index: dict[str, tuple[int, str]], counts: dict[str, int], heading: str
+) -> list[str]:
+    lines = [f"## {heading}", "", "| Path | Lines | Purpose |", "| :--- | ---: | :--- |"]
+    for path in files:
+        purpose = index.get(path, (0, ""))[1] or module_purpose(REPO_ROOT / path)
+        lines.append(f"| `{path}` | {counts[path]} | {purpose} |")
+    lines.append("")
+    return lines
+
+
+def render_file(path: str, counts: dict[str, int], index: dict[str, tuple[int, str]]) -> list[str]:
+    purpose = index.get(path, (0, ""))[1] or module_purpose(REPO_ROOT / path)
+    source = (REPO_ROOT / path).read_text(encoding="utf-8").rstrip("\n")
+    return [
+        f"### `{path}`",
+        "",
+        f"*{counts[path]} lines. {purpose}*",
+        "",
+        "```python",
+        source,
+        "```",
+        "",
+    ]
+
+
+def build_full(files: list[str], tests: list[str], index, counts) -> str:
+    src_lines = sum(counts[p] for p in files)
+    test_lines = sum(counts[p] for p in tests)
+    lines = render_header(
+        "Program Listing — Full Source",
+        [
+            "Generated by `scripts/build_program_listing.py`. Do not edit by hand; re-run the "
+            "script after any source change.",
+            "",
+            f"Source files: **{len(files)}** ({src_lines:,} lines). "
+            f"Test files are listed by index only: **{len(tests)}** ({test_lines:,} lines).",
+        ],
+    )
+    lines.extend(render_index_table(files, index, counts, "Contents"))
+    lines.extend(["---", "", "## Source", ""])
+    for path in files:
+        lines.extend(render_file(path, counts, index))
+    lines.extend(render_index_table(tests, index, counts, "Test suite (index only)"))
+    return "\n".join(lines).rstrip("\n") + "\n"
+
+
+def build_core(files: list[str], tests: list[str], index, counts) -> str:
+    core = [p for p in CORE_FILES if p in files]
+    rest_src = [p for p in files if p not in core]
+    core_lines = sum(counts[p] for p in core)
+    lines = render_header(
+        "Program Listing — Core Modules",
+        [
+            "Generated by `scripts/build_program_listing.py`. Do not edit by hand; re-run the "
+            "script after any source change.",
+            "",
+            "Core selection: the simulation loop and each model that feeds a reported result — "
+            "domain models, equipment audit, occupancy, non-cooling and cooling demand, solar "
+            "irradiance and array, battery dynamics and reserve, outage sampler and shedding, "
+            "the integration engine, and the AHP/Pareto sizing pipeline.",
+            "",
+            f"Reproduced here: **{len(core)}** files ({core_lines:,} lines). "
+            f"Indexed only: **{len(rest_src)}** remaining source files and **{len(tests)}** test files.",
+        ],
+    )
+    lines.extend(render_index_table(core, index, counts, "Core modules included"))
+    lines.extend(["---", "", "## Core module source", ""])
+    for path in core:
+        lines.extend(render_file(path, counts, index))
+    lines.extend(render_index_table(rest_src, index, counts, "Remaining source files (index only)"))
+    lines.extend(render_index_table(tests, index, counts, "Test suite (index only)"))
+    return "\n".join(lines).rstrip("\n") + "\n"
+
+
+def main() -> None:
+    index = read_index()
+    files = collect_files()
+    tests = test_files()
+    missing = [p for p in files if not (REPO_ROOT / p).is_file()]
+    if missing:
+        raise SystemExit(f"Listed file(s) do not exist: {missing}")
+    counts = {p: line_count(REPO_ROOT / p) for p in files + tests}
+
+    stale = [
+        (p, index[p][0], counts[p]) for p in counts if p in index and index[p][0] != counts[p]
+    ]
+    if stale:
+        print("Note: index line counts differ from the files on disk:")
+        for path, indexed, actual in sorted(stale):
+            print(f"  {path}: index {indexed}, file {actual}")
+
+    OUT_FULL.parent.mkdir(parents=True, exist_ok=True)
+    OUT_FULL.write_text(build_full(files, tests, index, counts), encoding="utf-8")
+    OUT_CORE.write_text(build_core(files, tests, index, counts), encoding="utf-8")
+    print(f"wrote {OUT_FULL.relative_to(REPO_ROOT)} ({OUT_FULL.stat().st_size / 1024:.0f} KB)")
+    print(f"wrote {OUT_CORE.relative_to(REPO_ROOT)} ({OUT_CORE.stat().st_size / 1024:.0f} KB)")
+
+
+if __name__ == "__main__":
+    main()
