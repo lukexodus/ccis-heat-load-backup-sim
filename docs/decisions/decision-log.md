@@ -527,3 +527,13 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Decision:** Reserved for late changes or figure annotations; confirmed unused.  
 - **Reasoning:** Maintained to prevent ID reservation collisions per repository governance rules.  
 - **Affects:** None.
+
+
+**[D-40]** Heat-Effect Reporting Convention and 2016 Calendar-Mismatch Disclosure (DOC-FIX-001 Part C).  
+- **Date / Session:** 2026-10-26  
+- **Decision:**  
+  1. Heat-effect figures are reported from grid-only runs (solar 0, battery 0), bottom-up demand, seed 0, and are duplicated for the bill-calibrated demand scale. Cooling kWh comes from calling `compute_cooling_demand` with the same weather/occupancy/audit inputs; non-cooling kWh comes from `compute_non_cooling_demand`. No new model logic is introduced.  
+  2. The 2016 weather comparison uses the default `AcademicCalendar(year=2019)` because that is what `simulate()` uses. As a consequence, 2019 holiday dates do not match the 2016 calendar: 2016 resolves to 218 class days versus 206 in 2019, inflating 2016 non-cooling demand independently of weather. Any 2016-vs-2019 demand or grid-import comparison must disclose this confound.  
+  3. The daily regression (daily total kWh on daily mean temperature, school days only) is reported as a simulation-conditional association, not a causal estimate.  
+- **Reasoning:** Answers the project's primary heat-effect question with reproducible on-disk numbers while preventing the 2016 calendar mismatch from being presented as a pure weather effect.  
+- **Affects:** `results/heat_effect.md`, `scripts/run_heat_effect.py`, `docs/reports/DOC-FIX-001-claude-code-closeout.md`.

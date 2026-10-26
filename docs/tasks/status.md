@@ -69,7 +69,7 @@ Status: **done**
 
 ## Phase 2 — Parallel Model Tracks
 
-Status: **open**
+Status: **done**
 
 | ID          | Task                                                                                                 | Status | Notes / Report                                                                                                       |
 | :---------- | :--------------------------------------------------------------------------------------------------- | :----- | :------------------------------------------------------------------------------------------------------------------- |
@@ -118,7 +118,7 @@ Status: **open**
 
 ## Phase 3 — Integration, Simulation Engine & Experiment Matrix
 
-Status: **open**
+Status: **done**
 
 | ID          | Task                                                                | Status | Notes / Report                                                                                   |
 | :---------- | :------------------------------------------------------------------ | :----- | :----------------------------------------------------------------------------------------------- |
@@ -140,7 +140,7 @@ Status: **open**
 
 ## Phase 4 — Decision Analysis, Visualization & Reporting
 
-Status: **open**
+Status: **in-progress**
 
 | ID          | Task                                                                | Status | Notes / Report                                                    |
 | :---------- | :------------------------------------------------------------------ | :----- | :---------------------------------------------------------------- |
@@ -152,7 +152,8 @@ Status: **open**
 | DEC-002.1   | Compute 2D/3D Pareto frontier (Reliability vs Cost vs Self-Suff)    | `done` | `identify_pareto_frontier()` — both demand cases, r∈{0.3,0.6,1.0} |
 | DEC-002.2   | Identify recommended sizing configuration                           | `done` | Pre-registered rule: ≥90% BU / ≥80% BC typhoon outage served     |
 | DEC-002.3   | Sensitivity analysis across weights & weather years                 | `done` | 2016 robustness re-run on top-5 sizings (N=50 seeds)              |
-| **DEC-003** | **Visualization Suite & Final Report Generation**                   | `done` | [DEC-001-gemini-decision.md](../reports/DEC-001-gemini-decision.md) |
+| **DEC-003** | **Visualization Suite & Final Report Generation**                   | `in-progress` | DEC-003.1/.2 done; DEC-003.3 open (APC writes final report) |
 | DEC-003.1   | Generate energy balance dispatch stacked area charts                | `done` | `results/figures/fig1_dispatch_7day.png`, `fig4_pareto_scatter.png` |
 | DEC-003.2   | Generate battery SoC duration curves & unserved load distributions  | `done` | `results/figures/fig2_soc_duration_curve.png`, `fig3_unserved_distribution.png`, `fig5_monthly_demand_comparison.png` |
 | DEC-003.3   | Compile comprehensive engineering report markdown                   | `open` | Final report (APC writes this per DEC-001-002-PROMPT.md)          |
+| **DOC-FIX-001** | **Report Gap Closure, Hygiene, Hypothesis Tests & Heat-Effect Numbers** | `done` | [DOC-FIX-001-claude-code-closeout.md](../reports/DOC-FIX-001-claude-code-closeout.md) [D-40] |
