@@ -120,21 +120,21 @@ Status: **open**
 
 Status: **open**
 
-| ID          | Task                                                                | Status | Notes / Report                                                    |
-| :---------- | :------------------------------------------------------------------ | :----- | :---------------------------------------------------------------- |
+| ID          | Task                                                                | Status | Notes / Report                                                                                   |
+| :---------- | :------------------------------------------------------------------ | :----- | :----------------------------------------------------------------------------------------------- |
 | **INT-001** | **Simulation Engine Integration & Full Dispatch Loop**              | `done` | [INT-001-gemini-engine.md](../reports/INT-001-gemini-engine.md) [D-35] Engine, CLI, verification |
-| INT-001.1   | Integrate all sub-models into hourly time loop                      | `done` | simulate() 8-step dispatch loop                                   |
-| INT-001.2   | Implement priority bus energy routing (Solar -> Load -> Battery)    | `done` | Bus routing & tiered shedding                                     |
-| INT-001.3   | Run full annual simulation for all combinations                     | `done` | Matrix runner & CLI driver ccis-sim run                           |
-| INT-001.4   | Verify energy conservation across all 8,760 hours                   | `done` | Conservation residual < 1e-9 kWh across all 8,760h                |
-| **INT-002** | **Monte Carlo Outage Simulation Engine**                            | `done` | [INT-002-gemini-scenarios.md](../reports/INT-002-gemini-scenarios.md) [D-36] |
-| INT-002.1   | Monte Carlo driver (N = 100 seeds per scenario)                     | `done` | MC engine: 2,460 runs across main, sensitivity, and +2°C grids    |
-| INT-002.2   | Stochastic convergence test (sample size sufficiency)               | `done` | Convergence evaluated at N=10, 20, 30 (SE halves, D-36)           |
-| INT-002.3   | Record distributions: unserved kWh, outage hours survived           | `done` | 100 cells serialized to results/mc_summary.csv                    |
-| **INT-003** | **Verification, Validation & Headline KPI Reporting**               | `done` | [Report](docs/reports/INT-003-gemini-validation.md) [D-37] Audits, plausibility, sensitivities |
-| INT-003.1   | Final energy balance audit (residual < 10⁻⁵ kWh everywhere)         | `done` | Invariant audit across 12 configs (residual < 3e-14 kWh) [D-37]    |
-| INT-003.2   | Compare uncalibrated simulation vs synthetic bills (NMBE, CV(RMSE)) | `done` | ASHRAE NMBE -57.3%, CV(RMSE) 55.3%, plausibility reconciliation    |
-| INT-003.3   | Generate publication-quality headline KPI summary tables             | `done` | [kpi_tables.md](../../results/kpi_tables.md) reference cases      |
+| INT-001.1   | Integrate all sub-models into hourly time loop                      | `done` | simulate() 8-step dispatch loop                                                                  |
+| INT-001.2   | Implement priority bus energy routing (Solar -> Load -> Battery)    | `done` | Bus routing & tiered shedding                                                                    |
+| INT-001.3   | Run full annual simulation for all combinations                     | `done` | Matrix runner & CLI driver ccis-sim run                                                          |
+| INT-001.4   | Verify energy conservation across all 8,760 hours                   | `done` | Conservation residual < 1e-9 kWh across all 8,760h                                               |
+| **INT-002** | **Monte Carlo Outage Simulation Engine**                            | `done` | [INT-002-gemini-scenarios.md](../reports/INT-002-gemini-scenarios.md) [D-36]                     |
+| INT-002.1   | Monte Carlo driver (N = 100 seeds per scenario)                     | `done` | MC engine: 2,460 runs across main, sensitivity, and +2°C grids                                   |
+| INT-002.2   | Stochastic convergence test (sample size sufficiency)               | `done` | Convergence evaluated at N=10, 20, 30 (SE halves, D-36)                                          |
+| INT-002.3   | Record distributions: unserved kWh, outage hours survived           | `done` | 100 cells serialized to results/mc_summary.csv                                                   |
+| **INT-003** | **Verification, Validation & Headline KPI Reporting**               | `done` | [Report](docs/reports/INT-003-gemini-validation.md) [D-37] Audits, plausibility, sensitivities   |
+| INT-003.1   | Final energy balance audit (residual < 10⁻⁵ kWh everywhere)         | `done` | Invariant audit across 12 configs (residual < 3e-14 kWh) [D-37]                                  |
+| INT-003.2   | Compare uncalibrated simulation vs synthetic bills (NMBE, CV(RMSE)) | `done` | ASHRAE NMBE -57.3%, CV(RMSE) 55.3%, plausibility reconciliation                                  |
+| INT-003.3   | Generate publication-quality headline KPI summary tables            | `done` | [kpi_tables.md](../../results/kpi_tables.md) reference cases                                     |
 
 ---
 
